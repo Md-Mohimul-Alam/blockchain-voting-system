@@ -1,0 +1,50 @@
+{
+  "name": "voting-contract",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Blockchain-based voting contract for Hyperledger Fabric",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "mocha --recursive",
+    "start": "fabric-chaincode-node start"
+  },
+  "keywords": ["hyperledger", "fabric", "chaincode", "voting"],
+  "author": "Your Name",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "fabric-contract-api": "^2.5.8",
+    "fabric-shim": "^2.5.8",
+    "json-stringify-deterministic": "^1.0.0",
+    "sort-keys-recursive": "^2.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^10.4.0",
+    "eslint": "^8.57.0",
+    "chai": "^4.4.1",
+    "nyc": "^15.1.0",
+    "sinon": "^18.0.0",
+    "sinon-chai": "^3.7.0"
+  },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "test/**",
+      "index.js",
+      ".eslintrc.js"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "all": true,
+    "check-coverage": true,
+    "statements": 100,
+    "branches": 100,
+    "functions": 100,
+    "lines": 100
+  }
+}
