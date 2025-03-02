@@ -1,38 +1,36 @@
+// routes/voteRoutes.js
 import express from "express";
 import {
   registerCandidate,
-  vote,
   deleteCandidate,
   updateCandidate,
+  vote,
   closeVoting,
   getResults,
   getCandidates,
   getVoterVote,
   resetElection,
+  registerVoter,
+  searchVoter,
+  deleteVoter,
 } from "../controllers/voteController.js";
-
-import {
-  createVoterDIDController,
-  issueVoterCredentialController,
-  listDIDsController,
-} from "../controllers/ariesController.js";
 
 const router = express.Router();
 
-// Fabric chaincode endpoints
+// Voting-related routes
 router.post("/registerCandidate", registerCandidate);
-router.post("/castVote", vote);
 router.post("/deleteCandidate", deleteCandidate);
 router.post("/updateCandidate", updateCandidate);
+router.post("/castVote", vote);
 router.post("/closeVoting", closeVoting);
 router.get("/getResults", getResults);
 router.get("/getCandidates", getCandidates);
 router.get("/getVoterVote/:voterDID", getVoterVote);
 router.post("/resetElection", resetElection);
 
-// Aries endpoints
-router.post("/createVoterDID", createVoterDIDController);
-router.post("/issueVoterCredential", issueVoterCredentialController);
-router.get("/listDIDs", listDIDsController);
+// Voter management routes
+router.post("/registerVoter", registerVoter);
+router.get("/searchVoter/:did", searchVoter);
+router.delete("/deleteVoter", deleteVoter);
 
 export default router;

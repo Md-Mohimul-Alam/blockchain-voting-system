@@ -1,3 +1,4 @@
+// controllers/voteController.js
 import { getContract } from "../config/fabricConfig.js";
 import Voter from "../models/voterModel.js";
 
@@ -11,7 +12,6 @@ export const registerCandidate = async (req, res) => {
     await contract.submitTransaction("registerCandidate", candidateID, name);
     res.json({ message: `✅ Candidate ${name} registered successfully.` });
   } catch (error) {
-    console.error("❌ Error registering candidate:", error.message);
     res.status(400).json({ error: error.message });
   }
 };
@@ -34,7 +34,6 @@ export const vote = async (req, res) => {
     await Voter.updateOne({ did: voterDID }, { hasVoted: true }, { upsert: true });
     res.json({ message: "✅ Vote cast successfully!" });
   } catch (error) {
-    console.error("❌ Error casting vote:", error.message);
     res.status(400).json({ error: error.message });
   }
 };
@@ -49,7 +48,6 @@ export const deleteCandidate = async (req, res) => {
     await contract.submitTransaction("deleteCandidate", candidateID);
     res.json({ message: `✅ Candidate ${candidateID} deleted successfully.` });
   } catch (error) {
-    console.error("❌ Error deleting candidate:", error.message);
     res.status(400).json({ error: error.message });
   }
 };
@@ -64,7 +62,6 @@ export const updateCandidate = async (req, res) => {
     await contract.submitTransaction("updateCandidate", candidateID, newName);
     res.json({ message: `✅ Candidate ${candidateID} updated to ${newName}.` });
   } catch (error) {
-    console.error("❌ Error updating candidate:", error.message);
     res.status(400).json({ error: error.message });
   }
 };
@@ -78,7 +75,6 @@ export const closeVoting = async (req, res) => {
     const results = await contract.submitTransaction("closeVoting");
     res.json(JSON.parse(results.toString()));
   } catch (error) {
-    console.error("❌ Error closing voting:", error.message);
     res.status(400).json({ error: error.message });
   }
 };
@@ -92,7 +88,6 @@ export const getResults = async (req, res) => {
     const results = await contract.evaluateTransaction("getResults");
     res.json(JSON.parse(results.toString()));
   } catch (error) {
-    console.error("❌ Error fetching results:", error.message);
     res.status(400).json({ error: error.message });
   }
 };
@@ -106,7 +101,7 @@ export const getCandidates = async (req, res) => {
     const result = await contract.evaluateTransaction("getAllCandidates");
     res.json(JSON.parse(result.toString()));
   } catch (error) {
-    console.error("❌ Error getting candidates:", error.message);
+    console.error("❌ Error getting candidates:", error);
     res.status(500).json({ error: "Failed to fetch candidates" });
   }
 };
@@ -121,7 +116,6 @@ export const getVoterVote = async (req, res) => {
     const result = await contract.evaluateTransaction("getVoterVote", voterDID);
     res.json({ message: result.toString() });
   } catch (error) {
-    console.error("❌ Error fetching voter vote:", error.message);
     res.status(400).json({ error: error.message });
   }
 };
@@ -135,7 +129,58 @@ export const resetElection = async (req, res) => {
     await contract.submitTransaction("resetElection");
     res.json({ message: "✅ Election has been reset successfully." });
   } catch (error) {
-    console.error("❌ Error resetting election:", error.message);
     res.status(400).json({ error: error.message });
+  }
+};
+
+/**
+ * Register a new voter (Store voter info in MongoDB)
+ */
+export const registerVoter = async (req, res) => {
+  const { did } = req.body;
+  try {
+    // Create a new voter record in the database
+    const newVoter = new Voter({ did, hasVoted: false });
+    await newVoter.save();
+    res.json({ message: `✅ Voter with DID ${did} registered successfully.` });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+/**
+ * Search for a voter by DID
+ */
+export const searchVoter = async (req, res) => {
+  console.log("Request query:", req.query);
+  try {
+    const { did } = req.query;
+    if (!did) {
+      return res.status(400).json({ error: "DID query parameter is required." });
+    }
+    console.log("Searching for voter with DID:", did);
+    const voter = await Voter.findOne({ did });
+    if (!voter) {
+      return res.status(404).json({ error: "Voter not found." });
+    }
+    res.json(voter);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/**
+ * Delete a voter by DID
+ */
+export const deleteVoter = async (req, res) => {
+  const { did } = req.body;
+  try {
+    const voter = await Voter.findOneAndDelete({ did });
+    if (!voter) {
+      return res.status(404).json({ error: "❌ Voter not found." });
+    }
+    res.json({ message: `✅ Voter with DID ${did} deleted successfully.` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
