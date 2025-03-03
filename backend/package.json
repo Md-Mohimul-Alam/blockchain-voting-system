@@ -5,41 +5,43 @@
     "type": "module",
     "main": "server.js",
     "scripts": {
-      "start": "node server.js",
-      "dev": "nodemon server.js",
-      "start-aries": "node startAriesAgent.js"
+        "start": "node server.js",
+        "dev": "nodemon server.js",
+        "start-aries": "node startAriesAgent.js"
     },
     "dependencies": {
-      "@aries-framework/askar": "^0.4.2",
-      "@aries-framework/core": "^0.4.2",
-      "@aries-framework/indy-sdk": "^0.4.2",
-      "@aries-framework/indy-vdr": "^0.4.2",
-      "@aries-framework/node": "^0.4.2",
-      "axios": "^1.7.9",
-      "body-parser": "^1.20.3",
-      "compression": "^1.8.0",
-      "cors": "^2.8.5",
-      "dotenv": "^16.4.7",
-      "express": "^4.21.2",
-      "express-rate-limit": "^7.5.0",
-      "fabric-ca-client": "^2.2.20",
-      "fabric-network": "^2.2.9",
-      "helmet": "^8.0.0",
-      "mongoose": "^8.10.1",
-      "morgan": "^1.10.0",
-      "uuid": "^11.1.0",
-      "winston": "^3.17.0"
+        "@aries-framework/askar": "^0.4.2",
+        "@aries-framework/core": "^0.4.2",
+        "@aries-framework/indy-sdk": "^0.4.2",
+        "@aries-framework/indy-vdr": "^0.4.2",
+        "@aries-framework/node": "^0.4.2",
+        "@hyperledger/aries-askar-shared": "^0.2.3",
+        "axios": "^1.7.9",
+        "bcryptjs": "^3.0.2",
+        "body-parser": "^1.20.3",
+        "compression": "^1.8.0",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.7",
+        "express": "^4.21.2",
+        "express-rate-limit": "^7.5.0",
+        "fabric-ca-client": "^2.2.20",
+        "fabric-network": "^2.2.9",
+        "helmet": "^8.0.0",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.10.1",
+        "morgan": "^1.10.0",
+        "uuid": "^11.1.0",
+        "winston": "^3.17.0"
     },
     "devDependencies": {
-      "eslint": "^8.54.0",
-      "nodemon": "^3.0.2",
-      "prettier": "^3.1.0"
+        "eslint": "^8.54.0",
+        "nodemon": "^3.0.2",
+        "prettier": "^3.1.0"
     },
     "engines": {
-      "node": ">=18.0.0",
-      "npm": ">=8.0.0"
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0"
     },
     "author": "Your Name",
     "license": "MIT"
-  }
-  
+}

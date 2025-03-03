@@ -14,9 +14,13 @@ import {
   searchVoter,
   deleteVoter,
 } from "../controllers/voteController.js";
-
+import { registerUser, loginUser } from "../controllers/authController.js";
+import { protect, restrictTo } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
+
+router.post("/register", registerUser);
+router.post("/login", loginUser);
 // Voting-related routes
 router.post("/registerCandidate", registerCandidate);
 router.post("/deleteCandidate", deleteCandidate);

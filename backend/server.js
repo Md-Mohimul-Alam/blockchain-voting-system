@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import helmet from "helmet";
 import voteRoutes from "./routes/voteRoutes.js";
+import authRoutes from "./routes/authRoutes.js";  // ✅ Import authentication routes
 import { connectDB } from "./config/db.js";
 
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 app.use("/api/vote", voteRoutes);
+app.use("/api/auth", authRoutes); // ✅ Add authentication routes
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

@@ -1,29 +1,20 @@
-import { createVoterDID, issueVoterCredential, listDIDs } from "../services/ariesService.js";
+import User from "../models/User.js";
 
-export const createVoterDIDController = async (req, res) => {
+export const registerUser = async (req, res) => {
   try {
-    const didData = await createVoterDID();
-    res.json(didData);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
+    const { nid, password } = req.body;
 
-export const issueVoterCredentialController = async (req, res) => {
-  try {
-    const { voterDID } = req.body;
-    const credentialData = await issueVoterCredential(voterDID);
-    res.json(credentialData);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
+    let user = await User.findOne({ nid });
+    if (user) {
+      return res.status(400).json({ success: false, message: "User already exists" });
+    }
 
-export const listDIDsController = async (req, res) => {
-  try {
-    const dids = await listDIDs();
-    res.json({ dids });
+    const newUser = new User({ nid, password });
+    await newUser.save();
+
+    res.status(201).json({ success: true, message: "Registration successful" });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("❌ Registration Error:", error);
+    res.status(500).json({ success: false, message: "Server error", error });
   }
 };
