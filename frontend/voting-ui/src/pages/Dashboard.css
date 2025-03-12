@@ -1,0 +1,470 @@
+/* General Styling */
+.dashboard-container {
+    width: 80%;
+    margin: 20px auto;
+    text-align: center;
+  }
+  
+  /* Lists Styling */
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  li {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  /* Hover effect */
+  li:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+  }
+  
+  /* Buttons */
+  button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  button:hover {
+    background: #0056b3;
+  }
+  
+  /* Specific List Colors */
+  .candidate-list li {
+    border-left: 5px solid #007bff;
+  }
+  
+  .users-list li {
+    border-left: 5px solid #28a745;
+  }
+  
+  .voter-list li {
+    border-left: 5px solid #ffc107;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    li {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    button {
+      width: 100%;
+      margin-top: 8px;
+    }
+  }
+  
+
+  /* 📌 Form Styling */
+.form-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* 📌 Input Fields */
+  .form-container input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border 0.3s ease-in-out;
+  }
+  
+  /* Focus Effect */
+  .form-container input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  /* 📌 Submit Button */
+  .form-container button {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+  }
+  
+  /* Hover & Active Effects */
+  .form-container button:hover {
+    background: #0056b3;
+  }
+  
+  .form-container button:active {
+    transform: scale(0.98);
+  }
+  
+  /* 📌 Responsive Design */
+  @media (max-width: 768px) {
+    .form-container {
+      max-width: 90%;
+    }
+  
+    .form-container input {
+      width: 100%;
+    }
+  }
+  /* 📌 Table Container */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+  }
+  
+  /* 📌 General Table Styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  /* 📌 Table Header */
+  th {
+    background: #007bff;
+    color: white;
+    text-align: left;
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  /* 📌 Table Rows */
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 15px;
+  }
+  
+  /* 📌 Alternate Row Color */
+  tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+  
+  /* 📌 Action Buttons */
+  .action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  
+  .delete-btn {
+    width: 50%;
+    background: #dc3545;
+    color: white;
+  }
+  
+  .delete-btn:hover {
+    background: #c82333;
+  }
+  
+  .vote-btn {
+    background: #28a745;
+    color: white;
+  }
+  
+  .vote-btn:hover {
+    background: #218838;
+  }
+  
+  /* 📌 Responsive Table */
+  @media (max-width: 768px) {
+    table {
+      font-size: 14px;
+    }
+    
+    th, td {
+      padding: 8px;
+    }
+  
+    .action-btn {
+      padding: 4px 8px;
+      font-size: 14px;
+    }
+  }
+/* 📌 Table Container */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+  }
+  
+  /* 📌 General Table Styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  /* 📌 Table Header */
+  th {
+    background: #007bff;
+    color: white;
+    text-align: left;
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  /* 📌 Table Rows */
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 15px;
+  }
+  
+  /* 📌 Alternate Row Color */
+  tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+  
+  /* 📌 Action Buttons */
+  .action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  
+  .delete-btn {
+    background: #dc3545;
+    color: white;
+  }
+  
+  .delete-btn:hover {
+    background: #c82333;
+  }
+  
+  .vote-btn {
+    background: #28a745;
+    color: white;
+  }
+  
+  .vote-btn:hover {
+    background: #218838;
+  }
+  
+  /* 📌 Responsive Table */
+  @media (max-width: 768px) {
+    table {
+      font-size: 14px;
+    }
+    
+    th, td {
+      padding: 8px;
+    }
+  
+    .action-btn {
+      padding: 4px 8px;
+      font-size: 14px;
+    }
+  }
+/* 📌 Table Container */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+  }
+  
+  /* 📌 General Table Styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  /* 📌 Table Header */
+  th {
+    background: #007bff;
+    color: white;
+    text-align: left;
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  /* 📌 Table Rows */
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 15px;
+  }
+  
+  /* 📌 Alternate Row Color */
+  tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+  
+  /* 📌 Action Buttons */
+  .action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  
+  .delete-btn {
+    background: #dc3545;
+    color: white;
+  }
+  
+  .delete-btn:hover {
+    background: #c82333;
+  }
+  
+  .vote-btn {
+    background: #28a745;
+    color: white;
+  }
+  
+  .vote-btn:hover {
+    background: #218838;
+  }
+  
+  /* 📌 Responsive Table */
+  @media (max-width: 768px) {
+    table {
+      font-size: 14px;
+    }
+    
+    th, td {
+      padding: 8px;
+    }
+  
+    .action-btn {
+      padding: 4px 8px;
+      font-size: 14px;
+    }
+  }
+/* 📌 Close Button */
+.close-btn {
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .close-btn:hover {
+    background: #e60000;
+  }
+  
+  /* 📌 Table Styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .delete-btn {
+    background: #dc3545;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+  }
+/* 📌 Winner Announcement */
+.winner-container {
+    background: #28a745;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .winner-container h2 {
+    margin-bottom: 10px;
+  }
+  
+  .winner-container p {
+    font-size: 18px;
+    margin: 5px 0;
+  }
+  .role-dropdown {
+    margin-bottom: 15px;
+  }
+  
+  .role-dropdown label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .role-dropdown select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  

@@ -1,39 +1,48 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import dotenv from "dotenv";
 
-// Protect Middleware (Authenticate Users)
-export const protect = async (req, res, next) => {
-  let token;
+dotenv.config();
 
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-    token = req.headers.authorization.split(" ")[1];
-  }
-
-  if (!token) {
-    return res.status(401).json({ success: false, message: "Not authorized, no token" });
-  }
-
+/**
+ * 🔹 Middleware: Verify JWT Token (Protect Routes)
+ */
+export const verifyToken = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id).select("-password");
+    const token = req.header("Authorization");
 
-    if (!req.user) {
-      return res.status(401).json({ success: false, message: "User not found" });
+    if (!token) {
+      return res.status(401).json({ success: false, error: "❌ Access Denied. No token provided." });
+    }
+
+    // ✅ Extract the token without "Bearer "
+    const jwtToken = token.replace("Bearer ", "");
+
+    // ✅ Verify JWT Token
+    const verified = jwt.verify(jwtToken, process.env.JWT_SECRET);
+    req.user = verified; // Attach user data to request
+
+    next();
+  } catch (error) {
+    console.error("❌ JWT Verification Failed:", error);
+    res.status(403).json({ success: false, error: "❌ Invalid Token." });
+  }
+};
+
+/**
+ * 🔹 Middleware: Check if User is Admin
+ */
+export const isAdmin = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ did: req.user.did });
+
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ success: false, error: "❌ Permission Denied. Admin access required." });
     }
 
     next();
   } catch (error) {
-    console.error("❌ Auth Middleware Error:", error);
-    res.status(401).json({ success: false, message: "Not authorized, token failed" });
+    console.error("❌ Admin Check Failed:", error);
+    res.status(500).json({ success: false, error: "❌ Server Error." });
   }
-};
-
-// Restrict to Specific Roles (Admin/User)
-export const restrictTo = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ success: false, message: "Not authorized for this action" });
-    }
-    next();
-  };
 };

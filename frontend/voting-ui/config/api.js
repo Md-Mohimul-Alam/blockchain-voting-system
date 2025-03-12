@@ -1,1 +1,8 @@
-export const API_URL = 'http://localhost:5000/api';
+import axios from "axios";
+
+const API_URL = "http://localhost:5001/api/vote"; // Change if backend URL is different
+
+export const api = axios.create({
+  baseURL: API_URL,
+  headers: { "Content-Type": "application/json" },
+});

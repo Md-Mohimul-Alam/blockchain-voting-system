@@ -1,16 +1,31 @@
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Link, useNavigate } from "react-router-dom";
+import "./Navbar.css";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   return (
     <nav>
-      <Link to="/">Dashboard</Link>
-      {user?.role === 'user' && <Link to="/vote">Vote</Link>}
-      <Link to="/results">Results</Link>
-      {user ? <button onClick={logout}>Logout</button> : <Link to="/login">Login</Link>}
+      <h1>Blockchain Based Voting System</h1>
+      <ul>
+        <li className="nav-links"><Link to="/">Home</Link></li>
+        {token ? (
+          <>
+            <li  className="nav-links"><Link to="/dashboard">Dashboard</Link></li>
+            <li  className="nav-links"><button onClick={handleLogout}>Logout</button></li>
+          </>
+        ) : (
+          <li className="nav-links"><Link to="/login">Login</Link></li>
+        )}
+      </ul>
     </nav>
   );
 };
+
 export default Navbar;

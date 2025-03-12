@@ -1,9 +1,15 @@
 import mongoose from "mongoose";
 
-const UserSchema = new mongoose.Schema({
-  nid: { type: String, required: true, unique: true }, // DID will be stored here
-  password: { type: String, required: true }, // Password is the same as DID
-  role: { type: String, enum: ["admin", "user"], default: "user" }
+const userSchema = new mongoose.Schema({
+  did: { type: String, required: true, unique: true },
+  userId: { type: String, required: true },
+  district: { type: String, required: true },
+  password: { type: String, required: true },
+  role: { type: String, enum: ["admin", "voter"], required: true },
+  hasVoted: { type: Boolean, default: false },
 });
 
-export default mongoose.model("User", UserSchema);
+// ✅ Check if model already exists before defining it
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+
+export default User;

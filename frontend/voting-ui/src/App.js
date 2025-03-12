@@ -1,41 +1,46 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
-import AdminDashboard from './pages/AdminDashboard';
-import UserDashboard from './pages/UserDashboard';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Vote from './pages/Vote';
-import Results from './pages/Results';
-import Navbar from './components/Navbar';
-import ProtectedRoute from './components/ProtectedRoute';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import './styles/global.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Auth from "./pages/Auth";
+import AdminDashboard from "./pages/AdminDashboard";
+import UserDashboard from "./pages/UserDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Navbar from "./components/Navbar";  // ✅ Import Navbar
+import "./App.css";
 
-function App() {
+const App = () => {
   return (
-    <AuthProvider>
-      <Router>
-        <Navbar />
-        <Toaster position="top-right" />
-        <Routes>
-          <Route path="/" element={
-            <ProtectedRoute>
-              <RoleBasedDashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/vote" element={<ProtectedRoute><Vote /></ProtectedRoute>} />
-          <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
-        </Routes>
-      </Router>
-    </AuthProvider>
-  );
-}
+    <Router>
+      {/* ✅ Move Navbar outside Routes so it renders globally */}
+      <Navbar />
 
-const RoleBasedDashboard = () => {
-  const { user } = useAuth();
-  return user?.role === 'admin' ? <AdminDashboard /> : <UserDashboard />;
+      <Routes>
+        <Route path="/login" element={<Auth />} />
+
+        {/* 🔹 Protected Routes for Admin */}
+        <Route 
+          path="/admin-dashboard" 
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* 🔹 Protected Routes for Users */}
+        <Route 
+          path="/user-dashboard" 
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserDashboard />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* 🔹 Redirect unknown routes to login */}
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    </Router>
+  );
 };
 
 export default App;

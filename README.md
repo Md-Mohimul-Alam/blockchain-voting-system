@@ -39,3 +39,18 @@ This Blockchain Voting System will:
     Any person can audit the blockchain to check election integrity.
 
 📌 This process ensures a secure, fair, and government-compliant election.
+
+
+
+
+📌 Features Implemented
+    Admin registration first (DID, Username, Password)
+    Users register with (DID, User ID, District, Password)
+    Login with DID & Password
+    Admin can Create, Read, Update, Delete Candidates
+    candidate field( candidate id, Name, DOB,logo)
+    Admin can Close Voting and Declare Winner
+    Admin can reset Election
+    Admin can Reset Election (Delete all candidates and votes, but keep Admin)
+    Users can Vote, View Results, and See Personal Info
+

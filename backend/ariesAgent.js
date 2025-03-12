@@ -1,51 +1,36 @@
-import pkg from "@aries-framework/core";
-const { Agent, HttpOutboundTransport, WsOutboundTransport } = pkg;
-import { AskarModule } from "@aries-framework/askar"; // ✅ Import Askar for Wallet
+import { Agent, HttpOutboundTransport } from "@aries-framework/core";
+import { AskarModule } from "@aries-framework/askar";
 import { agentDependencies } from "@aries-framework/node";
-import dotenv from "dotenv";
+import { HttpInboundTransport } from "@aries-framework/node"; // Ensure this is properly imported
 
-dotenv.config();
-
-// Ensure environment variables are loaded
-console.log("🔍 Debug: Loaded Environment Variables:");
-console.log("ARIES_AGENT_ENDPOINT:", process.env.ARIES_AGENT_ENDPOINT);
-
-const setupAriesAgent = async () => {
-  try {
-    const agentConfig = {
+async function setupAriesAgent() {
+  const agent = new Agent({
+    config: {
       label: "VotingAgent",
-      walletConfig: { id: "voting_wallet", key: "secure_wallet_key" },
-      walletCredentials: { key: "secure_wallet_key" },
-      endpoints: process.env.ARIES_AGENT_ENDPOINT
-        ? [process.env.ARIES_AGENT_ENDPOINT]
-        : ["http://localhost:3001"],
-    };
-
-    console.log("🔍 Debug: Aries Agent Config:", agentConfig);
-
-    if (!agentConfig.endpoints || agentConfig.endpoints.length === 0) {
-      throw new Error("❌ Aries Agent endpoint is not properly configured.");
-    }
-
-    const agent = new Agent({
-      config: agentConfig,
-      dependencies: agentDependencies,
-      modules: {
-        // ✅ Register Askar Wallet Module
-        askar: new AskarModule(),
+      walletConfig: {
+        id: "voting_wallet",
+        key: "secure_wallet_key",
       },
-    });
+      walletCredentials: {
+        key: "secure_wallet_key",
+      },
+      endpoints: ["http://localhost:3001"],
+    },
+    dependencies: agentDependencies, // ✅ Fix FileSystem issue by using correct dependencies
+    modules: {
+      askar: new AskarModule({
+        multiWalletDatabaseScheme: "sqlite", // Ensure correct database type
+      }),
+    },
+  });
 
-    agent.registerOutboundTransport(new HttpOutboundTransport());
-    agent.registerOutboundTransport(new WsOutboundTransport());
-    await agent.initialize();
+  // ✅ Add transports
+  agent.registerOutboundTransport(new HttpOutboundTransport());
+  agent.registerInboundTransport(new HttpInboundTransport({ port: 3001 }));
 
-    console.log(`✅ Hyperledger Aries Agent Initialized at ${agentConfig.endpoints[0]}`);
-    return agent;
-  } catch (error) {
-    console.error("❌ Error initializing Aries Agent:", error);
-    throw error;
-  }
-};
+  await agent.initialize();
+  console.log("✅ Aries Agent is up and running!");
+  return agent;
+}
 
 export default setupAriesAgent;

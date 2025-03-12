@@ -1,40 +1,35 @@
-// routes/voteRoutes.js
 import express from "express";
 import {
+  registerAdmin,
+  registerUser,
+  login,
   registerCandidate,
-  deleteCandidate,
+  listCandidates,
   updateCandidate,
+  deleteCandidate,
   vote,
   closeVoting,
-  getResults,
-  getCandidates,
-  getVoterVote,
   resetElection,
-  registerVoter,
-  searchVoter,
-  deleteVoter,
 } from "../controllers/voteController.js";
-import { registerUser, loginUser } from "../controllers/authController.js";
-import { protect, restrictTo } from "../middleware/authMiddleware.js";
+import { verifyToken, isAdmin } from "../middleware/authMiddleware.js";
+import { upload } from "../middleware/multerConfig.js"; 
+
 const router = express.Router();
 
+// ✅ Public Routes (No Auth Required)
+router.post("/registerAdmin", registerAdmin);
+router.post("/registerUser", registerUser);
+router.post("/login", login);
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-// Voting-related routes
-router.post("/registerCandidate", registerCandidate);
-router.post("/deleteCandidate", deleteCandidate);
-router.post("/updateCandidate", updateCandidate);
-router.post("/castVote", vote);
-router.post("/closeVoting", closeVoting);
-router.get("/getResults", getResults);
-router.get("/getCandidates", getCandidates);
-router.get("/getVoterVote/:voterDID", getVoterVote);
-router.post("/resetElection", resetElection);
+// ✅ Candidate Management (Admin Only)
+router.post("/registerCandidate", verifyToken, isAdmin, upload.single("logo"), registerCandidate);
+router.put("/updateCandidate", verifyToken, isAdmin, updateCandidate);
+router.delete("/deleteCandidate", verifyToken, isAdmin, deleteCandidate);
+router.get("/listCandidates", verifyToken, listCandidates);
 
-// Voter management routes
-router.post("/registerVoter", registerVoter);
-router.get("/searchVoter/:did", searchVoter);
-router.delete("/deleteVoter", deleteVoter);
+// ✅ Voting Routes (Protected)
+router.post("/vote", verifyToken, vote);
+router.post("/closeVoting", verifyToken, isAdmin, closeVoting);
+router.post("/resetElection", verifyToken, isAdmin, resetElection);
 
 export default router;
