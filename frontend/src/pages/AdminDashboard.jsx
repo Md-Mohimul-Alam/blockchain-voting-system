@@ -16,7 +16,7 @@ const AdminDashboard = () => {
     setLoading(true); // Set loading to true before making the request
     setError(null); // Reset previous error if any
     axios
-      .get("http://localhost:5001/api/candidate/all")
+      .get("http://localhost:5001/api/candidates/all")
       .then((response) => {
         setCandidates(response.data); // Use the data to update state
         setLoading(false);  // Set loading to false after data is fetched
@@ -47,7 +47,7 @@ const AdminDashboard = () => {
         )}
 
         {/* Update Candidate Form */}
-        {selectedTab === "updateCandidate" && selectedCandidate && (
+        {selectedTab === "updateCandidate" && (
           <CandidateUpdateForm
             fetchCandidates={fetchCandidates}
             setSelectedTab={setSelectedTab}

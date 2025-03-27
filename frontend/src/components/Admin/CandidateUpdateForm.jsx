@@ -34,6 +34,7 @@ const CandidateUpdateForm = ({ selectedCandidate, setSelectedCandidate, setSelec
       setSelectedTab("AllCandidates");
       setSelectedCandidate(null);
     } catch (error) {
+      console.error("Error updating candidate:", error);
       alert("Error updating candidate");
     }
   };
