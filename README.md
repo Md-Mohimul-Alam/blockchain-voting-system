@@ -44,13 +44,25 @@ This Blockchain Voting System will:
 
 
 📌 Features Implemented
-    Admin registration first (DID, Username, Password)
-    Users register with (DID, User ID, District, Password)
-    Login with DID & Password
-    Admin can Create, Read, Update, Delete Candidates
-    candidate field( candidate id, Name, DOB,logo)
-    Admin can Close Voting and Declare Winner
-    Admin can reset Election
-    Admin can Reset Election (Delete all candidates and votes, but keep Admin)
-    Users can Vote, View Results, and See Personal Info
-
+    Admin Functions
+        RegisterAdmin(did, UserName, DOB, Password) → 
+        Login(did, UserName, DOB, Password) → Admin login
+        UpdateAdmin(UserName, DOB, Password) → Update admin details
+        GetAllVoters() → Retrieve all voters
+        GetAllCandidates() → Retrieve all candidates
+        CreateCandidate(did, Name, DOB, Logo, Birthplace) → Register a new candidate
+        DeleteCandidate(did) → Remove a candidate
+        UpdateCandidate(did, Name, DOB, Logo, Birthplace) → Update candidate details
+        SeeVoteCount() → View votes for each candidate
+        CloseElection() → End election process
+        ResetElection() → Reset election data
+        DeclareWinner() → Announce election winner
+    User Functions
+        RegisterUser(did, Name, DOB, Birthplace, UserName, Password) → Register a voter
+        LoginUser(did, UserName, DOB, Password) → Voter login
+        GetAllCandidates() → Retrieve all candidates
+        CastVote(did, candidateDid) → Vote for a candidate
+        SeeWinner() → View election winner
+        SeeVoteCount() → View votes for each candidate
+        GetPersonalInfo(did) → View personal details
+        UpdatePersonalInfo(did, Name, DOB, Birthplace, UserName, Password) → Update voter details
