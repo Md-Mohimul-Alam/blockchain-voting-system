@@ -1,39 +1,37 @@
-import axios from "axios";
-
-// Create an Axios instance with a base URL
-const API = axios.create({ baseURL: "http://localhost:5001/api" });
+// src/api/api.js
+import API from "./axiosConfig";
 
 // Admin APIs
-export const registerAdmin = (data) => API.post("/admin/register", data); // Register an admin
-export const loginAdmin = (data) => API.post("/admin/login", data);       // Admin login
-export const updateAdmin = (data) => API.put("/admin/update", data);      // Update admin details
+export const registerAdmin = (data) => API.post("/admin/register", data);
+export const loginAdmin = (data) => API.post("/admin/login", data);
+export const updateAdmin = (data) => API.put("/admin/update", data);
 
 // User APIs
-export const registerUser = (data) => API.post("/user/register", data);   // Register a user
-export const loginUser = (data) => API.post("/user/login", data);         // User login
-export const updateUserInfo = (data) => API.put("/user/update", data);    // Update user details
-export const getUserInfo = (did) => API.get(`/user/${did}`);              // Get personal information
+export const registerUser = (data) => API.post("/user/register", data);
+export const loginUser = (data) => API.post("/user/login", data);
+export const updateUserInfo = (data) => API.put("/user/update", data);
+export const getUserInfo = (did) => API.get(`/user/${did}`);
 
 // Candidate APIs
 export const createCandidate = (data) =>
-  API.post("/candidate/create", data, { headers: { "Content-Type": "multipart/form-data" } }); // Create a candidate with a logo
-export const getAllCandidates = () => API.get("/candidate/all");          // Retrieve all candidates
-export const deleteCandidate = (did) => API.delete(`/candidate/${did}`);  // Delete a candidate by DID
+  API.post("/candidate/create", data, { headers: { "Content-Type": "multipart/form-data" } });
+export const getAllCandidates = () => API.get("/candidate/all");
+export const deleteCandidate = (did) => API.delete(`/candidate/${did}`);
 
 // Election APIs
 export const declareWinner = (electionID) =>
-  API.post(`/election/${electionID}/winner`);                             // Declare election winner
+  API.post(`/election/${electionID}/winner`);
 export const closeElection = (electionID) =>
-  API.post(`/election/${electionID}/close`);                              // Close an election
+  API.post(`/election/${electionID}/close`);
 export const resetElection = (electionID) =>
-  API.post(`/election/${electionID}/reset`);                              // Reset an election
+  API.post(`/election/${electionID}/reset`);
 
 // Voting APIs
-export const castVote = (data) => API.post("/user/vote", data);           // Cast a vote for a candidate
+export const castVote = (data) => API.post("/user/vote", data);
 export const seeWinner = (electionID) =>
-  API.get(`/user/winner/${electionID}`);                                  // View election winner
+  API.get(`/user/winner/${electionID}`);
 
 // General utility APIs
-export const getVoteCounts = () => API.get("/candidate/voteCounts");      // View vote count for all candidates
+export const getVoteCounts = () => API.get("/candidate/voteCounts");
 
-export default API;
+export default API; // You can export the API instance as well if needed

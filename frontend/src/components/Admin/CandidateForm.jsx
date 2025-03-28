@@ -1,5 +1,6 @@
+// src/components/Admin/CandidateForm.jsx
 import { useState } from "react";
-import axios from "axios";
+import API from "../../api/axiosConfig"; // Importing centralized API instance
 
 const CandidateForm = ({ setSelectedTab, fetchCandidates }) => {
   const [candidateFormData, setCandidateFormData] = useState({
@@ -20,15 +21,23 @@ const CandidateForm = ({ setSelectedTab, fetchCandidates }) => {
 
   const handleCreateCandidate = async (e) => {
     e.preventDefault();
+  
+    // Validate if all required fields are filled
+    if (!candidateFormData.did || !candidateFormData.name || !candidateFormData.dob || !candidateFormData.birthplace || !candidateFormData.logo) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+  
     const formData = new FormData();
-    formData.append("did", candidateFormData.did);
+    formData.append("did", candidateFormData.did);  // Ensure 'did' is passed correctly
     formData.append("name", candidateFormData.name);
     formData.append("dob", candidateFormData.dob);
     formData.append("birthplace", candidateFormData.birthplace);
     formData.append("logo", candidateFormData.logo);
+    console.log("Candidate data being sent:", candidateFormData);
 
     try {
-      await axios.post("http://localhost:5001/api/candidate/create", formData, {
+      await API.post("/candidate/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Candidate registered successfully!");
@@ -40,7 +49,7 @@ const CandidateForm = ({ setSelectedTab, fetchCandidates }) => {
       alert("Error registering candidate");
     }
   };
-
+  
   return (
     <form onSubmit={handleCreateCandidate} className="space-y-6 bg-white p-6 rounded-lg shadow-lg w-full max-w-lg mx-auto">
       <div className="text-2xl font-semibold text-gray-800 mb-6">Add New Candidate</div>

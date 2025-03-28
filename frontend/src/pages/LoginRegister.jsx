@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
 import { loginUser, registerUser, loginAdmin, registerAdmin } from "../api/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const LoginRegister = () => {
+  useEffect(() => {
+    const storedRole = localStorage.getItem("userRole");
+    if (storedRole) {
+      setUserData((prevState) => ({ ...prevState, role: storedRole }));
+    }
+  }, []);
   const [isLogin, setIsLogin] = useState(true); // Toggle between Login and Register views
   const [userData, setUserData] = useState({
     role: "admin", // Default role is Admin; changes based on user selection
@@ -16,14 +22,6 @@ const LoginRegister = () => {
 
   const navigate = useNavigate();
 
-  // Synchronize authentication state with localStorage
-  useEffect(() => {
-    const storedRole = localStorage.getItem("userRole");
-    if (storedRole) {
-      setUserData((prevState) => ({ ...prevState, role: storedRole }));
-    }
-  }, []);
-
   // Handle form field changes
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -35,30 +33,29 @@ const LoginRegister = () => {
     try {
       if (isLogin) {
         // Login Flow
+        let response;
         if (userData.role === "admin") {
-          const response = await loginAdmin(userData); // Ensure API returns response
-          console.log("Admin login response:", response); // Log the response
-          localStorage.setItem("userRole", "admin"); // Save role to localStorage
-          alert("Admin login successful!");
-          navigate("/admin-dashboard"); // Navigate to Admin Dashboard
+          response = await loginAdmin(userData);
+          localStorage.setItem("userRole", "admin");
         } else {
-          const response = await loginUser(userData); // Ensure API returns response
-          console.log("User login response:", response); // Log the response
-          localStorage.setItem("userRole", "user"); // Save role to localStorage
-          alert("User login successful!");
-          navigate("/user-dashboard"); // Navigate to User Dashboard
+          response = await loginUser(userData);
+          localStorage.setItem("userRole", "user");
         }
+
+        // Save JWT token in localStorage
+        localStorage.setItem("jwtToken", response.data.token); // Save token in localStorage
+        alert(`${userData.role} login successful!`);
+        navigate(userData.role === "admin" ? "/admin-dashboard" : "/user-dashboard");
       } else {
         // Register Flow
         if (userData.role === "admin") {
           await registerAdmin(userData);
           alert("Admin registration successful!");
-          setIsLogin(true); // Switch to Login view
         } else {
           await registerUser(userData);
           alert("User registration successful!");
-          setIsLogin(true); // Switch to Login view
         }
+        setIsLogin(true); // Switch to Login view
       }
     } catch (error) {
       console.error("Error during login/register:", error);
@@ -68,21 +65,17 @@ const LoginRegister = () => {
 
   return (
     <div className="flex h-screen">
-      {/* Left Section - Display branding and info */}
       <div className="w-1/2 bg-sky-950 text-white flex flex-col justify-center items-center p-10">
         <div className="text-3xl text-white font-bold">Secure Blockchain Voting</div>
         <p className="mt-4 text-gray-400">Login or Register to vote securely.</p>
       </div>
 
-      {/* Right Section - Login/Register Form */}
       <div className="w-1/2 flex justify-center items-center rounded-lg">
         <div className="bg-white shadow-lg rounded-xl p-8 w-96">
-          {/* Form Header */}
           <div className="flex justify-center items-center p-2 font-medium uppercase text-neutral-700">
             {isLogin ? "Login" : "Register"}
           </div>
 
-          {/* Toggle between Login and Register */}
           <div className="flex justify-center items-center mb-4">
             <div
               onClick={() => setIsLogin(true)}
@@ -102,9 +95,7 @@ const LoginRegister = () => {
             </div>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Role Selection */}
             <select
               name="role"
               onChange={handleChange}
@@ -116,7 +107,6 @@ const LoginRegister = () => {
               <option value="user">User</option>
             </select>
 
-            {/* DID */}
             <input
               type="text"
               name="did"
@@ -126,7 +116,6 @@ const LoginRegister = () => {
               required
             />
 
-            {/* Username */}
             <input
               type="text"
               name="userName"
@@ -136,7 +125,6 @@ const LoginRegister = () => {
               required
             />
 
-            {/* Name (only for User registration) */}
             {!isLogin && userData.role === "user" && (
               <input
                 type="text"
@@ -148,7 +136,6 @@ const LoginRegister = () => {
               />
             )}
 
-            {/* Date of Birth */}
             <input
               type="date"
               name="dob"
@@ -157,7 +144,6 @@ const LoginRegister = () => {
               required
             />
 
-            {/* Birthplace (only for User registration) */}
             {!isLogin && userData.role === "user" && (
               <input
                 type="text"
@@ -169,7 +155,6 @@ const LoginRegister = () => {
               />
             )}
 
-            {/* Password */}
             <input
               type="password"
               name="password"
@@ -179,7 +164,6 @@ const LoginRegister = () => {
               required
             />
 
-            {/* Submit Button */}
             <button
               type="submit"
               className="bg-blue-500 text-white px-4 py-2 rounded w-full"

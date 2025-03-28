@@ -1,13 +1,7 @@
 import { useState } from "react";
-import {
-  HomeIcon,
-  UserIcon,
-  UserCircleIcon,
-  UserGroupIcon,
-  CalendarIcon,
-} from "@heroicons/react/24/solid";
+import { HomeIcon, UserIcon, UserCircleIcon, UserGroupIcon, CalendarIcon } from "@heroicons/react/24/solid";
 
-const SidebarAdmin = ({ setSelectedTab }) => {
+const SidebarAdmin = ({ setSelectedTab, isSidebarOpen }) => {
   const [isCandidatesDropdownOpen, setIsCandidatesDropdownOpen] = useState(false);
   const [isUsersDropdownOpen, setIsUsersDropdownOpen] = useState(false);
   const [isElectionsDropdownOpen, setIsElectionsDropdownOpen] = useState(false);
@@ -30,13 +24,10 @@ const SidebarAdmin = ({ setSelectedTab }) => {
   };
 
   return (
-    <aside className="w-64 bg-gray-900 text-white min-h-screen p-6">
+    <aside className={`lg:w-64 bg-gray-900 text-white min-h-screen p-6 ${isSidebarOpen ? "block" : "hidden lg:block"}`}>
       <ul className="space-y-4">
         {/* Dashboard Overview */}
-        <li
-          className="hover:bg-blue-900 p-2 rounded cursor-pointer transition duration-200"
-          onClick={() => setSelectedTab("overview")}
-        >
+        <li className="hover:bg-blue-900 p-2 rounded cursor-pointer transition duration-200" onClick={() => setSelectedTab("overview")}>
           <HomeIcon className="h-5 w-5 inline-block mr-2" />
           Dashboard Overview
         </li>
@@ -61,10 +52,7 @@ const SidebarAdmin = ({ setSelectedTab }) => {
           </div>
           {isUsersDropdownOpen && (
             <ul className="ml-4 space-y-2">
-              <li
-                className="hover:bg-gray-600 p-2 rounded cursor-pointer"
-                onClick={() => setSelectedTab("allUsers")}
-              >
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("allUsers")}>
                 <UserIcon className="h-5 w-5 inline-block mr-2" />
                 All Users
               </li>
@@ -92,24 +80,15 @@ const SidebarAdmin = ({ setSelectedTab }) => {
           </div>
           {isCandidatesDropdownOpen && (
             <ul className="ml-4 space-y-2">
-              <li
-                className="hover:bg-gray-600 p-2 rounded cursor-pointer"
-                onClick={() => setSelectedTab("addCandidate")}
-              >
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("addCandidate")}>
                 <UserCircleIcon className="h-5 w-5 inline-block mr-2" />
                 Add Candidate
               </li>
-              <li
-                className="hover:bg-gray-600 p-2 rounded cursor-pointer"
-                onClick={() => setSelectedTab("updateCandidate")}
-              >
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("updateCandidate")}>
                 <UserCircleIcon className="h-5 w-5 inline-block mr-2" />
                 Update Candidate
               </li>
-              <li
-                className="hover:bg-gray-600 p-2 rounded cursor-pointer"
-                onClick={() => setSelectedTab("AllCandidates")}
-              >
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("AllCandidates")}>
                 <UserGroupIcon className="h-5 w-5 inline-block mr-2" />
                 All Candidates
               </li>
@@ -137,22 +116,13 @@ const SidebarAdmin = ({ setSelectedTab }) => {
           </div>
           {isElectionsDropdownOpen && (
             <ul className="ml-4 space-y-2">
-              <li
-                className="hover:bg-gray-600 p-2 rounded cursor-pointer"
-                onClick={() => setSelectedTab("openElection")}
-              >
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("openElection")}>
                 Open Election
               </li>
-              <li
-                className="hover:bg-gray-600 p-2 rounded cursor-pointer"
-                onClick={() => setSelectedTab("closeElection")}
-              >
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("closeElection")}>
                 Close Election
               </li>
-              <li
-                className="hover:bg-gray-600 p-2 rounded cursor-pointer"
-                onClick={() => setSelectedTab("resetElection")}
-              >
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("resetElection")}>
                 Reset Election
               </li>
             </ul>

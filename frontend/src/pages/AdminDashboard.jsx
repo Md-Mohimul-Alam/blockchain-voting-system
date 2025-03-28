@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import SidebarAdmin from "../components/SidebarAdmin";
-import axios from "axios";
+import API from "../api/axiosConfig"; // Importing centralized API instance
 import CandidateForm from "../components/Admin/CandidateForm";
 import CandidateUpdateForm from "../components/Admin/CandidateUpdateForm";
 import CandidateList from "../components/Admin/CandidateList";
+import OverviewTab from "../components/Admin/OverView"; // Import the OverviewTab component
 
 const AdminDashboard = () => {
   const [selectedTab, setSelectedTab] = useState("overview");
@@ -12,20 +13,19 @@ const AdminDashboard = () => {
   const [error, setError] = useState(null);  // Track error state
   const [selectedCandidate, setSelectedCandidate] = useState(null); // For editing a candidate
 
-  const fetchCandidates = () => {
+  const fetchCandidates = async () => {
     setLoading(true); // Set loading to true before making the request
     setError(null); // Reset previous error if any
-    axios
-      .get("http://localhost:5001/api/candidates/all")
-      .then((response) => {
-        setCandidates(response.data); // Use the data to update state
-        setLoading(false);  // Set loading to false after data is fetched
-      })
-      .catch((error) => {
-        console.error("Error fetching candidates:", error); // Log the error
-        setError("Failed to fetch candidates!");  // Update error state
-        setLoading(false);  // Set loading to false after error is caught
-      });
+
+    try {
+      const response = await API.get("/candidate/all");  // Use centralized API instance
+      setCandidates(response.data); // Use the data to update state
+      setLoading(false);  // Set loading to false after data is fetched
+    } catch (error) {
+      console.error("Error fetching candidates:", error);
+      setError(error.response ? error.response.data.message : "Failed to fetch candidates!");
+      setLoading(false);  // Set loading to false after error is caught
+    }
   };
 
   // Initial fetch
@@ -38,8 +38,9 @@ const AdminDashboard = () => {
       <SidebarAdmin setSelectedTab={setSelectedTab} />
 
       <div className="flex-1 p-6">
-        {/* Tab-Based Rendering */}
-        {selectedTab === "overview" && <div className="text-black">Welcome, Admin! View system statistics here.</div>}
+        {selectedTab === "overview" && (
+          <OverviewTab />  // Import and render the OverviewTab component here
+        )}
 
         {/* Add Candidate Form */}
         {selectedTab === "addCandidate" && (
@@ -67,6 +68,12 @@ const AdminDashboard = () => {
             fetchCandidates={fetchCandidates}
           />
         )}
+
+        {/* Loading State */}
+        {loading && <div className="text-center">Loading candidates...</div>}
+
+        {/* Error State */}
+        {error && <div className="text-red-500 text-center">{error}</div>}
       </div>
     </div>
   );

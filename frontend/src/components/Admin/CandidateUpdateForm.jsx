@@ -1,11 +1,22 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../../api/axiosConfig"; // Import centralized API instance
 
 const CandidateUpdateForm = ({ selectedCandidate, setSelectedCandidate, setSelectedTab, fetchCandidates }) => {
-  const [candidateFormData, setCandidateFormData] = useState(selectedCandidate);
+  const [candidateFormData, setCandidateFormData] = useState({
+    did: "",
+    name: "",
+    dob: "",
+    birthplace: "",
+    logo: null,
+  });
+  const [loading, setLoading] = useState(false); // Track loading state
+  const [error, setError] = useState(""); // Track error state
 
+  // Initialize form data when selectedCandidate changes
   useEffect(() => {
-    setCandidateFormData(selectedCandidate);
+    if (selectedCandidate) {
+      setCandidateFormData(selectedCandidate);
+    }
   }, [selectedCandidate]);
 
   const handleInputChange = (e) => {
@@ -18,30 +29,38 @@ const CandidateUpdateForm = ({ selectedCandidate, setSelectedCandidate, setSelec
 
   const handleUpdateCandidate = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
+    setError(""); // Reset any previous error
+  
     const formData = new FormData();
     formData.append("did", candidateFormData.did);
     formData.append("name", candidateFormData.name);
     formData.append("dob", candidateFormData.dob);
     formData.append("birthplace", candidateFormData.birthplace);
     if (candidateFormData.logo) formData.append("logo", candidateFormData.logo);
-
+  
     try {
-      await axios.put("http://localhost:5001/api/candidate/update", formData, {
+      await API.put("/candidate/update", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("Candidate updated successfully!");
-      fetchCandidates();
-      setSelectedTab("AllCandidates");
-      setSelectedCandidate(null);
+      fetchCandidates(); // Fetch updated candidate list
+      setSelectedTab("AllCandidates"); // Go back to the candidate list tab
+      setSelectedCandidate(null); // Clear selected candidate for future updates
+      setLoading(false); // Stop loading
     } catch (error) {
+      setLoading(false); // Stop loading
       console.error("Error updating candidate:", error);
-      alert("Error updating candidate");
+      setError(error.response ? error.response.data.error : "Error updating candidate. Please try again.");
     }
   };
-
+  
   return (
     <form onSubmit={handleUpdateCandidate} className="space-y-6 bg-white p-6 rounded-lg shadow-lg w-full max-w-lg mx-auto">
       <div className="text-2xl font-semibold text-gray-800 mb-6">Update Candidate</div>
+
+      {/* Display Error Message */}
+      {error && <div className="text-red-500 text-center">{error}</div>}
 
       <div className="flex flex-col space-y-2">
         <label htmlFor="did" className="text-gray-600 font-medium">DID</label>
@@ -112,9 +131,10 @@ const CandidateUpdateForm = ({ selectedCandidate, setSelectedCandidate, setSelec
       <div className="mt-6">
         <button
           type="submit"
-          className="bg-blue-500 text-white px-6 py-3 rounded-lg w-full hover:bg-blue-600 transition-colors duration-300"
+          className={`bg-blue-500 text-white px-6 py-3 rounded-lg w-full ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'} transition-colors duration-300`}
+          disabled={loading}
         >
-          Update Candidate
+          {loading ? "Updating..." : "Update Candidate"}
         </button>
       </div>
     </form>
