@@ -16,7 +16,7 @@ const CandidateList = ({ candidates, loading, error, setSelectedTab, setSelected
   
   return (
     <div>
-      <div className="text-xl font-bold mb-4 text-black">Candidates List</div>
+      <div className="text-2xl font-mono mb-4 text-sky-700 ml-100  pt-5 pt-5">Candidates List</div>
       
       {loading && <div className="text-center">Loading candidates...</div>}
 

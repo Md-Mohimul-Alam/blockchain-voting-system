@@ -51,8 +51,8 @@ const CandidateForm = ({ setSelectedTab, fetchCandidates }) => {
   };
   
   return (
-    <form onSubmit={handleCreateCandidate} className="space-y-6 bg-white p-6 rounded-lg shadow-lg w-full max-w-lg mx-auto">
-      <div className="text-2xl font-semibold text-gray-800 mb-6">Add New Candidate</div>
+    <form onSubmit={handleCreateCandidate} className="space-y-6 bg-white p-15 rounded-lg shadow-lg w-full max-w-lg mx-auto">
+      <div className="text-2xl font-semibold text-sky-700 pl-22 mb-6">Add New Candidate</div>
 
       <div className="flex flex-col space-y-2">
         <label htmlFor="did" className="text-gray-600 font-medium">DID</label>

@@ -1,65 +1,132 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../../api/axiosConfig"; // Import centralized API instance
+import PlayOnce from '../../assets/com1';
+import PlayTwice from '../../assets/com2';
 
 const OverviewTab = () => {
-    const [selectedTab, setSelectedTab] = useState("overview"); // Default to "overview"
-    const [totalCandidates, setTotalCandidates] = useState(0);
-  
-    useEffect(() => {
-        const fetchCandidateCount = async () => {
-            try {
-              const response = await axios.get("http://localhost:5001/api/total-candidates", {  // Use the correct backend URL
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure token is passed if authentication is required
-                },
-              });
-              setTotalCandidates(response.data.totalCandidates);
-            } catch (error) {
-              console.error("Error fetching candidate count:", error);
-            }
-          };
-          
-      fetchCandidateCount();
-    }, []);
-  
-    return (
-      <div className="flex flex-col justify-center items-center py-10 px-5 bg-gray-50 min-h-screen">
-        <div className="flex space-x-4 mb-6">
-          <button
-            onClick={() => setSelectedTab("overview")}
-            className={`px-4 py-2 rounded ${selectedTab === "overview" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            Overview
-          </button>
-          <button
-            onClick={() => setSelectedTab("details")}
-            className={`px-4 py-2 rounded ${selectedTab === "details" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          >
-            Details
-          </button>
+  const [totalCandidates, setTotalCandidates] = useState(0);
+  const [totalVoters, setTotalVoters] = useState(0);
+  const [totalVotes, setTotalVotes] = useState(0); // New state for total votes
+  const [error, setError] = useState(null); // Add error state for handling API errors
+
+  // Fetch total candidates count and total voters count on component mount
+  useEffect(() => {
+    const fetchTotalCandidatesCount = async () => {
+      try {
+        const response = await API.get("/total-candidates", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setTotalCandidates(response.data.totalCandidates); // Set total candidates state
+      } catch (error) {
+        console.error("Error fetching total candidates:", error);
+        setError("Failed to fetch total candidates"); // Set error state
+      }
+    };
+
+    const fetchTotalVotersCount = async () => {
+      try {
+        const response = await API.get("/total-voters", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setTotalVoters(response.data.totalVoters); // Set total voters state
+      } catch (error) {
+        console.error("Error fetching total voters:", error);
+        setError("Failed to fetch total voters"); // Set error state
+      }
+    };
+
+    const fetchTotalVotesCount = async () => {
+      try {
+        const response = await API.get("/total-vote-count", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setTotalVotes(response.data.totalVoteCount); // Set total votes state
+      } catch (error) {
+        console.error("Error fetching total vote count:", error);
+        setError("Failed to fetch total votes"); // Set error state
+      }
+    };
+
+    // Fetch data when the component is mounted
+    fetchTotalCandidatesCount();
+    fetchTotalVotersCount();
+    fetchTotalVotesCount();
+  }, []);
+
+  return (
+    <div className="flex flex-col justify-center items-start pt-0 py-10 px-5 bg-gray-50 min-h-screen">
+      {/* Dashboard Header */}
+      <div className="grid grid-cols-2 gap-6 w-full max-w-6xl pt-0">
+        {/* Total Candidates Card */}
+        <div className="flex items-center justify-between p-6 bg-blue-500 text-white rounded-lg shadow-md ">
+          <div>
+            <h3 className="text-xl font-semibold">Total Candidates</h3>
+            {error ? (
+              <div className="bg-red-200 text-red-800 p-4 rounded-lg mt-2">
+                {error}
+              </div>
+            ) : (
+              <div className="text-3xl font-extrabold">{totalCandidates}</div>
+            )}
+          </div>
+          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
+            <PlayOnce />
+          </div>
         </div>
-  
-        {selectedTab === "overview" && (
-          <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
-              Welcome, Admin! View system statistics here.
-            </h2>
-            <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 space-y-4">
-              <h3 className="text-2xl font-semibold text-gray-700">Total Candidates</h3>
-              <div className="text-5xl font-extrabold text-indigo-600">{totalCandidates}</div>
-              <p className="text-lg text-gray-500">The total number of candidates currently registered in the system.</p>
-            </div>
+
+        {/* Total Voters Card */}
+        <div className="flex items-center justify-between p-6 bg-green-500 text-white rounded-lg shadow-md">
+          <div>
+            <h3 className="text-xl font-semibold">Total Voters</h3>
+            {error ? (
+              <div className="bg-red-200 text-red-800 p-4 rounded-lg mt-2">
+                {error}
+              </div>
+            ) : (
+              <div className="text-3xl font-extrabold">{totalVoters}</div>
+            )}
           </div>
-        )}
-  
-        {selectedTab === "details" && (
-          <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
-              Details Tab Content
-            </h2>
+          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
+            <PlayTwice style={{ width: "60px", height: "60px" }} />
           </div>
-        )}
+        </div>
+
+        {/* Total Vote Count Card */}
+        <div className="flex items-center justify-between p-6 bg-yellow-500 text-white rounded-lg shadow-md">
+          <div>
+            <h3 className="text-xl font-semibold">Total Vote Count</h3>
+            {error ? (
+              <div className="bg-red-200 text-red-800 p-4 rounded-lg mt-2">
+                {error}
+              </div>
+            ) : (
+              <div className="text-3xl font-extrabold">{totalVotes}</div>
+            )}
+          </div>
+          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
+            <PlayOnce />
+          </div>
+        </div>
+
+        {/* Additional Info 2 Card */}
+        <div className="flex items-center justify-between p-6 bg-red-500 text-white rounded-lg shadow-md">
+          <div>
+            <h3 className="text-xl font-semibold">Additional Info 2</h3>
+            <div className="text-3xl font-extrabold"></div> {/* Hardcoded for now */}
+          </div>
+          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
+            <PlayTwice style={{ width: "60px", height: "60px" }} />
+          </div>
+        </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
+
 export default OverviewTab;

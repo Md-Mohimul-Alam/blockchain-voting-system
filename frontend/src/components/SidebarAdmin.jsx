@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HomeIcon, UserIcon, UserCircleIcon, UserGroupIcon, CalendarIcon } from "@heroicons/react/24/solid";
+import { HomeIcon, UserIcon, UserCircleIcon, UserGroupIcon, CalendarIcon } from "@heroicons/react/solid";
 
 const SidebarAdmin = ({ setSelectedTab, isSidebarOpen }) => {
   const [isCandidatesDropdownOpen, setIsCandidatesDropdownOpen] = useState(false);
@@ -116,14 +116,17 @@ const SidebarAdmin = ({ setSelectedTab, isSidebarOpen }) => {
           </div>
           {isElectionsDropdownOpen && (
             <ul className="ml-4 space-y-2">
-              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("openElection")}>
-                Open Election
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("createElection")}>
+                Create Election
               </li>
               <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("closeElection")}>
                 Close Election
               </li>
               <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("resetElection")}>
                 Reset Election
+              </li>
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("declareWinner")}>
+                Declare Winner
               </li>
             </ul>
           )}

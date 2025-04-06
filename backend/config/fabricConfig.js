@@ -13,7 +13,7 @@ const ccp = buildCCPOrg1();
 const channelName = process.env.FABRIC_CHANNEL || "mychannel";
 const chaincodeName = process.env.FABRIC_CHAINCODE_NAME || "voting-contract";
 const mspOrg1 = "Org1MSP";
-const walletPath = path.join(process.cwd(), "../wallet");
+const walletPath = path.join(process.cwd(), "./wallet");
 const org1UserId = "javascriptAppUser";
 
 export async function getContract() {

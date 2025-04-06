@@ -3,12 +3,6 @@ import { loginUser, registerUser, loginAdmin, registerAdmin } from "../api/api";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const LoginRegister = () => {
-  useEffect(() => {
-    const storedRole = localStorage.getItem("userRole");
-    if (storedRole) {
-      setUserData((prevState) => ({ ...prevState, role: storedRole }));
-    }
-  }, []);
   const [isLogin, setIsLogin] = useState(true); // Toggle between Login and Register views
   const [userData, setUserData] = useState({
     role: "admin", // Default role is Admin; changes based on user selection
@@ -22,37 +16,70 @@ const LoginRegister = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const storedRole = localStorage.getItem("userRole");
+    if (storedRole) {
+      setUserData((prevState) => ({ ...prevState, role: storedRole }));
+    }
+  }, []);
+
   // Handle form field changes
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
-  // Handle form submission for Login/Register
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      let response;
       if (isLogin) {
         // Login Flow
-        let response;
         if (userData.role === "admin") {
           response = await loginAdmin(userData);
-          localStorage.setItem("userRole", "admin");
         } else {
           response = await loginUser(userData);
-          localStorage.setItem("userRole", "user");
         }
-
-        // Save JWT token in localStorage
-        localStorage.setItem("jwtToken", response.data.token); // Save token in localStorage
-        alert(`${userData.role} login successful!`);
-        navigate(userData.role === "admin" ? "/admin-dashboard" : "/user-dashboard");
+  
+        console.log("Login Response:", response);  // Log entire response object
+  
+        // Check if the response contains the expected fields
+        if (!response || !response.data || !response.data.token || !response.data.did || !response.data.role) {
+          throw new Error("Invalid response data");
+        }
+  
+        // Extract token, did, and role from the response
+        const { token, did, role } = response.data;
+  
+        // Save JWT token, DID, and userRole in localStorage
+        localStorage.setItem("jwtToken", token);
+        localStorage.setItem("did", did); // Save DID to localStorage
+        localStorage.setItem("userRole", role); // Save user role
+  
+        alert(`${role} login successful!`);
+  
+        // Redirect to the appropriate dashboard based on the role
+        if (role === "admin") {
+          navigate("/admin-dashboard");  // Admin dashboard
+        } else if (role === "user") {
+          navigate("/user-dashboard");  // User dashboard
+        }
       } else {
         // Register Flow
         if (userData.role === "admin") {
           await registerAdmin(userData);
           alert("Admin registration successful!");
         } else {
-          await registerUser(userData);
+          const response = await registerUser(userData);
+  
+          console.log("Registration Response:", response);  // Log entire response object
+  
+          // Ensure the response contains the correct `did`, `jwtToken`, and `role`
+          const { did, token, role } = response.data;
+  
+          // Save the DID and JWT to localStorage after registration
+          localStorage.setItem("did", did); // Save DID from the response
+          localStorage.setItem("jwtToken", token); // Save JWT token
+          localStorage.setItem("userRole", role); // Save user role
           alert("User registration successful!");
         }
         setIsLogin(true); // Switch to Login view
@@ -62,7 +89,8 @@ const LoginRegister = () => {
       alert("An error occurred during the process. Please try again.");
     }
   };
-
+  
+  
   return (
     <div className="flex h-screen">
       <div className="w-1/2 bg-sky-950 text-white flex flex-col justify-center items-center p-10">
@@ -178,3 +206,4 @@ const LoginRegister = () => {
 };
 
 export default LoginRegister;
+

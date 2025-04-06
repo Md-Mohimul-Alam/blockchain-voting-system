@@ -57,7 +57,7 @@ const CandidateUpdateForm = ({ selectedCandidate, setSelectedCandidate, setSelec
   
   return (
     <form onSubmit={handleUpdateCandidate} className="space-y-6 bg-white p-6 rounded-lg shadow-lg w-full max-w-lg mx-auto">
-      <div className="text-2xl font-semibold text-gray-800 mb-6">Update Candidate</div>
+      <div className="text-2xl font-semibold text-sky-700 pl-34 mb-6">Update Candidate</div>
 
       {/* Display Error Message */}
       {error && <div className="text-red-500 text-center">{error}</div>}

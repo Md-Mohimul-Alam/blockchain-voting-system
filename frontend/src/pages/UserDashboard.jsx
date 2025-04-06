@@ -1,5 +1,9 @@
 import { useState } from "react";
 import SidebarUser from "../components/SidebarUser";
+import Vote from "../components/User/vote";
+import Results from "../components/User/Results";
+import Profile from "../components/User/profile";
+import OverviewTab from "../components/User/Overview";
 
 const UserDashboard = () => {
   const [selectedTab, setSelectedTab] = useState("vote");
@@ -7,16 +11,15 @@ const UserDashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <SidebarUser setSelectedTab={setSelectedTab} />
+      <SidebarUser selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
 
       {/* Main Content */}
       <div className="flex-1 p-6">
-        <h2 className="text-2xl font-bold mb-4">User Dashboard</h2>
-
         {/* Dynamic Content */}
-        {selectedTab === "vote" && <p>Select a candidate and cast your vote.</p>}
-        {selectedTab === "results" && <p>View live election results here.</p>}
-        {selectedTab === "profile" && <p>Update your personal details.</p>}
+        {selectedTab === "overview" && <OverviewTab />}
+        {selectedTab === "vote" && <Vote />}
+        {selectedTab === "results" && <Results />}
+        {selectedTab === "profile" && <Profile />}
       </div>
     </div>
   );

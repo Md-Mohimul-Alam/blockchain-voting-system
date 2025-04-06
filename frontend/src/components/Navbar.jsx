@@ -11,7 +11,7 @@ const Navbar = () => {
   useEffect(() => {
     const token = localStorage.getItem("jwtToken"); // Check for token in localStorage
     const storedRole = localStorage.getItem("userRole");
-    
+
     if (token && storedRole) {
       setIsAuthenticated(true);
       setUserRole(storedRole);
@@ -19,16 +19,18 @@ const Navbar = () => {
       setIsAuthenticated(false);
       setUserRole(null);
     }
-  }, []);
+  }, []); // This will run after a page reload (which happens after login)
 
   // Logout Function
   const handleLogout = () => {
     // Clear role and authentication state
     localStorage.removeItem("userRole"); // Remove role from localStorage
     localStorage.removeItem("jwtToken"); // Optionally, remove JWT token
+    localStorage.removeItem("did"); // Optionally, remove DID
     setIsAuthenticated(false);
     setUserRole(null);
     navigate("/auth"); // Redirect to login/register page
+    window.location.reload(); // Force page reload to reset the UI state
   };
 
   return (
@@ -49,7 +51,7 @@ const Navbar = () => {
       {/* Navigation Links */}
       <div className="hidden lg:flex text-white">
         {/* Home Link */}
-        <Link to="/" className="mr-6 text-lg text-white hover:text-gray-300 transition">
+        <Link to="/" className="mr-6 pt-2 text-lg text-white hover:text-gray-300 transition">
           Home
         </Link>
 
@@ -58,7 +60,7 @@ const Navbar = () => {
             {/* Dashboard Link */}
             <Link
               to={userRole === "admin" ? "/admin-dashboard" : "/user-dashboard"}
-              className="mr-6 text-lg text-white hover:text-gray-300 transition"
+              className="mr-6 pt-2 text-lg text-white hover:text-gray-300 transition"
             >
               Dashboard
             </Link>

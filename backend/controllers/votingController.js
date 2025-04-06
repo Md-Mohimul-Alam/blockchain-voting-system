@@ -84,7 +84,13 @@ export const loginAdmin = async (req, res) => {
     // Generate JWT token
     const token = jwt.sign({ did: admin.did, role: "admin" }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
 
-    res.status(200).json({ message: "Admin login successful", token });
+    // Send response with token, did, and role
+    res.status(200).json({
+      message: "Admin login successful",
+      token,
+      did: admin.did,  // Include did in the response
+      role: "admin",   // Send the role as admin
+    });
   } catch (error) {
     console.error("Error logging in:", error);
     res.status(500).json({ error: error.message || "Error logging in" });
@@ -115,11 +121,31 @@ export const updateAdmin = async (req, res) => {
 export const registerUser = async (req, res) => {
   const { did, name, dob, birthplace, userName, password } = req.body;
   try {
+    // Hash password before storing it in the blockchain
     const hashedPassword = await bcrypt.hash(password, 10);
     const contract = await getContract();
-    await contract.submitTransaction("registerUser", did, name, dob, birthplace, userName, hashedPassword);
 
-    await User.create({ did, name, dob, birthplace, userName, password: hashedPassword, role: "user" });
+    // Store data on the blockchain using the chaincode function registerUser
+    await contract.submitTransaction(
+      "registerUser", 
+      did, 
+      name, 
+      dob, 
+      birthplace, 
+      userName, 
+      hashedPassword
+    );
+
+    // Store the user in the database (if needed, for indexing or other purposes)
+    await User.create({
+      did,
+      name,
+      dob,
+      birthplace,
+      userName,
+      password: hashedPassword,
+      role: "user",
+    });
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
@@ -144,7 +170,13 @@ export const loginUser = async (req, res) => {
     // Generate JWT token
     const token = jwt.sign({ did: user.did, role: "user" }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
 
-    res.status(200).json({ message: "User login successful", token });
+    // Send response with token, did, and role
+    res.status(200).json({
+      message: "User login successful",
+      token,
+      did: user.did,  // Include did in the response
+      role: "user",   // Send the role as user
+    });
   } catch (error) {
     res.status(500).json({ error: "Error logging in" });
   }
@@ -168,16 +200,29 @@ export const updatePersonalInfo = async (req, res) => {
 };
 
 // Get Personal Info
+// Example for better error handling
 export const getPersonalInfo = async (req, res) => {
   const { did } = req.params;
+
+  if (!did || did.startsWith('total-')) {
+    return res.status(400).json({ error: `Invalid DID: ${did}. Cannot retrieve personal info for aggregate values.` });
+  }
+
   try {
-    const contract = await getContract();
+    const contract = await getContract(); 
     const result = await contract.evaluateTransaction("getPersonalInfo", did);
-    res.status(200).json(JSON.parse(result.toString()));
+    
+    if (!result) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const userData = JSON.parse(result.toString());
+    res.status(200).json(userData); 
   } catch (error) {
     res.status(500).json({ error: "Error fetching personal info" });
   }
 };
+
 const generateUniqueID = () => {
   return `C${Date.now()}`; // Generating a unique ID based on the current timestamp (you can customize this logic)
 };
@@ -290,15 +335,18 @@ export const getAllCandidates = async (req, res) => {
       const contract = await getContract();
       console.log("Requesting candidates with DID:", req.user.did);  // Log the DID from JWT
 
+      // Ensure that all users (admin or regular user) can fetch candidates
       const result = await contract.evaluateTransaction("getAllCandidates", req.user.did);
 
       if (result) {
-          const candidates = JSON.parse(result.toString());
-          return res.status(200).json(candidates);  // Send response if result is found
+          const candidates = JSON.parse(result.toString());  // Parse the result into an array of candidates
+          return res.status(200).json(candidates);  // Send the list of candidates as response
       }
 
-      return res.status(404).json({ error: "No candidates found" });  // Handle no results found
+      // Handle the case where no candidates are found
+      return res.status(404).json({ error: "No candidates found" });
   } catch (error) {
+      // Handle error if something goes wrong during fetching the candidates
       console.error("Error fetching candidates:", error);
       res.status(500).json({ error: `Error fetching candidates: ${error.message}` });
   }
@@ -325,8 +373,11 @@ export const declareWinner = async (req, res) => {
 
 // Voting Routes
 export const castVote = async (req, res) => {
-  const { did, candidateDid, electionID } = req.body;
+  const { candidateDid, electionID } = req.body;
+  const { user } = req; // User info is available here from the authenticate middleware
+  
   try {
+    // Validate election status
     const contract = await getContract();
     const electionResult = await contract.evaluateTransaction("seeWinner", electionID);
     const election = JSON.parse(electionResult.toString());
@@ -335,36 +386,75 @@ export const castVote = async (req, res) => {
       return res.status(400).json({ error: "Voting is not allowed. Election is closed." });
     }
 
-    const userAsBytes = await contract.evaluateTransaction("getPersonalInfo", did);
-    const user = JSON.parse(userAsBytes.toString());
+    // Check if the user has already voted
+    const userAsBytes = await contract.evaluateTransaction("getPersonalInfo", user.did);
+    const currentUser = JSON.parse(userAsBytes.toString());
 
-    if (user.voted) {
-      return res.status(400).json({ error: `User ${did} has already voted` });
+    if (currentUser.voted) {
+      return res.status(400).json({ error: `User ${user.did} has already voted` });
     }
 
+    // Cast vote for the candidate
     const candidateAsBytes = await contract.evaluateTransaction("getPersonalInfo", candidateDid);
     const candidate = JSON.parse(candidateAsBytes.toString());
     candidate.votes += 1;
 
-    user.voted = true;
-    await contract.submitTransaction("castVote", did, candidateDid, electionID);
+    // Mark the user as voted and submit the vote transaction
+    currentUser.voted = true;
+    await contract.submitTransaction("castVote", user.did, candidateDid, electionID);
 
     res.status(200).json({ message: `Vote cast successfully for candidate ${candidateDid}` });
   } catch (error) {
     res.status(500).json({ error: "Error casting vote" });
   }
 };
-export const closeElection = async (req, res) => {
-  const { electionID } = req.params;
+
+
+
+// Create Election (Admin only)
+export const createElection = async (req, res) => {
+  const { electionID, status, startDate } = req.body; // Data sent from the client
+
   try {
     const contract = await getContract();
-    const electionExists = await Election.findOne({ electionID });
 
+    // Check if the election already exists
+    const electionExists = await Election.findOne({ electionID });
+    if (electionExists) {
+      return res.status(400).json({ error: `Election with ID ${electionID} already exists` });
+    }
+
+    // Call the chaincode function to create the election on the blockchain
+    const result = await contract.submitTransaction("createElection", electionID, status, startDate);
+
+    // Save the election data in MongoDB (optional)
+    const election = JSON.parse(result.toString()); // Assuming chaincode returns the election data
+    await Election.create(election);
+
+    res.status(201).json({ message: `Election ${electionID} created successfully`, election });
+  } catch (error) {
+    console.error("Error creating election:", error);
+    res.status(500).json({ error: "Error creating election" });
+  }
+};
+
+// Close Election (Admin only)
+export const closeElection = async (req, res) => {
+  const { electionID } = req.params;
+
+  try {
+    const contract = await getContract();
+
+    // Check if the election exists in the database
+    const electionExists = await Election.findOne({ electionID });
     if (!electionExists) {
       return res.status(404).json({ error: `Election with ID ${electionID} does not exist` });
     }
 
+    // Call the chaincode function to close the election on the blockchain
     await contract.submitTransaction("closeElection", electionID);
+
+    // Update the election status in MongoDB
     const updatedElection = await Election.findOneAndUpdate(
       { electionID },
       { status: "closed" },
@@ -373,36 +463,43 @@ export const closeElection = async (req, res) => {
 
     res.status(200).json({ message: `Election ${electionID} has been closed successfully.`, election: updatedElection });
   } catch (error) {
+    console.error("Error closing election:", error);
     res.status(500).json({ error: "Error closing election" });
   }
 };
-// Ensure resetElection is included in your exports
+// Reset Election (Admin only)
 export const resetElection = async (req, res) => {
   const { electionID } = req.params;
+
   try {
     const contract = await getContract();
-    const electionExists = await Election.findOne({ electionID });
 
+    // Check if the election exists in the database
+    const electionExists = await Election.findOne({ electionID });
     if (!electionExists) {
       return res.status(404).json({ error: `Election with ID ${electionID} does not exist` });
     }
 
+    // Ensure election is not closed or has a winner
     if (electionExists.winner) {
       return res.status(400).json({ error: "Election cannot be reset after a winner is declared." });
     }
 
+    // Call the chaincode function to reset the election status on the blockchain
+    // This will also delete the election from Hyperledger
     await contract.submitTransaction("resetElection", electionID);
-    const updatedElection = await Election.findOneAndUpdate(
-      { electionID },
-      { status: "open" },
-      { new: true }
-    );
 
-    res.status(200).json({ message: `Election ${electionID} has been reset successfully.`, election: updatedElection });
+    // Optionally, delete the election from the database (if you are storing it in MongoDB)
+    await Election.findOneAndDelete({ electionID });
+
+    res.status(200).json({ message: `Election ${electionID} has been reset and deleted successfully.` });
   } catch (error) {
+    console.error("Error resetting election:", error);
     res.status(500).json({ error: "Error resetting election" });
   }
 };
+
+
 // Controller function for viewing election winner
 export const seeWinner = async (req, res) => {
   const { electionID } = req.params;
@@ -415,9 +512,37 @@ export const seeWinner = async (req, res) => {
     res.status(500).json({ error: "Error retrieving election winner" });
   }
 };
-// Get the total candidate count
+
+// Get All Voters (Admin only)
+// Get All Voters (Admin only)
+export const getAllVoters = async (req, res) => {
+  try {
+    const contract = await getContract();
+    
+    // Call the chaincode function to get all voters
+    const result = await contract.evaluateTransaction("getAllVoters");
+
+    // Parse the result and return it in the response
+    const voters = JSON.parse(result.toString());
+
+    res.status(200).json({ voters });
+  } catch (error) {
+    console.error("Error getting all voters:", error);
+    res.status(500).json({ error: "Error fetching voters" });
+  }
+};
+
+
+
+
 export const getTotalCandidatesCount = async (req, res) => {
   try {
+    console.log("Request user:", req.user);  // Log the request's user to see if `did` is set properly
+
+    if (!req.user || !req.user.did) {
+      return res.status(400).json({ error: "User DID is missing in the request" });
+    }
+
     const contract = await getContract();  // Initialize the Hyperledger contract
     const result = await contract.evaluateTransaction("getAllCandidates", req.user.did); // Retrieve all candidates from blockchain
     
@@ -429,5 +554,47 @@ export const getTotalCandidatesCount = async (req, res) => {
   } catch (error) {
     console.error("Error fetching total candidate count:", error);
     res.status(500).json({ error: "Error fetching total candidate count" });
+  }
+};
+
+
+export const getTotalVotersCount = async (req, res) => {
+  const adminDID = req.user.did; // Make sure the DID is correctly parsed from the token or request
+  if (!adminDID) {
+    return res.status(400).json({ error: "User DID is missing in the request" });
+  }
+
+  try {
+    const contract = await getContract();  // Initialize the Hyperledger contract
+    const result = await contract.evaluateTransaction("getAllVoters", adminDID); // Retrieve all voters from blockchain
+    
+    const voters = JSON.parse(result.toString());
+    const totalCount = voters.length;  // Get the total number of voters
+    
+    // Return the total count
+    res.status(200).json({ totalVoters: totalCount });
+  } catch (error) {
+    console.error("Error fetching total voters count:", error);
+    res.status(500).json({ error: "Error fetching total voters count" });
+  }
+};
+export const getTotalVoteCount = async (req, res) => {
+  const adminDID = req.user.did; // Make sure the DID is correctly parsed from the token or request
+  if (!adminDID) {
+    return res.status(400).json({ error: "User DID is missing in the request" });
+  }
+
+  try {
+    const contract = await getContract();  // Initialize the Hyperledger contract
+    const result = await contract.evaluateTransaction("seeVoteCount", adminDID); // Retrieve all vote counts from blockchain
+    
+    const voteCounts = JSON.parse(result.toString());
+    const totalVoteCount = voteCounts.reduce((sum, candidate) => sum + candidate.votes, 0);  // Sum up all votes
+    
+    // Return the total vote count
+    res.status(200).json({ totalVoteCount });
+  } catch (error) {
+    console.error("Error fetching total vote count:", error);
+    res.status(500).json({ error: "Error fetching total vote count" });
   }
 };

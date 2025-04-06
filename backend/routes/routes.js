@@ -17,7 +17,11 @@ import {
   castVote,
   seeWinner,
   getTotalCandidatesCount,
-} from "../controllers/votingController.js"; // Update the path to your controller file
+  createElection,
+  getAllVoters,
+  getTotalVotersCount,
+  getTotalVoteCount,
+} from "../controllers/votingController.js";
 import { upload } from "../controllers/votingController.js"; // Import multer configuration if needed
 import authenticateAdmin from '../middlewares/authenticateAdmin.js';  // Import the authentication middleware for Admin
 import authenticate from '../middlewares/authenticate.js';  // Generic authentication middleware for User
@@ -27,7 +31,7 @@ const router = express.Router();
 // Admin Routes
 router.post("/admin/register", registerAdmin);
 router.post("/admin/login", loginAdmin);
-router.put("/admin/update", authenticateAdmin, updateAdmin); // Protect admin update with authentication
+router.put("/admin/update", authenticateAdmin, updateAdmin);
 
 // User Routes
 router.post("/user/register", registerUser);
@@ -42,13 +46,19 @@ router.get("/candidate/all", authenticateAdmin, getAllCandidates); // Protect vi
 router.delete("/candidate/:did", authenticateAdmin, deleteCandidate); // Protect delete candidate route with authenticateAdmin middleware
 
 // Election Routes (Admin only)
+router.post("/election/create", authenticateAdmin, createElection); // Protect create election route with authenticateAdmin middleware
 router.post("/election/:electionID/winner", authenticateAdmin, declareWinner); // Protect declare winner route with authenticateAdmin middleware
-router.post("/election/:electionID/close", authenticateAdmin, closeElection); // Protect close election route with authenticateAdmin middleware
-router.post("/election/:electionID/reset", authenticateAdmin, resetElection); // Protect reset election route with authenticateAdmin middleware
+router.put("/election/:electionID/close", authenticateAdmin, closeElection); // Protect close election route with authenticateAdmin middleware
+router.put("/election/:electionID/reset", authenticateAdmin, resetElection); // Protect reset election route with authenticateAdmin middleware
 
 // Voting Routes (User only)
 router.post("/vote", authenticate, castVote); // Protect vote route with authenticate middleware
 router.get("/election/:electionID/winner", authenticate, seeWinner); // Protect view winner route with authenticate middleware
 
-router.get("/total-candidates", getTotalCandidatesCount);
+// Additional Routes
+router.get("/total-candidates", authenticateAdmin, getTotalCandidatesCount); // Ensure authenticate middleware is applied here
+router.get("/voters", authenticateAdmin, getAllVoters); // Protect getAllVoters route with authenticateAdmin middleware
+router.get("/total-voters", authenticateAdmin, getTotalVotersCount);  // New route for total voters count
+router.get("/total-vote-count", authenticateAdmin, getTotalVoteCount);  // New route for total vote count
+
 export default router;
