@@ -24,6 +24,8 @@ export const createCandidate = (data) => API.post("/candidate/create", data, { h
 export const getAllCandidates = () => API.get("/candidate/all");
 export const deleteCandidate = (did) => API.delete(`/candidate/${did}`);
 
+export const getAllCandidatesUser = () => API.get("/candidateUser/all");
+
 // Election APIs
 export const declareWinner = (electionID) => API.post(`/election/${electionID}/winner`);
 export const closeElection = (electionID) => API.post(`/election/${electionID}/close`);

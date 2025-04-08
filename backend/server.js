@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import helmet from "helmet";
@@ -21,6 +22,13 @@ connectDB();
 
 // ✅ API Routes
 app.use('/api', routes); // Use the consolidated routes for all API routes
+
+// Get the directory path of the current module in ES Modules
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const uploadsPath = path.join(__dirname, 'uploads');
+
+// Serve images stored in the 'uploads' folder
+app.use('/uploads', express.static(uploadsPath));  // This serves the 'uploads/' folder as static content
 
 // ✅ Home Route
 app.get("/", (req, res) => {

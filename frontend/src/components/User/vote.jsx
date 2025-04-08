@@ -1,86 +1,106 @@
 import { useState, useEffect } from "react";
-import API from "../../api/axiosConfig"; // Import centralized API instance
+import API from "../../api/axiosConfig"; // Your API configuration
 
 const Vote = () => {
   const [candidates, setCandidates] = useState([]);
   const [error, setError] = useState(null);
-  const [electionID, setElectionID] = useState(""); // Election ID
+  const [votingMessage, setVotingMessage] = useState(null);  // Display vote status message
+  const [ELECTION_ID, setElectionID] = useState("Election1"); // Election ID, can be dynamic
+  const [userDid, setUserDid] = useState(""); // Store the user's DID for later use
 
-  useEffect(() => {
-    const fetchCandidates = async () => {
-      try {
-        const response = await API.get("/candidates/all", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure token is sent in request
-          },
-        });
-        setCandidates(response.data); // Set candidates data
-      } catch (error) {
-        console.error("Error fetching candidates:", error);
-        setError("Failed to fetch candidates");
-      }
-    };
+  // Function to fetch candidates with DID from localStorage
+  const fetchCandidates = async () => {
+    const token = localStorage.getItem("did");  // Retrieve DID from localStorage
+    if (!token) {
+      setError("User is not authenticated. Please log in again.");
+      return;
+    }
 
-    // Set election ID (you can set this dynamically based on your application's context)
-    setElectionID("Election1"); // Replace with dynamic election ID fetching
-    fetchCandidates();
-  }, []);
+    setUserDid(token);  // Set the User DID into state
 
-  const handleVote = async (candidateId) => {
-    const userDID = localStorage.getItem("userDID"); // Get user DID (ensure it's available in local storage)
-    
-    if (!userDID) {
-      setError("User ID not found. Please log in again.");
+    try {
+      // Fetch candidates from the API and pass the token in the request headers
+      const response = await API.get("/candidateUser/all", {
+        headers: {
+          Authorization: `Bearer ${token}`,  // Pass the token in the Authorization header
+        },
+      });
+
+      setCandidates(response.data); // Set candidates data
+    } catch (error) {
+      console.error("Error fetching candidates:", error);
+      setError(error.response ? error.response.data.error : "Failed to fetch candidates");
+    }
+  };
+
+  // Function to cast the vote
+  const castVote = async (candidateDid) => {
+    if (!userDid) {
+      setError("User is not authenticated. Please log in again.");
       return;
     }
 
     const voteData = {
-      did: userDID,
-      candidateDid: candidateId,
-      electionID: electionID,
+      candidateDid,
+      electionID: ELECTION_ID,  // Set election ID
     };
 
     try {
       const response = await API.post("/vote", voteData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure the token is sent with the request
+          Authorization: `Bearer ${userDid}`,  // Pass the User DID in the Authorization header
         },
       });
-      alert(response.data.message); // Show success message
+
+      setVotingMessage(response.data.message); // Display success message after vote
     } catch (error) {
       console.error("Error casting vote:", error);
-      setError(error.response ? error.response.data.error : "Error casting vote");
+      setVotingMessage(error.response ? error.response.data.error : "Error casting vote");
     }
   };
 
+  // Fetch candidates when the component mounts
+  useEffect(() => {
+    fetchCandidates(); // Call the fetchCandidates function to get data
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h3 className="text-3xl font-semibold text-center mb-6">Vote Now</h3>
-      {error && <div className="bg-red-200 text-red-800 p-4 rounded-lg mb-4">{error}</div>}
+      <div className="text-3xl font-semibold text-center mb-6">Vote Now</div>
+
+      {/* Show any error or success message */}
+      {error && <div className="bg-red-200 text-red-800 p-4 rounded-lg mb-4 shadow-lg">{error}</div>}
+      {votingMessage && <div className="bg-green-200 text-green-800 p-4 rounded-lg mb-4 shadow-lg">{votingMessage}</div>}
 
       {/* List of Candidates */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {candidates.map((candidate) => (
           <div
             key={candidate.did}
-            className="bg-white rounded-lg shadow-md p-4 flex justify-between items-center"
+            className="bg-white rounded-lg shadow-md p-6 flex flex-col justify-between items-center hover:shadow-xl transition duration-300"
           >
-            <div>
-              <h4 className="text-xl font-semibold">{candidate.name}</h4>
-              <p className="text-gray-500">Party: {candidate.party || "N/A"}</p>
+            <img 
+              src={`/uploads/${candidate.logo}`} 
+              alt={`${candidate.name}'s Logo`} 
+              className="w-24 h-24 mb-4 object-contain"
+            />
+            <div className="text-center mb-4">
+              <h4 className="text-xl font-semibold text-gray-800">{candidate.name}</h4>
+              <div className="text-gray-500">Candidate DID: {candidate.did}</div>
+              <div className="text-gray-400">Candidate Birthplace: {candidate.birthplace}</div>
             </div>
             <button
-              onClick={() => handleVote(candidate.did)}
-              className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
+              onClick={() => castVote(candidate.did)}  // Handle the vote
+              className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors focus:outline-none"
             >
-              Vote
+              Vote Now
             </button>
           </div>
         ))}
       </div>
 
       {/* Loader while fetching candidates */}
-      {!candidates.length && !error && (
+      {!candidates.length && !error && !votingMessage && (
         <div className="text-center text-xl text-gray-500">
           <p>Loading candidates...</p>
         </div>

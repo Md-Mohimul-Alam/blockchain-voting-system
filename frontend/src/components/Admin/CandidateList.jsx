@@ -1,6 +1,13 @@
 import API from "../../api/axiosConfig"; // Import centralized API instance
 
-const CandidateList = ({ candidates, loading, error, setSelectedTab, setSelectedCandidate, fetchCandidates }) => {
+const CandidateList = ({
+  candidates,
+  loading,
+  error,
+  setSelectedTab,
+  setSelectedCandidate,
+  fetchCandidates,
+}) => {
   const handleDeleteCandidate = async (did) => {
     try {
       // Make sure you're sending the correct candidate DID (`c2`)
@@ -12,12 +19,11 @@ const CandidateList = ({ candidates, loading, error, setSelectedTab, setSelected
       alert("Error deleting candidate");
     }
   };
-  
-  
+
   return (
     <div>
-      <div className="text-2xl font-mono mb-4 text-sky-700 ml-100  pt-5 pt-5">Candidates List</div>
-      
+      <div className="text-2xl font-mono mb-4 text-sky-700 ml-100 pt-5 pt-5">Candidates List</div>
+
       {loading && <div className="text-center">Loading candidates...</div>}
 
       {error && <div className="text-red-500 text-center">{error}</div>}
@@ -46,8 +52,9 @@ const CandidateList = ({ candidates, loading, error, setSelectedTab, setSelected
                   <td className="px-6 py-4">{candidate.birthplace}</td>
                   <td className="px-6 py-4">{candidate.votes}</td>
                   <td className="px-6 py-4">
+                    {/* Use the logo URL if available, else show a fallback */}
                     <img
-                      src={`/uploads/${candidate.logo}`} // Assuming logo is stored in the uploads folder
+                      src={`../../../../backend/uploads/${candidate.logo}`}  
                       alt={candidate.name}
                       className="w-10 h-10 object-cover"
                     />

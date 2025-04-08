@@ -17,9 +17,11 @@ if (!fs.existsSync(uploadDir)) {
 // Multer Storage Configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir); // Save files in `uploads/` folder
+    const uploadDir = path.join(process.cwd(), 'uploads');
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
+    console.log(`Saving file: ${file.originalname}`);
     cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
@@ -332,23 +334,49 @@ export const deleteCandidate = async (req, res) => {
 // Get All Candidates
 export const getAllCandidates = async (req, res) => {
   try {
-      const contract = await getContract();
-      console.log("Requesting candidates with DID:", req.user.did);  // Log the DID from JWT
+    const contract = await getContract();
+    // Ensure we're passing the admin DID correctly
+    const result = await contract.evaluateTransaction("getAllCandidates", req.user.did);
 
-      // Ensure that all users (admin or regular user) can fetch candidates
-      const result = await contract.evaluateTransaction("getAllCandidates", req.user.did);
+    const candidates = JSON.parse(result.toString());
+    
+    // Ensure the logoUrl is set correctly
+    const updatedCandidates = candidates.map(candidate => ({
+      ...candidate,
+      logoUrl: `/uploads/${candidate.logo}`, // Assuming logo is saved in 'uploads' folder
+    }));
 
-      if (result) {
-          const candidates = JSON.parse(result.toString());  // Parse the result into an array of candidates
-          return res.status(200).json(candidates);  // Send the list of candidates as response
-      }
-
-      // Handle the case where no candidates are found
-      return res.status(404).json({ error: "No candidates found" });
+    res.status(200).json(updatedCandidates);  // Send updated candidates with logoUrl
   } catch (error) {
-      // Handle error if something goes wrong during fetching the candidates
-      console.error("Error fetching candidates:", error);
-      res.status(500).json({ error: `Error fetching candidates: ${error.message}` });
+    console.error("Error fetching candidates:", error);
+    res.status(500).json({ error: "Error fetching candidates" });
+  }
+};
+
+// Assuming you have authenticateUser middleware already in place
+export const getAllCandidatesUsers = async (req, res) => {
+  try {
+    const did = req.headers["authorization"]?.split(" ")[1];  // Retrieve DID from Authorization header
+
+    if (!did) {
+      return res.status(403).json({ error: "User is not authenticated." });
+    }
+
+    const contract = await getContract();
+    const result = await contract.evaluateTransaction("getAllCandidatesUsers", did);  // Pass DID directly
+
+    const candidates = JSON.parse(result.toString());
+
+    // Add logo URL to each candidate (if applicable)
+    const updatedCandidates = candidates.map(candidate => ({
+      ...candidate,
+      logoUrl: `/uploads/${candidate.logo}`, // Assuming logo is saved in 'uploads' folder
+    }));
+
+    res.status(200).json(updatedCandidates);  // Send updated candidates with logoUrl
+  } catch (error) {
+    console.error("Error fetching candidates:", error);
+    res.status(500).json({ error: "Error fetching candidates" });
   }
 };
 
@@ -405,11 +433,10 @@ export const castVote = async (req, res) => {
 
     res.status(200).json({ message: `Vote cast successfully for candidate ${candidateDid}` });
   } catch (error) {
+    console.error("Error casting vote:", error);
     res.status(500).json({ error: "Error casting vote" });
   }
 };
-
-
 
 // Create Election (Admin only)
 export const createElection = async (req, res) => {
