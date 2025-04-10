@@ -5,27 +5,31 @@ import Home from "./pages/Home";
 import LoginRegister from "./pages/LoginRegister";
 import AdminDashboard from "./pages/AdminDashboard";
 import UserDashboard from "./pages/UserDashboard";
+import { AuthProvider } from "./Context/AuthContext"; // Import AuthProvider
 
 // Layout Wrapper to ensure Navbar and Footer are always present
 const Layout = ({ children }) => (
   <div className="flex flex-col min-h-screen bg-gray-100">
     <Navbar />
-    <main className="flex-grow pt-16 pb-12">{children}</main> {/* ✅ Prevents overlap */}
+    <main className="flex-grow pt-16 pb-12">{children}</main> {/* Prevents overlap */}
     <Footer />
   </div>
 );
 
 function App() {
   return (
+    // Wrap the entire app in Router
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<LoginRegister />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/user-dashboard" element={<UserDashboard />} />
-        </Routes>
-      </Layout>
+      <AuthProvider>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/auth" element={<LoginRegister />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/user-dashboard" element={<UserDashboard />} />
+          </Routes>
+        </Layout>
+      </AuthProvider>
     </Router>
   );
 }

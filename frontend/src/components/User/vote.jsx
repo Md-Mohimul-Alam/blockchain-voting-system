@@ -5,8 +5,7 @@ const Vote = () => {
   const [candidates, setCandidates] = useState([]);
   const [error, setError] = useState(null);
   const [votingMessage, setVotingMessage] = useState(null);  // Display vote status message
-  const [ELECTION_ID, setElectionID] = useState("Election1"); // Election ID, can be dynamic
-  const [userDid, setUserDid] = useState(""); // Store the user's DID for later use
+  const [ELECTION_ID] = useState("Election 1"); // Election ID, can be dynamic
 
   // Function to fetch candidates with DID from localStorage
   const fetchCandidates = async () => {
@@ -15,8 +14,6 @@ const Vote = () => {
       setError("User is not authenticated. Please log in again.");
       return;
     }
-
-    setUserDid(token);  // Set the User DID into state
 
     try {
       // Fetch candidates from the API and pass the token in the request headers
@@ -35,24 +32,36 @@ const Vote = () => {
 
   // Function to cast the vote
   const castVote = async (candidateDid) => {
-    if (!userDid) {
-      setError("User is not authenticated. Please log in again.");
-      return;
-    }
-
+    const did = localStorage.getItem("did");  // Retrieve DID from localStorage
     const voteData = {
+      did: did,  // User DID
       candidateDid,
       electionID: ELECTION_ID,  // Set election ID
     };
 
     try {
-      const response = await API.post("/vote", voteData, {
+      const response = await API.post("/user/vote", voteData, {
         headers: {
-          Authorization: `Bearer ${userDid}`,  // Pass the User DID in the Authorization header
+          Authorization: `Bearer ${did}`,  // Pass the User DID in the Authorization header
         },
       });
 
       setVotingMessage(response.data.message); // Display success message after vote
+      localStorage.setItem("votingMessage", response.data.message); // Store the message in localStorage
+
+      // Update the voting history in localStorage
+      const storedHistory = localStorage.getItem("votingHistory");
+      let history = storedHistory ? JSON.parse(storedHistory) : [];
+
+      const newVote = {
+        candidateName: response.data.candidateName,  // Assuming response contains the candidate name
+        voteDate: new Date().toISOString(),
+        electionName: ELECTION_ID,
+      };
+
+      history.push(newVote);  // Add the new vote to the history
+      localStorage.setItem("votingHistory", JSON.stringify(history));  // Store the updated history
+
     } catch (error) {
       console.error("Error casting vote:", error);
       setVotingMessage(error.response ? error.response.data.error : "Error casting vote");

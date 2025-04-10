@@ -5,123 +5,143 @@ import PlayTwice from "../../assets/com2"; // Lottie components for icons
 
 const OverviewTab = () => {
   // States to hold the data fetched from the APIs
-  const [totalCandidates, setTotalCandidates] = useState(0);
+  const [candidates, setCandidates] = useState([]);
   const [totalVoters, setTotalVoters] = useState(0);
   const [totalVotes, setTotalVotes] = useState(0);
   const [electionStatus, setElectionStatus] = useState("Open"); // Default value
-  const [electionDates, setElectionDates] = useState({ startDate: "", endDate: "" });
+  const [electionDates, setElectionDates] = useState({ startDate: ""});
   const [votingHistory, setVotingHistory] = useState([]);
-  const [notifications, setNotifications] = useState([]);
+  const [notifications,] = useState([]);
   const [error, setError] = useState(null);
 
-  // Fetch data on component mount
+  const [ELECTION_ID] = useState("Election 1"); // Election ID, can be dynamic
+
+  // Fetch candidates
+  const fetchCandidates = async () => {
+    const token = localStorage.getItem("did");  // Retrieve DID from localStorage
+    if (!token) {
+      setError("User is not authenticated. Please log in again.");
+      return;
+    }
+
+    try {
+      const response = await API.get("/candidateUser/all", {
+        headers: {
+          Authorization: `Bearer ${token}`,  // Pass the token in the Authorization header
+        },
+      });
+
+      setCandidates(response.data); // Set candidates data
+      console.log(`Total candidates: ${response.data.length}`); // Count and log the number of candidates
+    } catch (error) {
+      console.error("Error fetching candidates:", error);
+      setError(error.response ? error.response.data.error : "Failed to fetch candidates");
+    }
+  };
+
+  // Function to fetch total voters count
+  const fetchTotalVotersCount = async () => {
+    const token = localStorage.getItem("jwtToken");  // Retrieve JWT from localStorage
+    if (!token) {
+      setError("User is not authenticated. Please log in again.");
+      return;
+    }
+
+    try {
+      const response = await API.get("/total-voters-user", {
+        headers: {
+          Authorization: `Bearer ${token}`,  // Pass the JWT in the Authorization header
+        },
+      });
+      setTotalVoters(response.data.totalVoters); // Set total voters state
+    } catch (error) {
+      console.error("Error fetching total voters:", error);
+      setError("Failed to fetch total voters");
+    }
+  };
+
+  // Function to fetch total votes count
+  const fetchTotalVotesCount = async () => {
+    const did = localStorage.getItem("did");  // Retrieve DID from localStorage
+    const token = localStorage.getItem("jwtToken");  // Retrieve JWT from localStorage
+    if (!token) {
+      setError("User is not authenticated. Please log in again.");
+      return;
+    }
+
+    try {
+      const response = await API.get("/total-vote-count-user", {
+        headers: {
+          Authorization: `Bearer ${did}`,  // Pass the JWT in the Authorization header
+        },
+      });
+      setTotalVotes(response.data.totalVoteCount); // Set total votes state
+    } catch (error) {
+      console.error("Error fetching total vote count:", error);
+      setError("Failed to fetch total votes");
+    }
+  };
+
+  // Function to fetch election status
+  const fetchElectionStatus = async () => {
+    const token = localStorage.getItem("did");
+    const electionID = "Election 1"; // Make sure you use a valid election ID
+    if (!token) {
+      setError("User is not authenticated. Please log in again.");
+      return;
+    }
+
+    try {
+      const response = await API.get(`/election/${electionID}/status`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setElectionStatus(response.data.status);
+    } catch (error) {
+      console.error("Error fetching election status:", error);
+      setError("Failed to fetch election status");
+    }
+  };
+
+  // Function to fetch election dates
+  const fetchElectionDates = async () => {
+    const token = localStorage.getItem("jwtToken");  // Retrieve JWT from localStorage
+    if (!token) {
+      setError("User is not authenticated. Please log in again.");
+      return;
+    }
+
+    try {
+      const response = await API.get("/election/startDate", {
+        headers: {
+          Authorization: `Bearer ${token}`,  // Pass the JWT in the Authorization header
+        },
+      });
+      setElectionDates(response.data.dates);
+    } catch (error) {
+      console.error("Error fetching election dates:", error);
+      setError("Failed to fetch election dates");
+    }
+  };
+
+  // Function to fetch voting history
+  const fetchVotingHistory = () => {
+    const storedHistory = localStorage.getItem("votingHistory");
+    if (storedHistory) {
+      setVotingHistory(JSON.parse(storedHistory));  // Set the voting history from localStorage
+    } else {
+      setError("No voting history found.");
+    }
+  };
+
   useEffect(() => {
-    const fetchTotalCandidatesCount = async () => {
-      try {
-        const response = await API.get("/total-candidates", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setTotalCandidates(response.data.totalCandidates);
-      } catch (error) {
-        console.error("Error fetching total candidates:", error);
-        setError("Failed to fetch total candidates");
-      }
-    };
-
-    const fetchTotalVotersCount = async () => {
-      try {
-        const response = await API.get("/total-voters", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setTotalVoters(response.data.totalVoters);
-      } catch (error) {
-        console.error("Error fetching total voters:", error);
-        setError("Failed to fetch total voters");
-      }
-    };
-
-    const fetchTotalVotesCount = async () => {
-      try {
-        const response = await API.get("/total-vote-count", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setTotalVotes(response.data.totalVoteCount);
-      } catch (error) {
-        console.error("Error fetching total votes:", error);
-        setError("Failed to fetch total votes");
-      }
-    };
-
-    const fetchElectionStatus = async () => {
-      try {
-        const response = await API.get("/election/status", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setElectionStatus(response.data.status);
-      } catch (error) {
-        console.error("Error fetching election status:", error);
-        setError("Failed to fetch election status");
-      }
-    };
-
-    const fetchElectionDates = async () => {
-      try {
-        const response = await API.get("/election/dates", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setElectionDates(response.data.dates);
-      } catch (error) {
-        console.error("Error fetching election dates:", error);
-        setError("Failed to fetch election dates");
-      }
-    };
-
-    const fetchVotingHistory = async () => {
-      try {
-        const response = await API.get("/user/voting-history", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setVotingHistory(response.data.history);
-      } catch (error) {
-        console.error("Error fetching voting history:", error);
-        setError("Failed to fetch voting history");
-      }
-    };
-
-    const fetchNotifications = async () => {
-      try {
-        const response = await API.get("/user/notifications", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setNotifications(response.data.notifications);
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-        setError("Failed to fetch notifications");
-      }
-    };
-
-    // Call all the fetch functions
-    fetchTotalCandidatesCount();
+    fetchCandidates();
     fetchTotalVotersCount();
     fetchTotalVotesCount();
     fetchElectionStatus();
     fetchElectionDates();
-    fetchVotingHistory();
-    fetchNotifications();
+    fetchVotingHistory();  // Call the function to load the voting history
   }, []);
 
   return (
@@ -130,12 +150,8 @@ const OverviewTab = () => {
         {/* Total Candidates Card */}
         <div className="flex items-center justify-between p-6 bg-blue-500 text-white rounded-lg shadow-md">
           <div>
-            <h3 className="text-xl font-semibold">Total Candidates</h3>
-            {error ? (
-              <div className="bg-red-200 text-red-800 p-4 rounded-lg mt-2">{error}</div>
-            ) : (
-              <div className="text-3xl font-extrabold">{totalCandidates}</div>
-            )}
+            <div className="text-xl font-semibold">Total Candidates</div>
+            <div className="text-3xl font-extrabold">{candidates.length}</div>
           </div>
           <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
             <PlayOnce />
@@ -145,12 +161,8 @@ const OverviewTab = () => {
         {/* Total Voters Card */}
         <div className="flex items-center justify-between p-6 bg-green-500 text-white rounded-lg shadow-md">
           <div>
-            <h3 className="text-xl font-semibold">Total Voters</h3>
-            {error ? (
-              <div className="bg-red-200 text-red-800 p-4 rounded-lg mt-2">{error}</div>
-            ) : (
-              <div className="text-3xl font-extrabold">{totalVoters}</div>
-            )}
+            <div className="text-xl font-semibold">Total Voters</div>
+            <div className="text-3xl font-extrabold">{totalVoters}</div>
           </div>
           <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
             <PlayTwice style={{ width: "60px", height: "60px" }} />
@@ -160,12 +172,8 @@ const OverviewTab = () => {
         {/* Total Vote Count Card */}
         <div className="flex items-center justify-between p-6 bg-yellow-500 text-white rounded-lg shadow-md">
           <div>
-            <h3 className="text-xl font-semibold">Total Vote Count</h3>
-            {error ? (
-              <div className="bg-red-200 text-red-800 p-4 rounded-lg mt-2">{error}</div>
-            ) : (
-              <div className="text-3xl font-extrabold">{totalVotes}</div>
-            )}
+            <div className="text-xl font-semibold">Total Vote Count</div>
+            <div className="text-3xl font-extrabold">{totalVotes}</div>
           </div>
           <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
             <PlayOnce />
@@ -175,12 +183,8 @@ const OverviewTab = () => {
         {/* Election Status Card */}
         <div className="flex items-center justify-between p-6 bg-purple-500 text-white rounded-lg shadow-md">
           <div>
-            <h3 className="text-xl font-semibold">Election Status</h3>
-            {error ? (
-              <div className="bg-red-200 text-red-800 p-4 rounded-lg mt-2">{error}</div>
-            ) : (
-              <div className="text-3xl font-extrabold">{electionStatus}</div>
-            )}
+            <div className="text-xl font-semibold">Election Status</div>
+            <div className="text-3xl font-extrabold">{electionStatus}({ELECTION_ID})</div>
           </div>
           <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
             <PlayTwice style={{ width: "60px", height: "60px" }} />
@@ -190,23 +194,34 @@ const OverviewTab = () => {
 
       {/* Election Dates Card */}
       <div className="flex flex-col items-center justify-center p-6 bg-gray-300 rounded-lg shadow-md mt-6 w-full max-w-6xl">
-        <h3 className="text-xl font-semibold">Election Dates</h3>
-        <div className="text-xl font-extrabold">{electionDates.startDate} - {electionDates.endDate}</div>
+        <div className="text-xl font-semibold">Election Dates</div>
+        <div className="text-xl font-extrabold">{ELECTION_ID}</div>
+        <div className="text-lg">Start Date: {electionDates.startDate}</div>
       </div>
 
       {/* Voting History */}
       <div className="flex flex-col items-center justify-center p-6 bg-gray-300 rounded-lg shadow-md mt-6 w-full max-w-6xl">
-        <h3 className="text-xl font-semibold">Your Voting History</h3>
-        <ul className="space-y-4">
-          {votingHistory.map((vote, index) => (
-            <li key={index} className="text-lg">{vote}</li>
-          ))}
-        </ul>
+        <div className="text-xl font-semibold mb-4">Your Voting History</div>
+
+        {/* If no voting history exists */}
+        {votingHistory.length === 0 ? (
+          <div className="text-lg text-gray-600">You have not voted yet.</div>
+        ) : (
+          <ul className="space-y-4 w-full">
+            {votingHistory.map((vote, index) => (
+              <li key={index} className="bg-white p-4 rounded-lg shadow-md flex flex-col mb-2">
+                <div className="font-semibold text-lg">{vote.candidateName}</div>
+                <div className="text-sm text-gray-500">Vote Time: {new Date(vote.voteDate).toLocaleString()}</div>
+                <div className="mt-2 text-gray-700">You voted for {vote.candidateName} in the election "{vote.electionName}".</div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Notifications */}
       <div className="flex flex-col items-center justify-center p-6 bg-gray-300 rounded-lg shadow-md mt-6 w-full max-w-6xl">
-        <h3 className="text-xl font-semibold">Notifications</h3>
+        <div className="text-xl font-semibold">Notifications</div>
         <ul className="space-y-4">
           {notifications.map((notification, index) => (
             <li key={index} className="text-lg">{notification}</li>

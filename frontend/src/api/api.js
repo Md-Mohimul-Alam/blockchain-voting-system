@@ -11,7 +11,7 @@ export const registerUser = (data) => API.post("/user/register", data);
 export const loginUser = (data) => API.post("/user/login", data);
 export const updateUserInfo = (data) => API.put("/user/update", data);
 export const getUserInfo = (did) => {
-  return API.get(`/${did}`, {
+  return API.get(`/user/${did}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,  // Pass the JWT token for authentication
     },

@@ -399,13 +399,15 @@ export const declareWinner = async (req, res) => {
   }
 };
 
-// Voting Routes
+// Cast vote
 export const castVote = async (req, res) => {
-  const { candidateDid, electionID } = req.body;
-  const { user } = req; // User info is available here from the authenticate middleware
-  
+  const { did, candidateDid, electionID } = req.body;
+
+  console.log('Authenticated user DID:', did);  // Log user DID for debugging
+  console.log('Candidate DID:', candidateDid);  // Log candidate DID for debugging
+
   try {
-    // Validate election status
+    // Step 1: Validate election status
     const contract = await getContract();
     const electionResult = await contract.evaluateTransaction("seeWinner", electionID);
     const election = JSON.parse(electionResult.toString());
@@ -414,22 +416,34 @@ export const castVote = async (req, res) => {
       return res.status(400).json({ error: "Voting is not allowed. Election is closed." });
     }
 
-    // Check if the user has already voted
-    const userAsBytes = await contract.evaluateTransaction("getPersonalInfo", user.did);
-    const currentUser = JSON.parse(userAsBytes.toString());
+    // Step 2: Check if the user has already voted using the user's DID
+    const userAsBytes = await contract.evaluateTransaction("getPersonalInfo", did);  // Use the user's DID here
+    const currentUser  = JSON.parse(userAsBytes.toString());
 
-    if (currentUser.voted) {
-      return res.status(400).json({ error: `User ${user.did} has already voted` });
+    if (currentUser .voted) {
+      return res.status(400).json({ error: `User  with DID ${did} has already voted` });
     }
 
-    // Cast vote for the candidate
-    const candidateAsBytes = await contract.evaluateTransaction("getPersonalInfo", candidateDid);
+    // Step 3: Fetch candidate details using the candidate's DID
+    const candidateAsBytes = await contract.evaluateTransaction("getAllCandidatesUsers", candidateDid);  // Use the candidate's DID here
     const candidate = JSON.parse(candidateAsBytes.toString());
+
+    if (!candidate) {
+      return res.status(400).json({ error: `Candidate with DID ${candidateDid} does not exist` });
+    }
+
+    // Step 4: Increment candidate's vote count
     candidate.votes += 1;
 
-    // Mark the user as voted and submit the vote transaction
-    currentUser.voted = true;
-    await contract.submitTransaction("castVote", user.did, candidateDid, electionID);
+    // Step 5: Mark the user as having voted
+    currentUser .voted = true;
+
+    // Step 6: Submit the transaction to cast the vote
+    await contract.submitTransaction("castVote", did, candidateDid, electionID);  // Ensure correct order of arguments here
+
+    // Update user and candidate states on the ledger
+    await contract.submitTransaction("updatePersonalInfo", did, currentUser .name, currentUser .dob, currentUser .birthplace, currentUser .userName, currentUser .password);
+    await contract.submitTransaction("updateCandidateVotes", candidateDid, candidate.votes); // Assuming you have a function to update candidate votes
 
     res.status(200).json({ message: `Vote cast successfully for candidate ${candidateDid}` });
   } catch (error) {
@@ -437,6 +451,20 @@ export const castVote = async (req, res) => {
     res.status(500).json({ error: "Error casting vote" });
   }
 };
+
+export const updateCandidateInfo = async (req, res) => {
+  const { did, name, dob, logo, birthplace } = req.body;
+
+  try {
+      const contract = await getContract();
+      const updatedCandidate = await contract.submitTransaction("updateCandidate", did, name, dob, logo, birthplace);
+      res.status(200).json({ message: "Candidate updated successfully", candidate: JSON.parse(updatedCandidate.toString()) });
+  } catch (error) {
+      console.error("Error updating candidate:", error);
+      res.status(500).json({ error: "Error updating candidate" });
+  }
+};
+
 
 // Create Election (Admin only)
 export const createElection = async (req, res) => {
@@ -605,6 +633,7 @@ export const getTotalVotersCount = async (req, res) => {
     res.status(500).json({ error: "Error fetching total voters count" });
   }
 };
+
 export const getTotalVoteCount = async (req, res) => {
   const adminDID = req.user.did; // Make sure the DID is correctly parsed from the token or request
   if (!adminDID) {
@@ -623,5 +652,123 @@ export const getTotalVoteCount = async (req, res) => {
   } catch (error) {
     console.error("Error fetching total vote count:", error);
     res.status(500).json({ error: "Error fetching total vote count" });
+  }
+};
+// Fetch Voting History
+export const getVotingHistory = async (req, res) => {
+  try {
+    console.log("Request user:", req.user);
+
+    if (!req.user || !req.user.did) {
+      return res.status(400).json({ error: "User DID is missing in the request" });
+    }
+
+    const contract = await getContract();
+    const result = await contract.evaluateTransaction("getVotingHistory", req.user.did);
+
+    const history = JSON.parse(result.toString());
+    if (history.length === 0) {
+      return res.status(200).json({ history: [] });
+    }
+
+    res.status(200).json({ history });
+  } catch (error) {
+    console.error("Error fetching voting history:", error);
+    res.status(500).json({ error: "Error fetching voting history" });
+  }
+};
+
+// Fetch Notifications
+export const getNotifications = async (req, res) => {
+  try {
+    console.log("Request user:", req.user);
+
+    if (!req.user || !req.user.did) {
+      return res.status(400).json({ error: "User DID is missing in the request" });
+    }
+
+    const contract = await getContract();
+    const result = await contract.evaluateTransaction("getNotifications", req.user.did);
+
+    const notifications = JSON.parse(result.toString());
+    if (notifications.length === 0) {
+      return res.status(200).json({ notifications: [] });
+    }
+
+    res.status(200).json({ notifications });
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ error: "Error fetching notifications" });
+  }
+};
+
+
+// Fetch Total Voters Count
+export const getTotalVotersCountUser = async (req, res) => {
+  try {
+    console.log("Request user:", req.user);
+
+    if (!req.user || !req.user.did) {
+      return res.status(400).json({ error: "User DID is missing in the request" });
+    }
+
+    const contract = await getContract();
+    const result = await contract.evaluateTransaction("getAllVotersUsers", req.user.did);
+
+    const voters = JSON.parse(result.toString());
+    const totalCount = voters.length;
+
+    res.status(200).json({ totalVoters: totalCount });
+  } catch (error) {
+    console.error("Error fetching total voters count for user:", error);
+    res.status(500).json({ error: "Error fetching total voters count for user" });
+  }
+};
+
+// Fetch Total Vote Count
+export const getTotalVoteCountUser = async (req, res) => {
+  const { did } = req.user;  // Get 'did' from authenticated user
+
+  console.log('Authenticated user DID:', did);
+
+  if (!did) {
+    return res.status(400).json({ error: "User DID is missing in the request" });
+  }
+
+  try {
+    const contract = await getContract();
+    const result = await contract.evaluateTransaction("seeVoteCount", did);
+
+    const voteCounts = JSON.parse(result.toString());
+    const totalVoteCount = voteCounts.reduce((sum, candidate) => sum + candidate.votes, 0);
+
+    res.status(200).json({ totalVoteCount });
+  } catch (error) {
+    console.error("Error fetching total vote count:", error);
+    res.status(500).json({ error: "Error fetching total vote count" });
+  }
+};
+
+// Fetch Election by ID
+// Controller: Example fix for getting election details
+export const getElection = async (req, res) => {
+  const { electionID } = req.params; // Get electionID from request params
+  try {
+    const contract = await getContract(); // Get the contract from the Hyperledger fabric network
+
+    // Call the chaincode function to retrieve the election data
+    const result = await contract.evaluateTransaction("getElection", electionID); 
+
+    // Check if the result is valid
+    if (!result || result.toString() === "") {
+      return res.status(404).json({ error: `Election with ID ${electionID} not found` });
+    }
+
+    // Parse the result and return the election data in the response
+    const election = JSON.parse(result.toString());
+    res.status(200).json(election);
+  } catch (error) {
+    console.error("Error fetching election data:", error);
+    res.status(500).json({ error: "Error fetching election data" });
   }
 };

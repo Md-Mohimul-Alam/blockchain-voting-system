@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { loginUser, registerUser, loginAdmin, registerAdmin } from "../api/api";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useAuth } from "../Context/AuthContext"; // Import useAuth to use authentication context
 
 const LoginRegister = () => {
+  const { login } = useAuth(); // Destructure login function from AuthContext
   const [isLogin, setIsLogin] = useState(true); // Toggle between Login and Register views
   const [userData, setUserData] = useState({
     role: "admin", // Default role is Admin; changes based on user selection
@@ -39,24 +41,27 @@ const LoginRegister = () => {
         } else {
           response = await loginUser(userData);
         }
-  
+
         console.log("Login Response:", response);  // Log entire response object
-  
+
         // Check if the response contains the expected fields
         if (!response || !response.data || !response.data.token || !response.data.did || !response.data.role) {
           throw new Error("Invalid response data");
         }
-  
+
         // Extract token, did, and role from the response
         const { token, did, role } = response.data;
-  
+
         // Save JWT token, DID, and userRole in localStorage
         localStorage.setItem("jwtToken", token);
         localStorage.setItem("did", did); // Save DID to localStorage
         localStorage.setItem("userRole", role); // Save user role
-  
+
         alert(`${role} login successful!`);
-  
+
+        // Call the login function from AuthContext to update the global state
+        login(token, role, did);
+
         // Redirect to the appropriate dashboard based on the role
         if (role === "admin") {
           navigate("/admin-dashboard");  // Admin dashboard
@@ -70,17 +75,20 @@ const LoginRegister = () => {
           alert("Admin registration successful!");
         } else {
           const response = await registerUser(userData);
-  
+
           console.log("Registration Response:", response);  // Log entire response object
-  
+
           // Ensure the response contains the correct `did`, `jwtToken`, and `role`
           const { did, token, role } = response.data;
-  
+
           // Save the DID and JWT to localStorage after registration
           localStorage.setItem("did", did); // Save DID from the response
           localStorage.setItem("jwtToken", token); // Save JWT token
           localStorage.setItem("userRole", role); // Save user role
           alert("User registration successful!");
+
+          // Call the login function from AuthContext to update the global state
+          login(token, role, did);
         }
         setIsLogin(true); // Switch to Login view
       }
@@ -89,8 +97,7 @@ const LoginRegister = () => {
       alert("An error occurred during the process. Please try again.");
     }
   };
-  
-  
+
   return (
     <div className="flex h-screen">
       <div className="w-1/2 bg-sky-950 text-white flex flex-col justify-center items-center p-10">
@@ -206,4 +213,3 @@ const LoginRegister = () => {
 };
 
 export default LoginRegister;
-
