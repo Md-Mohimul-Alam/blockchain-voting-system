@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { HomeIcon, UserIcon, UserCircleIcon, UserGroupIcon, CalendarIcon } from "@heroicons/react/solid";
+import {FaPlay, FaPlus, FaLock, FaRedoAlt, FaTrophy } from "react-icons/fa"; // Import the icons
 
 const SidebarAdmin = ({ setSelectedTab, isSidebarOpen }) => {
   const [isCandidatesDropdownOpen, setIsCandidatesDropdownOpen] = useState(false);
@@ -116,17 +117,20 @@ const SidebarAdmin = ({ setSelectedTab, isSidebarOpen }) => {
           </div>
           {isElectionsDropdownOpen && (
             <ul className="ml-4 space-y-2">
-              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("createElection")}>
-                Create Election
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer flex items-center" onClick={() => setSelectedTab("createElection")}>
+                <FaPlus className="mr-2" /> Create Election
               </li>
-              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("closeElection")}>
-                Close Election
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer flex items-center" onClick={() => setSelectedTab("closeElection")}>
+                <FaLock className="mr-2" /> Close Election
               </li>
-              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("resetElection")}>
-                Reset Election
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer flex items-center" onClick={() => setSelectedTab("resetElection")}>
+                <FaRedoAlt className="mr-2" /> Reset Election
               </li>
-              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer" onClick={() => setSelectedTab("declareWinner")}>
-                Declare Winner
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer flex items-center" onClick={() => setSelectedTab("declareWinner")}>
+                <FaTrophy className="mr-2" /> Declare Winner
+              </li>
+              <li className="hover:bg-gray-600 p-2 rounded cursor-pointer flex items-center" onClick={() => setSelectedTab("runningElection")}>
+                <FaPlay className="mr-2" /> Running Election
               </li>
             </ul>
           )}

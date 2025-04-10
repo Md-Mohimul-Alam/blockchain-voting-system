@@ -9,12 +9,12 @@ const OverviewTab = () => {
   const [totalVoters, setTotalVoters] = useState(0);
   const [totalVotes, setTotalVotes] = useState(0);
   const [electionStatus, setElectionStatus] = useState("Open"); // Default value
-  const [electionDates, setElectionDates] = useState({ startDate: ""});
+  const [electionDates, setElectionDates] = useState({ startDate: "" });
   const [votingHistory, setVotingHistory] = useState([]);
-  const [notifications,] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
 
-  const [ELECTION_ID] = useState("Election 1"); // Election ID, can be dynamic
+  const [electionID, setElectionID] = useState(""); // Election ID dynamically selected
 
   // Fetch candidates
   const fetchCandidates = async () => {
@@ -84,8 +84,7 @@ const OverviewTab = () => {
 
   // Function to fetch election status
   const fetchElectionStatus = async () => {
-    const token = localStorage.getItem("did");
-    const electionID = "Election 1"; // Make sure you use a valid election ID
+    const token = localStorage.getItem("jwtToken"); // Retrieve JWT from localStorage
     if (!token) {
       setError("User is not authenticated. Please log in again.");
       return;
@@ -94,10 +93,10 @@ const OverviewTab = () => {
     try {
       const response = await API.get(`/election/${electionID}/status`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Pass the JWT in the Authorization header
         },
       });
-      setElectionStatus(response.data.status);
+      setElectionStatus(response.data.status); // Set election status
     } catch (error) {
       console.error("Error fetching election status:", error);
       setError("Failed to fetch election status");
@@ -106,19 +105,19 @@ const OverviewTab = () => {
 
   // Function to fetch election dates
   const fetchElectionDates = async () => {
-    const token = localStorage.getItem("jwtToken");  // Retrieve JWT from localStorage
+    const token = localStorage.getItem("jwtToken"); // Retrieve JWT from localStorage
     if (!token) {
       setError("User is not authenticated. Please log in again.");
       return;
     }
 
     try {
-      const response = await API.get("/election/startDate", {
+      const response = await API.get(`/election/${electionID}/dates`, {
         headers: {
-          Authorization: `Bearer ${token}`,  // Pass the JWT in the Authorization header
+          Authorization: `Bearer ${token}`, // Pass the JWT in the Authorization header
         },
       });
-      setElectionDates(response.data.dates);
+      setElectionDates(response.data.dates); // Set election dates (startDate and endDate)
     } catch (error) {
       console.error("Error fetching election dates:", error);
       setError("Failed to fetch election dates");
@@ -129,9 +128,24 @@ const OverviewTab = () => {
   const fetchVotingHistory = () => {
     const storedHistory = localStorage.getItem("votingHistory");
     if (storedHistory) {
-      setVotingHistory(JSON.parse(storedHistory));  // Set the voting history from localStorage
+      setVotingHistory(JSON.parse(storedHistory)); // Set the voting history from localStorage
     } else {
       setError("No voting history found.");
+    }
+  };
+
+  // Fetch all elections (if applicable) - Add this function to retrieve all elections
+  const fetchAllElections = async () => {
+    try {
+      const response = await API.get("/elections"); // API endpoint to fetch all elections
+      if (response.data && response.data.elections.length > 0) {
+        setElectionID(response.data.elections[0].electionID); // Set the first election as default
+        fetchElectionStatus(); // Fetch status of the first election
+        fetchElectionDates(); // Fetch dates of the first election
+      }
+    } catch (error) {
+      console.error("Error fetching elections:", error);
+      setError("Failed to fetch elections");
     }
   };
 
@@ -139,9 +153,8 @@ const OverviewTab = () => {
     fetchCandidates();
     fetchTotalVotersCount();
     fetchTotalVotesCount();
-    fetchElectionStatus();
-    fetchElectionDates();
-    fetchVotingHistory();  // Call the function to load the voting history
+    fetchAllElections(); // Fetch elections and update the selected election details
+    fetchVotingHistory(); // Call the function to load the voting history
   }, []);
 
   return (
@@ -184,7 +197,7 @@ const OverviewTab = () => {
         <div className="flex items-center justify-between p-6 bg-purple-500 text-white rounded-lg shadow-md">
           <div>
             <div className="text-xl font-semibold">Election Status</div>
-            <div className="text-3xl font-extrabold">{electionStatus}({ELECTION_ID})</div>
+            <div className="text-3xl font-extrabold">{electionStatus}:({electionID})</div>
           </div>
           <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
             <PlayTwice style={{ width: "60px", height: "60px" }} />
@@ -194,9 +207,8 @@ const OverviewTab = () => {
 
       {/* Election Dates Card */}
       <div className="flex flex-col items-center justify-center p-6 bg-gray-300 rounded-lg shadow-md mt-6 w-full max-w-6xl">
-        <div className="text-xl font-semibold">Election Dates</div>
-        <div className="text-xl font-extrabold">{ELECTION_ID}</div>
-        <div className="text-lg">Start Date: {electionDates.startDate}</div>
+        <div className="text-xl font-semibold">Running Election </div>
+        <div className="text-xl font-extrabold">{electionID}</div>
       </div>
 
       {/* Voting History */}
@@ -212,7 +224,7 @@ const OverviewTab = () => {
               <li key={index} className="bg-white p-4 rounded-lg shadow-md flex flex-col mb-2">
                 <div className="font-semibold text-lg">{vote.candidateName}</div>
                 <div className="text-sm text-gray-500">Vote Time: {new Date(vote.voteDate).toLocaleString()}</div>
-                <div className="mt-2 text-gray-700">You voted for {vote.candidateName} in the election "{vote.electionName}".</div>
+                <div className="mt-2 text-gray-700">You have voted for the election "{vote.electionName}".</div>
               </li>
             ))}
           </ul>

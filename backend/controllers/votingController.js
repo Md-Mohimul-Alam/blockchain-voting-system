@@ -7,6 +7,9 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import jwt from "jsonwebtoken";
+import sharp from 'sharp';  // Import Sharp
+
+
 
 // Ensure the "uploads/" folder exists
 const uploadDir = path.join(process.cwd(), "uploads");
@@ -27,6 +30,8 @@ const storage = multer.diskStorage({
 });
 
 export const upload = multer({ storage });
+
+
 
 // Middleware for verifying JWT token and extracting user details
 const authenticate = async (req, res, next) => {
@@ -229,34 +234,36 @@ const generateUniqueID = () => {
   return `C${Date.now()}`; // Generating a unique ID based on the current timestamp (you can customize this logic)
 };
 
+
 // Create Candidate Controller (Admin only)
 export const createCandidate = async (req, res) => {
-  const { did, name, dob, birthplace } = req.body;  // Take 4 parameters from req.body
-  const logo = req.file;  // Take the logo file from the request
+  const { did, name, dob, birthplace } = req.body;
+  const logo = req.file;  // Get the logo file
 
   // Validate if the required fields are provided
   if (!did || !name || !dob || !birthplace || !logo) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  // Check if the did is not null or empty
-  if (!did.trim()) {
-    return res.status(400).json({ error: "The DID cannot be null or empty" });
-  }
-
-  const adminDID = req.user.did; // Get admin's DID from JWT token
-
   try {
     // Generate a unique candidateID
-    const candidateID = generateUniqueID(); 
+    const candidateID = generateUniqueID();
+
+    // Process the logo image using sharp (resize and convert to a standard format)
+    const processedLogoPath = path.join(uploadDir, `processed-${logo.filename}`);
+    await sharp(logo.path)
+      .resize(200, 200) // Resize the image to 200x200 pixels
+      .toFormat('jpeg') // Convert image to JPEG
+      .jpeg({ quality: 80 }) // Set quality to 80%
+      .toFile(processedLogoPath); // Save processed logo
 
     // Create the candidate object with the unique candidateID
     const candidate = {
-      candidateID,  // Assign the generated unique ID
+      candidateID,
       did,
       name,
       dob,
-      logo: logo.filename, // Candidate Logo (just passing the filename)
+      logo: `processed-${logo.filename}`, // Save the processed logo filename
       birthplace,
       role: "candidate",
       votes: 0,
@@ -267,17 +274,17 @@ export const createCandidate = async (req, res) => {
 
     // Submit the transaction to create the candidate on Hyperledger Fabric
     const result = await contract.submitTransaction(
-      "createCandidate",  // Chaincode function name
-      adminDID,  // Admin DID
-      did,       // Candidate DID
-      name,      // Candidate Name
-      dob,       // Candidate Date of Birth
-      logo.filename, // Candidate Logo (just passing the filename)
-      birthplace // Candidate Birthplace
+      "createCandidate",
+      req.user.did, // Admin's DID
+      did,  // Candidate DID
+      name, // Candidate Name
+      dob,  // Candidate Date of Birth
+      `processed-${logo.filename}`,  // Candidate Logo (processed filename)
+      birthplace
     );
 
     // Save the candidate in MongoDB
-    await Candidate.create(candidate);  // Insert the candidate into MongoDB
+    await Candidate.create(candidate);
 
     res.status(201).json({ message: "Candidate created successfully", candidate });
   } catch (error) {
@@ -285,7 +292,6 @@ export const createCandidate = async (req, res) => {
     res.status(500).json({ error: "Error creating candidate" });
   }
 };
-
 // Update Candidate (Admin only)
 // In your votingController.js
 export const updateCandidate = async (req, res) => {
@@ -383,74 +389,107 @@ export const getAllCandidatesUsers = async (req, res) => {
 // Election Routes (Admin only)
 export const declareWinner = async (req, res) => {
   const { electionID } = req.params;
+
   try {
     const contract = await getContract();
+
+    // Ensure election is closed
+    const electionAsBytes = await contract.evaluateTransaction("getElection", electionID);
+    const election = JSON.parse(electionAsBytes.toString());
+    if (election.status !== "closed") {
+      return res.status(400).json({ error: "Election must be closed to declare a winner" });
+    }
+
+    // Declare the winner using the chaincode function
     const result = await contract.submitTransaction("declareWinner", electionID);
+    const winner = result.toString();
 
-    await Election.findOneAndUpdate(
-      { electionID },
-      { winner: result.toString() },
-      { new: true }
-    );
+    // Update election data with the winner
+    await Election.findOneAndUpdate({ electionID }, { winner }, { new: true });
 
-    res.status(200).json({ message: `Winner declared: ${result.toString()}` });
+    res.status(200).json({ message: `Winner declared: ${winner}` });
   } catch (error) {
-    res.status(500).json({ error: "Error declaring winner" });
+    console.error("Error declaring winner:", error);
+    res.status(500).json({ error: error.message || "Error declaring winner" });
   }
 };
-
 // Cast vote
 export const castVote = async (req, res) => {
   const { did, candidateDid, electionID } = req.body;
 
-  console.log('Authenticated user DID:', did);  // Log user DID for debugging
-  console.log('Candidate DID:', candidateDid);  // Log candidate DID for debugging
-
   try {
-    // Step 1: Validate election status
     const contract = await getContract();
-    const electionResult = await contract.evaluateTransaction("seeWinner", electionID);
+
+    // Step 1: Fetch the election details to check if the winner has been declared
+    const electionResult = await contract.evaluateTransaction("getElection", electionID);
     const election = JSON.parse(electionResult.toString());
 
+    // Step 2: Validate if the election is open
     if (election.status !== "open") {
       return res.status(400).json({ error: "Voting is not allowed. Election is closed." });
     }
 
-    // Step 2: Check if the user has already voted using the user's DID
-    const userAsBytes = await contract.evaluateTransaction("getPersonalInfo", did);  // Use the user's DID here
-    const currentUser  = JSON.parse(userAsBytes.toString());
+    // Step 3: Check if the user has already voted
+    const userAsBytes = await contract.evaluateTransaction("getPersonalInfo", did);  // Get user details
+    const currentUser = JSON.parse(userAsBytes.toString());
 
-    if (currentUser .voted) {
-      return res.status(400).json({ error: `User  with DID ${did} has already voted` });
+    if (currentUser.voted) {
+      return res.status(400).json({ error: `User with DID ${did} has already voted` });
     }
 
-    // Step 3: Fetch candidate details using the candidate's DID
-    const candidateAsBytes = await contract.evaluateTransaction("getAllCandidatesUsers", candidateDid);  // Use the candidate's DID here
+    // Step 4: Fetch candidate details using the candidate's DID
+    const candidateAsBytes = await contract.evaluateTransaction("getAllCandidatesUsers", candidateDid);
     const candidate = JSON.parse(candidateAsBytes.toString());
 
     if (!candidate) {
       return res.status(400).json({ error: `Candidate with DID ${candidateDid} does not exist` });
     }
 
-    // Step 4: Increment candidate's vote count
+    // Step 5: Increment candidate's vote count
     candidate.votes += 1;
 
-    // Step 5: Mark the user as having voted
-    currentUser .voted = true;
+    // Step 6: Mark the user as having voted
+    currentUser.voted = true;
 
-    // Step 6: Submit the transaction to cast the vote
-    await contract.submitTransaction("castVote", did, candidateDid, electionID);  // Ensure correct order of arguments here
+    // Step 7: Submit the transaction to cast the vote and update the ledger
+    const castVoteResult = await contract.submitTransaction("castVote", did, candidateDid, electionID);
 
-    // Update user and candidate states on the ledger
-    await contract.submitTransaction("updatePersonalInfo", did, currentUser .name, currentUser .dob, currentUser .birthplace, currentUser .userName, currentUser .password);
-    await contract.submitTransaction("updateCandidateVotes", candidateDid, candidate.votes); // Assuming you have a function to update candidate votes
+    if (!castVoteResult || castVoteResult.length === 0) {
+      return res.status(400).json({ error: "Error casting vote, no result returned from the chaincode" });
+    }
 
+    // Step 8: Update the candidate's vote count and the user's voted status
+    const updateUserResult = await contract.submitTransaction("updatePersonalInfo", 
+      did, 
+      currentUser.name, 
+      currentUser.dob, 
+      currentUser.birthplace, 
+      currentUser.userName, 
+      currentUser.password
+    );
+
+    const updateCandidateResult = await contract.submitTransaction("updateCandidate", 
+      candidate.did, 
+      candidate.name, 
+      candidate.dob, 
+      candidate.logo, 
+      candidate.birthplace
+    );
+
+    // If any of the updates failed, throw an error
+    if (!updateUserResult || !updateCandidateResult) {
+      throw new Error("Error updating the user or candidate information on the ledger");
+    }
+
+    // Return success message
     res.status(200).json({ message: `Vote cast successfully for candidate ${candidateDid}` });
+
   } catch (error) {
     console.error("Error casting vote:", error);
-    res.status(500).json({ error: "Error casting vote" });
+    res.status(500).json({ error: error.message || "Error casting vote" });
   }
 };
+
 
 export const updateCandidateInfo = async (req, res) => {
   const { did, name, dob, logo, birthplace } = req.body;
@@ -524,51 +563,61 @@ export const closeElection = async (req, res) => {
 };
 // Reset Election (Admin only)
 export const resetElection = async (req, res) => {
-  const { electionID } = req.params;
+  const { electionID } = req.params;  // Get electionID from the URL params
 
   try {
+    // Ensure you're connected to the Hyperledger Fabric contract
     const contract = await getContract();
 
-    // Check if the election exists in the database
-    const electionExists = await Election.findOne({ electionID });
-    if (!electionExists) {
-      return res.status(404).json({ error: `Election with ID ${electionID} does not exist` });
+    // Call the chaincode function to reset the election on Hyperledger Fabric
+    const result = await contract.submitTransaction('resetElection', electionID);
+
+    // Delete all candidates associated with this election from the ledger
+    const candidateIterator = await contract.getStateByRange('candidate-', 'candidate~');
+    let candidateResult = await candidateIterator.next();
+  
+    while (!candidateResult.done) {
+      const candidate = JSON.parse(candidateResult.value.value.toString());
+      if (candidate.electionID === electionID) {
+        // Delete the candidate associated with this election
+        await contract.deleteState(candidateResult.value.key);
+      }
+      candidateResult = await candidateIterator.next();
     }
+    await candidateIterator.close();
 
-    // Ensure election is not closed or has a winner
-    if (electionExists.winner) {
-      return res.status(400).json({ error: "Election cannot be reset after a winner is declared." });
-    }
-
-    // Call the chaincode function to reset the election status on the blockchain
-    // This will also delete the election from Hyperledger
-    await contract.submitTransaction("resetElection", electionID);
-
-    // Optionally, delete the election from the database (if you are storing it in MongoDB)
+    // Optionally, delete the election from MongoDB (if needed)
     await Election.findOneAndDelete({ electionID });
 
-    res.status(200).json({ message: `Election ${electionID} has been reset and deleted successfully.` });
+    // Optionally, delete the candidates from MongoDB (if needed)
+    await Candidate.deleteMany({ electionID });
+
+    // Respond with a success message
+    res.status(200).json({ message: `Election ${electionID} and all related data (including candidates, votes, and user data) have been deleted and reset. Election status has been unset.` });
   } catch (error) {
     console.error("Error resetting election:", error);
-    res.status(500).json({ error: "Error resetting election" });
+    res.status(500).json({ error: error.message || "Error resetting election" });
   }
 };
-
-
 // Controller function for viewing election winner
 export const seeWinner = async (req, res) => {
-  const { electionID } = req.params;
-  try {
-    const contract = await getContract();
-    const result = await contract.evaluateTransaction("seeWinner", electionID);
+  const { electionID } = req.params;  // Election ID from URL parameters
 
-    res.status(200).json(JSON.parse(result.toString()));  // Return winner data
+  try {
+    const contract = await getContract();  // Get the contract for interacting with Hyperledger Fabric
+
+    // Call the chaincode function to see the winner
+    const result = await contract.evaluateTransaction("seeWinner", electionID);  // Call the chaincode function
+    const winnerDetails = JSON.parse(result.toString());  // Parse the result to JSON
+
+    // Send the winner details and election status as the response
+    res.status(200).json(winnerDetails);
   } catch (error) {
-    res.status(500).json({ error: "Error retrieving election winner" });
+    console.error("Error fetching winner details:", error);
+    res.status(500).json({ error: "Error fetching winner details" });
   }
 };
 
-// Get All Voters (Admin only)
 // Get All Voters (Admin only)
 export const getAllVoters = async (req, res) => {
   try {
@@ -749,17 +798,35 @@ export const getTotalVoteCountUser = async (req, res) => {
   }
 };
 
-// Fetch Election by ID
-// Controller: Example fix for getting election details
-export const getElection = async (req, res) => {
+// Controller for fetching all elections from the ledger
+export const getAllElections = async (req, res) => {
+  try {
+    const contract = await getContract(); // Get the contract from Hyperledger Fabric
+
+    // Call the chaincode function to get all elections
+    const result = await contract.evaluateTransaction("getAllElections", ""); 
+
+    if (!result || result.toString() === "") {
+      return res.status(404).json({ error: "No elections found" });
+    }
+
+    const elections = JSON.parse(result.toString()); // Parse the response to get the elections
+    res.status(200).json({ elections }); // Return all elections
+  } catch (error) {
+    console.error("Error fetching elections:", error);
+    res.status(500).json({ error: "Error fetching elections" });
+  }
+};
+
+// Controller for fetching election by Election ID
+export const getElectionById = async (req, res) => {
   const { electionID } = req.params; // Get electionID from request params
   try {
-    const contract = await getContract(); // Get the contract from the Hyperledger fabric network
+    const contract = await getContract(); // Get the contract from Hyperledger Fabric
 
-    // Call the chaincode function to retrieve the election data
-    const result = await contract.evaluateTransaction("getElection", electionID); 
+    // Call the chaincode function to retrieve the election data by Election ID
+    const result = await contract.evaluateTransaction("getElection", electionID);
 
-    // Check if the result is valid
     if (!result || result.toString() === "") {
       return res.status(404).json({ error: `Election with ID ${electionID} not found` });
     }
@@ -770,5 +837,42 @@ export const getElection = async (req, res) => {
   } catch (error) {
     console.error("Error fetching election data:", error);
     res.status(500).json({ error: "Error fetching election data" });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  const { did, name, dob, birthplace, userName, password } = req.body;
+
+  try {
+    // Hash the password if it is provided for update
+    let hashedPassword = password;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10); // Hash the new password
+    }
+
+    const contract = await getContract();
+
+    // Call the chaincode function to update user info
+    const result = await contract.submitTransaction(
+      "updateUser", // Chaincode function name
+      did,          // DID of the user to update
+      name,         // New name
+      dob,          // New date of birth
+      birthplace,   // New birthplace
+      userName,     // New userName
+      hashedPassword // New hashed password (if updated)
+    );
+
+    // Parse the result (updated user data) returned from chaincode
+    const updatedUser = JSON.parse(result.toString());
+
+    // Optionally, update the user details in MongoDB (if you're storing users there)
+    await User.findOneAndUpdate({ did }, updatedUser, { new: true });
+
+    // Return the updated user data as a response
+    res.status(200).json({ message: "User details updated successfully", updatedUser });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Error updating user" });
   }
 };

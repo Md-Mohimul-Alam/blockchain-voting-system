@@ -2,7 +2,7 @@ import { useState } from "react";
 import API from "../../../api/axiosConfig"; // Adjust based on your API setup
 
 const CloseElection = () => {
-  const [electionID, setElectionID] = useState("");
+  const [electionID, setElectionID] = useState("");  // Store election ID
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
@@ -10,12 +10,14 @@ const CloseElection = () => {
     e.preventDefault();
 
     try {
-      await API.put(`/election/${electionID}/close`);
-      setSuccess(`Election ${electionID} closed successfully!`);
+      const response = await API.put(`/election/${electionID}/close`); // Call the correct route
+
+      // Handle successful response
+      setSuccess(response.data.message);  // Assuming message contains success info
       setError(null);
     } catch (error) {
-      console.error("Error closing election:", error); // Log the error for debugging
-      setError("Error closing election");
+      console.error("Error closing election:", error); // Log error for debugging
+      setError("Error closing election. Please try again.");
       setSuccess(null);
     }
   };
@@ -32,7 +34,7 @@ const CloseElection = () => {
             type="text"
             id="electionID"
             value={electionID}
-            onChange={(e) => setElectionID(e.target.value)}
+            onChange={(e) => setElectionID(e.target.value)}  // Bind election ID
             className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             required
           />

@@ -27,7 +27,7 @@ export const deleteCandidate = (did) => API.delete(`/candidate/${did}`);
 export const getAllCandidatesUser = () => API.get("/candidateUser/all");
 
 // Election APIs
-export const declareWinner = (electionID) => API.post(`/election/${electionID}/winner`);
+export const declareWinner = (electionID) => API.post(`/election/${electionID}/declare-winner`);
 export const closeElection = (electionID) => API.post(`/election/${electionID}/close`);
 export const resetElection = (electionID) => API.post(`/election/${electionID}/reset`);
 

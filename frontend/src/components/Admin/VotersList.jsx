@@ -47,6 +47,7 @@ const VotersList = () => {
             <tr>
               <th className="px-4 py-2 text-left text-gray-600">DID</th>
               <th className="px-4 py-2 text-left text-gray-600">Name</th>
+              <th className="px-4 py-2 text-left text-gray-600">User Name</th>
               <th className="px-4 py-2 text-left text-gray-600">Voted</th>
               <th className="px-4 py-2 text-left text-gray-600">DOB</th>
               <th className="px-4 py-2 text-left text-gray-600">Birth Place</th>
@@ -58,6 +59,7 @@ const VotersList = () => {
               <tr key={voter.did} className="border-b">
                 <td className="px-4 py-2 text-gray-700">{voter.did}</td>
                 <td className="px-4 py-2 text-gray-700">{voter.name}</td>
+                <td className="px-4 py-2 text-gray-700">{voter.userName}</td>
                 <td className="px-4 py-2 text-gray-700">
                   {voter.voted ? (
                     <span className="text-green-500">Yes</span>

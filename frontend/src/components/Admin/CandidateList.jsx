@@ -56,7 +56,7 @@ const CandidateList = ({
                     <img
                       src={`../../../../backend/uploads/${candidate.logo}`}  
                       alt={candidate.name}
-                      className="w-10 h-10 object-cover"
+                      className="w-15 h-15 object-cover"
                     />
                   </td>
                   <td className="px-6 py-4">

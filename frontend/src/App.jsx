@@ -11,7 +11,7 @@ import { AuthProvider } from "./Context/AuthContext"; // Import AuthProvider
 const Layout = ({ children }) => (
   <div className="flex flex-col min-h-screen bg-gray-100">
     <Navbar />
-    <main className="flex-grow pt-16 pb-12">{children}</main> {/* Prevents overlap */}
+    <main className="flex-grow pt-17 pb-12">{children}</main> {/* Prevents overlap */}
     <Footer />
   </div>
 );

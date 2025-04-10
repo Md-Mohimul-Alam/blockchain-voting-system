@@ -24,7 +24,7 @@ import {
   getAllCandidatesUsers,
   getTotalVotersCountUser,
   getTotalVoteCountUser,
-  getElection,
+  getAllElections,
   getVotingHistory,
   getNotifications,
 } from "../controllers/votingController.js";
@@ -53,13 +53,13 @@ router.get("/candidate/all", authenticateAdmin, getAllCandidates); // Protect vi
 router.delete("/candidate/:did", authenticateAdmin, deleteCandidate); // Protect delete candidate route with authenticateAdmin middleware
 // Election Routes (Admin only)
 router.post("/election/create", authenticateAdmin, createElection); // Protect create election route with authenticateAdmin middleware
-router.post("/election/:electionID/winner", authenticateAdmin, declareWinner); // Protect declare winner route with authenticateAdmin middleware
+router.put("/election/:electionID/declare-winner", authenticateAdmin, declareWinner); // Protect declare winner route with authenticateAdmin middleware
 router.put("/election/:electionID/close", authenticateAdmin, closeElection); // Protect close election route with authenticateAdmin middleware
 router.put("/election/:electionID/reset", authenticateAdmin, resetElection); // Protect reset election route with authenticateAdmin middleware
 
 // Voting Routes (User only)
 router.post("/user/vote", authenticateUser, castVote); // Protect vote route with authenticate middleware
-router.get("/election/:electionID/winner", authenticateUser, seeWinner); // Protect view winner route with authenticate middleware
+router.get("/election/:electionID/result", authenticateUser, seeWinner); // Protect view winner route with authenticate middleware
 
 // Additional Routes
 router.get("/total-candidates", authenticateAdmin, getTotalCandidatesCount); // Ensure authenticate middleware is applied here
@@ -75,7 +75,6 @@ router.get("/total-voters-user", authenticateUser, getTotalVotersCountUser);
 router.get("/total-vote-count-user", authenticateUser, getTotalVoteCountUser);
 
 // Route for Fetching Election by ID
-router.get("/election/:electionID", getElection); // Fetch the full election data based on electionID
-
+router.get("/elections", authenticateUser, getAllElections);
 
 export default router;

@@ -48,7 +48,7 @@ const Navbar = () => {
             </button>
           </>
         ) : (
-          <Link to="/auth" className="text-lg text-white hover:text-gray-300 transition">
+          <Link to="/auth" className="text-lg text-white hover:text-gray-300 transition w-35 pt-2">
             Login/Register
           </Link>
         )}

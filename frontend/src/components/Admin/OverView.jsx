@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import API from "../../api/axiosConfig"; // Import centralized API instance
 import PlayOnce from '../../assets/com1';
 import PlayTwice from '../../assets/com2';
-
+import PlayThird from '../../assets/com3';
 const OverviewTab = () => {
   const [totalCandidates, setTotalCandidates] = useState(0);
   const [totalVoters, setTotalVoters] = useState(0);
@@ -115,10 +115,13 @@ const OverviewTab = () => {
         </div>
 
         {/* Additional Info 2 Card */}
-        <div className="flex items-center justify-between p-6 bg-red-500 text-white rounded-lg shadow-md">
+        <div className="flex items-center justify-between p-6 bg-teal-800 text-white rounded-lg shadow-md">
           <div>
-            <h3 className="text-xl font-semibold">Additional Info 2</h3>
-            <div className="text-3xl font-extrabold"></div> {/* Hardcoded for now */}
+            <h3 className="text-xl font-semibold">Active Status</h3>
+            <div className="text-3xl font-extrabold">
+              <PlayThird style={{ width: "60px", height: "60px" }}/>
+              <div className="text-xl font-semibold">Active ✅</div>
+            </div> {/* Hardcoded for now */}
           </div>
           <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
             <PlayTwice style={{ width: "60px", height: "60px" }} />
