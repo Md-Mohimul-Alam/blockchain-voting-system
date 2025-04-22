@@ -43,6 +43,9 @@ This Blockchain Voting System will:
 
 
 
+
+
+
 📌 Features Implemented
     Admin Functions
         RegisterAdmin(did, UserName, DOB, Password) → 

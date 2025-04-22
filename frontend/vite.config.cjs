@@ -1,9 +1,15 @@
-const { defineConfig } = require('vite');
-const react = require('@vitejs/plugin-react-swc');
+// vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-// Vite Configuration
-module.exports = defineConfig({
+
+export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': '/src',  // Ensure the alias @ points to the src folder
+    },
+  },
   css: {
     postcss: {
       plugins: [
@@ -12,4 +18,4 @@ module.exports = defineConfig({
       ],
     },
   },
-});
+})

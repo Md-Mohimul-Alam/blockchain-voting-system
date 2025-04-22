@@ -1,37 +1,40 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import Home from "./pages/Home";
-import LoginRegister from "./pages/LoginRegister";
-import AdminDashboard from "./pages/AdminDashboard";
-import UserDashboard from "./pages/UserDashboard";
-import { AuthProvider } from "./Context/AuthContext"; // Import AuthProvider
+// src/App.jsx
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// Layout Wrapper to ensure Navbar and Footer are always present
-const Layout = ({ children }) => (
-  <div className="flex flex-col min-h-screen bg-gray-100">
-    <Navbar />
-    <main className="flex-grow pt-17 pb-12">{children}</main> {/* Prevents overlap */}
-    <Footer />
-  </div>
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import Dashboard from "./pages/Dashboard";
+import AdminPanel from "./pages/AdminPanel";
+import CreateElection from "./pages/CreateElection";
+import UserProfile from "./pages/UserProfile";
+import VoteNow from "./pages/VoteNow";
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/create-election" element={<CreateElection />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/vote" element={<VoteNow />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
-
-function App() {
-  return (
-    // Wrap the entire app in Router
-    <Router>
-      <AuthProvider>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<LoginRegister />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/user-dashboard" element={<UserDashboard />} />
-          </Routes>
-        </Layout>
-      </AuthProvider>
-    </Router>
-  );
-}
 
 export default App;

@@ -1,59 +1,40 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { createContext, useContext, useEffect, useState } from "react";
 
-// Create the context
-const AuthContext = createContext();
+// ✅ Exporting AuthContext so it can be used elsewhere (e.g., ProtectedRoute)
+export const AuthContext = createContext();
 
-// Custom hook to use the Auth context
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
-// Auth provider to wrap around the app
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null);
-  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
 
-  // Check authentication on component mount
   useEffect(() => {
-    const token = localStorage.getItem("jwtToken");
-    const storedRole = localStorage.getItem("userRole");
+    const savedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
 
-    if (token && storedRole) {
-      setIsAuthenticated(true);
-      setUserRole(storedRole);
-    } else {
-      setIsAuthenticated(false);
-      setUserRole(null);
+    if (savedUser && token) {
+      setUser(JSON.parse(savedUser));
     }
   }, []);
 
-  const login = (token, role, did) => {
-    localStorage.setItem("jwtToken", token);
-    localStorage.setItem("userRole", role);
-    localStorage.setItem("did", did);
-    setIsAuthenticated(true);
-    setUserRole(role);
-
-    // Redirect to the appropriate dashboard
-    navigate(role === "admin" ? "/admin-dashboard" : "/user-dashboard");
+  const login = (userData, token) => {
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", token);
+    setUser(userData);
   };
 
   const logout = () => {
-    localStorage.removeItem("jwtToken");
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("did");
-    setIsAuthenticated(false);
-    setUserRole(null);
-
-    // Redirect to login page
-    navigate("/auth");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setUser(null);
   };
 
+  const isAuthenticated = !!user;
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+// ✅ Exporting custom hook
+export const useAuth = () => useContext(AuthContext);
