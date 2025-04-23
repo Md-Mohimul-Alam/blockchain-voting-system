@@ -29,6 +29,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import API from "@/services/api";
 
 // Form schema (without TypeScript types)
 const registerSchema = {
@@ -56,37 +57,42 @@ const Register = () => {
   });
 
   // Form submission handler
+
   const onSubmit = async (data) => {
     setIsLoading(true);
-
     try {
-      // In a real app, you would make an actual API call
-      console.log("Registration data:", data);
+      // Convert image to FormData
+      const formData = new FormData();
+      formData.append("role", data.role);
+      formData.append("did", data.did);
+      formData.append("fullName", data.fullName);
+      formData.append("dob", new Date(data.dob).toISOString());
+      formData.append("birthplace", data.birthplace);
+      formData.append("username", data.username);
+      formData.append("password", data.password);
+      formData.append("image", data.image[0]); // File input
 
-      // Generate a mock DID (Decentralized Identifier)
-      const mockDID = `did:example:${Math.random().toString(36).substring(2, 15)}`;
-
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await API.post("/register", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       toast({
         title: "Registration successful!",
-        description: "Your account has been created. You can now log in.",
+        description: "Your account has been created.",
       });
 
-      // Redirect to login page
       navigate("/login");
     } catch (error) {
-      console.error("Registration error:", error);
       toast({
         title: "Registration failed",
-        description: "There was a problem creating your account. Please try again.",
+        description: error.response?.data?.error || "Try again later.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   };
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

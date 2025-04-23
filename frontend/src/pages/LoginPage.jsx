@@ -26,6 +26,7 @@ import {
 import { Vote, Eye, EyeOff } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import API from "@/services/api"; // 🔗 Import the API service
 
 const loginSchema = z.object({
   username: z.string().min(3, {
@@ -50,38 +51,33 @@ const Login = () => {
     },
   });
 
+
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      console.log("Login data:", data);
-      await new Promise((res) => setTimeout(res, 1500));
-      const mockResponse = {
-        token: "mock-jwt-token",
-        user: {
-          did: "did:example:123456789abcdef",
-          role: "Voter",
-          fullName: "John Doe",
-          username: data.username,
-        },
-      };
-      localStorage.setItem("token", mockResponse.token);
-      localStorage.setItem("user", JSON.stringify(mockResponse.user));
+      const response = await API.post("/login", data); // 🔗 Send login credentials to backend
+      const { token, ...user } = response.data;
+  
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+  
       toast({
         title: "Login successful!",
-        description: "Welcome back to Vote-Chain.",
+        description: `Welcome ${user.fullName || user.username}!`,
       });
+  
       navigate("/dashboard");
     } catch (error) {
-      console.error("Login error:", error);
       toast({
         title: "Login failed",
-        description: "Invalid username or password. Please try again.",
+        description: error.response?.data?.error || "Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
