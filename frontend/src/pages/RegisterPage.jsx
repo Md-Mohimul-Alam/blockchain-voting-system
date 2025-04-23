@@ -105,7 +105,7 @@ const Register = () => {
           <Card className="w-full">
             <CardHeader className="space-y-1">
               <div className="flex justify-center mb-4">
-                <Vote className="h-12 w-12 text-trustblue-600" />
+                <Vote className="h-12 w-12 text-teal-600" />
               </div>
               <CardTitle className="text-2xl font-bold text-center">
                 Create an Account
@@ -167,14 +167,16 @@ const Register = () => {
                           defaultValue={field.value} 
                           disabled={isLoading}
                         >
-                          <FormControl>
+                          <FormControl >
                             <SelectTrigger>
                               <SelectValue placeholder="Select a role" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Voter">Voter</SelectItem>
-                            <SelectItem value="Candidate">Candidate</SelectItem>
+                          <SelectContent className="bg-teal-600 text-white">
+                            <SelectItem className="bg-teal-600 hover:bg-teal-700 text-white" value="voter">Voter</SelectItem>
+                            <SelectItem className="bg-teal-600 hover:bg-teal-700 text-white" value="candidate">Candidate</SelectItem>
+                            <SelectItem className="bg-teal-600 hover:bg-teal-700 text-white" value="admin">Admin</SelectItem>
+                            <SelectItem className="bg-teal-600 hover:bg-teal-700 text-white" value="electioncommunity">Election Community</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -202,12 +204,12 @@ const Register = () => {
                                   ) : (
                                     <span>Pick a date</span>
                                   )}
-                                  <Calendar className="ml-auto h-4 w-4 opacity-50" />
+                                  <Calendar className="bg-teal-600 hover:bg-teal-700 text-white" />
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
-                              <CalendarComponent
+                              <CalendarComponent className="bg-teal-600 hover:bg-teal-700 text-white"
                                 mode="single"
                                 selected={field.value}
                                 onSelect={field.onChange}
@@ -326,7 +328,7 @@ const Register = () => {
                             I accept the{" "}
                             <Link
                               to="/terms"
-                              className="text-trustblue-600 hover:text-trustblue-800"
+                              className="text-teal-600 hover:text-teal-800"
                             >
                               terms and conditions
                             </Link>
@@ -342,7 +344,7 @@ const Register = () => {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-trustblue-600 hover:bg-trustblue-700"
+                    className="w-full bg-teal-600 hover:bg-teal-700"
                     disabled={isLoading}
                   >
                     {isLoading ? "Creating Account..." : "Create Account"}
@@ -355,7 +357,7 @@ const Register = () => {
                 Already have an account?{" "}
                 <Link 
                   to="/login" 
-                  className="text-trustblue-600 hover:text-trustblue-800 font-medium"
+                  className="text-teal-600 hover:text-teal-800 font-medium"
                 >
                   Sign in
                 </Link>

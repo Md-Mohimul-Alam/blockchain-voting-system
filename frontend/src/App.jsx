@@ -13,7 +13,10 @@ import AdminPanel from "./pages/AdminPanel";
 import CreateElection from "./pages/CreateElection";
 import UserProfile from "./pages/UserProfile";
 import VoteNow from "./pages/VoteNow";
+import About from "./pages/About";
+import ContactPage from "./pages/Contact";
 
+import { Contact } from "lucide-react";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -25,12 +28,14 @@ const App = () => (
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/about" element={<About />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/create-election" element={<CreateElection />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/vote" element={<VoteNow />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

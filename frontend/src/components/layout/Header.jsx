@@ -49,9 +49,9 @@ const Header = () => {
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Vote className="h-8 w-8 text-trustblue-600" />
-          <Link to="/" className="text-xl font-bold text-trustblue-700">
-            ElectTrust<span className="text-secure-700">Ledger</span>
+          <Vote className="h-8 w-8 text-trueblues-600" />
+          <Link to="/" className="text-xl font-bold text-teal-700">
+          Vote<span className="text-secure-700">-Chain</span>
           </Link>
         </div>
 
@@ -59,31 +59,16 @@ const Header = () => {
           <Link
             to="/"
             className={`text-sm font-medium ${
-              location.pathname === "/" ? "text-trustblue-700" : "text-gray-600 hover:text-trustblue-600"
+              location.pathname === "/" ? "text-teal-700" : "text-gray-600 hover:text-teal-600"
             }`}
           >
             Home
           </Link>
-          <Link
-            to="/elections"
-            className={`text-sm font-medium ${
-              location.pathname.includes("/elections") ? "text-trustblue-700" : "text-gray-600 hover:text-trustblue-600"
-            }`}
-          >
-            Elections
-          </Link>
-          <Link
-            to="/candidates"
-            className={`text-sm font-medium ${
-              location.pathname.includes("/candidates") ? "text-trustblue-700" : "text-gray-600 hover:text-trustblue-600"
-            }`}
-          >
-            Candidates
-          </Link>
+        
           <Link
             to="/about"
             className={`text-sm font-medium ${
-              location.pathname === "/about" ? "text-trustblue-700" : "text-gray-600 hover:text-trustblue-600"
+              location.pathname === "/about" ? "text-teal-700" : "text-gray-600 hover:text-teal-600"
             }`}
           >
             About
@@ -153,10 +138,10 @@ const Header = () => {
             </DropdownMenu>
           ) : (
             <>
-              <Button variant="ghost" onClick={() => navigate("/login")}>
+              <Button variant="ghost"  className="text-gray-600 hover:text-teal-600" onClick={() => navigate("/login")}>
                 Log in
               </Button>
-              <Button onClick={() => navigate("/register")}>Register</Button>
+              <Button onClick={() => navigate("/register")} variant="ghost" className="text-gray-600 hover:text-teal-600">Register</Button>
             </>
           )}
         </div>
