@@ -49,7 +49,7 @@ export async function getContract() {
     const network = await gateway.getNetwork(channelName);
     const contract = network.getContract(chaincodeName);
 
-    return { contract, gateway, network };
+    return contract; // ✅ Now only returning contract
   } catch (error) {
     console.error("❌ Fabric connection failed:", error);
     throw error;

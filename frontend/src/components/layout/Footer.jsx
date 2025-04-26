@@ -40,23 +40,14 @@ const Footer = () => {
           <div>
             <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">Platform</h3>
             <ul className="mt-4 space-y-4">
+
               <li>
-                <Link to="/elections" className="text-base text-gray-500 hover:text-gray-900">
-                  Elections
-                </Link>
-              </li>
-              <li>
-                <Link to="/candidates" className="text-base text-gray-500 hover:text-gray-900">
-                  Candidates
-                </Link>
-              </li>
-              <li>
-                <Link to="/how-it-works" className="text-base text-gray-500 hover:text-gray-900">
+                <Link to="/how-it-works" className="text-sm text-gray-500 hover:text-gray-900">
                   How it works
                 </Link>
               </li>
               <li>
-                <Link to="/blockchain" className="text-base text-gray-500 hover:text-gray-900">
+                <Link to="/blockchain" className="text-sm text-gray-500 hover:text-gray-900">
                   Blockchain
                 </Link>
               </li>
@@ -66,23 +57,13 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">Support</h3>
             <ul className="mt-4 space-y-4">
               <li>
-                <Link to="/help" className="text-base text-gray-500 hover:text-gray-900">
-                  Help Center
-                </Link>
-              </li>
-              <li>
-                <Link to="/faq" className="text-base text-gray-500 hover:text-gray-900">
+                <Link to="/faq" className="text-sm text-gray-500 hover:text-gray-900">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-base text-gray-500 hover:text-gray-900">
+                <Link to="/contact" className="text-sm text-gray-500 hover:text-gray-900">
                   Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/complaints" className="text-base text-gray-500 hover:text-gray-900">
-                  Submit a Complaint
                 </Link>
               </li>
             </ul>
@@ -91,29 +72,25 @@ const Footer = () => {
             <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase">Legal</h3>
             <ul className="mt-4 space-y-4">
               <li>
-                <Link to="/privacy" className="text-base text-gray-500 hover:text-gray-900">
+                <Link to="/privacy-policy" className="text-sm text-gray-500 hover:text-gray-900">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-base text-gray-500 hover:text-gray-900">
+                <Link to="/terms-of-service" className="text-sm text-gray-500 hover:text-gray-900">
                   Terms of Service
                 </Link>
               </li>
-              <li>
-                <Link to="/security" className="text-base text-gray-500 hover:text-gray-900">
-                  Security
-                </Link>
-              </li>
+              
             </ul>
           </div>
         </div>
         <div className="mt-8 border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between">
-          <p className="text-base text-gray-400">
+          <p className="text-sm text-gray-400">
             &copy; {new Date().getFullYear()} Vote-Chain. All rights reserved.
           </p>
-          <p className="text-base text-gray-400 mt-4 md:mt-0">
-            Powered by Hyperledger Fabric
+          <p className="text-sm text-gray-400 mt-4 md:mt-0">
+            Powered by Hyperledger Fabric and React
           </p>
         </div>
       </div>

@@ -1,7 +1,10 @@
 // controllers/votingController.js
-import { getContract } from "../config/fabricConfig.js";
-import fs from "fs";
+import { getContract } from "../config/fabricConfig.js"; // Correct casingimport fs from "fs";
 import path from "path";
+import fs from "fs";
+import dotenv from 'dotenv';
+dotenv.config();
+import jwt from "jsonwebtoken";
 
 // Helper for invoking chaincode
 const invoke = async (res, fn, ...args) => {
@@ -18,12 +21,15 @@ const invoke = async (res, fn, ...args) => {
 const query = async (res, fn, ...args) => {
   try {
     const contract = await getContract();
+    console.log(`📦 Calling ${fn} with args:`, args); // 👈 Add this
     const result = await contract.evaluateTransaction(fn, ...args);
     res.json(JSON.parse(result.toString()));
   } catch (err) {
+    console.error("❌ QUERY ERROR:", err); // 👈 Add this
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // Helper to extract image data as base64
 const getImageBase64 = (file) => {
@@ -42,13 +48,40 @@ export const isAdmin = (req, res, next) => {
 };
 
 // 🔐 User Management
-export const registerUser = (req, res) => {
-  const { role, did, fullName, dob, birthplace, username, password } = req.body;
-  const imageBase64 = getImageBase64(req.file);
-  invoke(res, "registerUser", role, did, fullName, dob, birthplace, username, password, imageBase64);
+export const registerUser = async (req, res) => {
+  try {
+    const { role, did, fullName, dob, birthplace, username, password } = req.body;
+    const imageBase64 = getImageBase64(req.file);
+    const contract = await getContract();
+    const result = await contract.submitTransaction("registerUser", role, did, fullName, dob, birthplace, username, password, imageBase64);
+    res.json(JSON.parse(result.toString()));
+  } catch (err) {
+    console.error("Register error:", err);
+    res.status(500).json({ error: err.message || "Registration failed." });
+  }
 };
 
-export const login = (req, res) => query(res, "login", ...Object.values(req.body));
+
+export const login = async (req, res) => {
+  const { role, did, dob, username, password } = req.body;
+
+  try {
+    const contract = await getContract();
+    const result = await contract.evaluateTransaction("login", role, did, dob, username, password);
+    const user = JSON.parse(result.toString());
+
+    const token = jwt.sign(
+      { did: user.did, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({ token, user });
+  } catch (error) {
+    console.error("Login failed (controller):", error.message);
+    res.status(401).json({ error: "Invalid credentials" });
+  }
+};
 
 export const updateProfile = (req, res) => {
   const { role, did, fullName, birthplace } = req.body;
@@ -57,20 +90,70 @@ export const updateProfile = (req, res) => {
 };
 
 export const getUserProfile = (req, res) => query(res, "getUserProfile", req.params.role, req.params.did);
-export const listAllUsersByRole = (req, res) => query(res, "listAllUsersByRole", req.params.role);
+export const listAllUsers = async (req, res) => {
+  try {
+    const contract = await getContract();
+    // Call the chaincode function to list all users
+    const result = await contract.evaluateTransaction("listAllUsers");
+    const users = JSON.parse(result.toString()); // Parse result into JSON
+    res.json(users); // Return the users data
+  } catch (err) {
+    console.error("Error fetching users:", err); // Log error for debugging
+    res.status(500).json({ error: "Failed to fetch users" }); // Return error response
+  }
+};
 export const changePassword = (req, res) => invoke(res, "changePassword", ...Object.values(req.body));
 export const deleteUser = (req, res) => invoke(res, "deleteUser", req.params.role, req.params.did);
 export const assignRole = (req, res) => invoke(res, "assignRole", ...Object.values(req.body));
 
 // 🗳️ Election Management
-export const createElection = (req, res) => invoke(res, "createElection", ...Object.values(req.body));
-export const stopElection = (req, res) => invoke(res, "stopElection", req.params.electionId);
+export const createElection = async (req, res) => {
+  console.log("User:", req.user); // This will log the user data from the decoded token
+
+  const { electionId, title, description, startDate, endDate } = req.body;
+
+  if (!electionId || !title || !description || !startDate || !endDate) {
+    return res.status(400).json({ error: "All fields (electionId, title, description, startDate, endDate) are required." });
+  }
+
+  try {
+    const contract = await getContract();
+    const result = await contract.submitTransaction("createElection", electionId, title, description, startDate, endDate);
+    const election = JSON.parse(result.toString());
+    res.status(201).json({
+      message: "Election created successfully",
+      election,
+    });
+  } catch (err) {
+    console.error("Error creating election:", err.message);
+    res.status(500).json({
+      error: `Failed to create election. ${err.message}`,
+    });
+  }
+};
+// controllers/votingController.js
+
+export const updateElectionDetails = async (req, res) => {
+  const electionId = req.params.electionId;
+  const { title, description, startDate, endDate } = req.body;
+
+  try {
+    const updatedElection = await invoke('updateElectionDetails', electionId, title, description, startDate, endDate);
+    res.status(200).json(updatedElection);
+  } catch (err) {
+    console.error("Error updating election:", err);
+    res.status(500).json({ error: "Failed to update election", message: err.message });
+  }
+};
+
+
+export const deleteElection = (req, res) => invoke(res, "deleteElection", req.params.electionId);
+
 export const getAllElections = (_req, res) => query(res, "getAllElections");
 export const filterUpcomingElections = (_req, res) => query(res, "filterUpcomingElections");
 export const getCalendar = (_req, res) => query(res, "getCalendar");
 export const viewElectionDetails = (req, res) => query(res, "viewElectionDetails", req.params.electionId);
-export const updateElectionDetails = (req, res) => invoke(res, "updateElectionDetails", ...Object.values(req.body));
-export const deleteElection = (req, res) => invoke(res, "deleteElection", req.params.electionId);
+
 export const addCandidateToElection = (req, res) => invoke(res, "addCandidateToElection", ...Object.values(req.body));
 export const removeCandidateFromElection = (req, res) => invoke(res, "removeCandidateFromElection", ...Object.values(req.body));
 export const declareWinner = (req, res) => invoke(res, "declareWinner", ...Object.values(req.body));
@@ -84,7 +167,47 @@ export const getElectionVoteHistory = (req, res) => query(res, "getElectionVoteH
 export const getElectionNotifications = (req, res) => query(res, "getElectionNotifications", req.params.electionId);
 
 // 👤 Candidate Management
-export const applyForCandidacy = (req, res) => invoke(res, "applyForCandidacy", ...Object.values(req.body));
+export const applyForCandidacy = async (req, res) => {
+  const { electionId } = req.body;
+  const candidateId = req.user?.did;  // This assumes req.user.did is available after successful authentication
+
+  if (!candidateId || !electionId) {
+    return res.status(400).json({ error: "Candidate ID and Election ID are required." });
+  }
+
+  try {
+    console.log(`Candidate ID: ${candidateId}, Election ID: ${electionId}`);
+
+    // Get contract instance to interact with Hyperledger Fabric
+    const contract = await getContract();
+
+    // Call the 'applyForCandidacy' function in the chaincode
+    const response = await contract.submitTransaction('applyForCandidacy', candidateId, electionId);
+    
+    // Check for empty response and handle accordingly
+    if (!response || response.toString().trim() === '') {
+      throw new Error("Empty response from chaincode");
+    }
+
+    // Parse the response from the chaincode
+    const applicationDetails = JSON.parse(response.toString());
+
+    // Log the successful candidacy application
+    console.log(`Successfully applied for candidacy in election ${electionId}`);
+
+    // Respond with the application status
+    res.status(200).json({ message: "Successfully applied for candidacy", applicationDetails });
+  } catch (error) {
+    // Log the error for debugging purposes
+    console.error("Error applying for candidacy:", error);
+
+    // Return a more detailed error response
+    res.status(500).json({ error: "Failed to apply for candidacy", message: error.message });
+  }
+};
+
+
+
 export const approveCandidacy = (req, res) => invoke(res, "approveCandidacy", ...Object.values(req.body));
 export const rejectCandidacy = (req, res) => invoke(res, "rejectCandidacy", ...Object.values(req.body));
 export const withdrawCandidacy = (req, res) => invoke(res, "withdrawCandidacy", ...Object.values(req.body));

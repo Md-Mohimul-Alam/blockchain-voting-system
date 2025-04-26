@@ -14,9 +14,13 @@ export const verifyToken = (req, res, next) => {
 };
 
 // ✅ This is what you're missing:
-export const authorizeRoles = (...allowedRoles) => (req, res, next) => {
-  if (!req.user || !allowedRoles.includes(req.user.role)) {
-    return res.status(403).json({ error: "Access denied" });
-  }
-  next();
+export const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    console.log("User role:", req.user.role);  // Debugging line to see what role is being passed
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ error: "You do not have permission to access this resource." });
+    }
+    next();
+  };
 };
+

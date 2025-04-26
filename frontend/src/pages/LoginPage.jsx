@@ -29,13 +29,14 @@ import Footer from "@/components/layout/Footer";
 import API from "@/services/api"; // 🔗 Import the API service
 
 const loginSchema = z.object({
-  username: z.string().min(3, {
-    message: "Username must be at least 3 characters.",
-  }),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }),
+  role: z.string().min(3, { message: "Role is required" }),
+  did: z.string().min(1, { message: "DID is required" }),
+  dob: z.string().min(4, { message: "Date of Birth is required" }),
+  username: z.string().min(1, { message: "Username must be at least 1 characters." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
+
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -46,27 +47,31 @@ const Login = () => {
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
+      role: "",
+      did: "",
+      dob: "",
       username: "",
       password: "",
-    },
+    }    
   });
 
 
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await API.post("/login", data); // 🔗 Send login credentials to backend
-      const { token, ...user } = response.data;
-  
+      const response = await API.post("/login", data);
+      const { token, user } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
+      
   
       toast({
         title: "Login successful!",
         description: `Welcome ${user.fullName || user.username}!`,
       });
   
-      navigate("/dashboard");
+      // ✅ Redirect to role-based dashboard
+      navigate(`/dashboard/${user.role.toLowerCase()}`);
     } catch (error) {
       toast({
         title: "Login failed",
@@ -76,9 +81,8 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-  
-
+  };  
+    
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   return (
@@ -114,6 +118,63 @@ const Login = () => {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="did"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>DID</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your DID" {...field} disabled={isLoading} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Role</FormLabel>
+                        <FormControl>
+                          <select
+                            {...field}
+                            className="w-full p-2 border border-gray-300 rounded"
+                            disabled={isLoading}
+                          >
+                            <option value="">Select role</option>
+                            <option value="Voter">Voter</option>
+                            <option value="Candidate">Candidate</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Electioncommunity">Election Community</option>
+                          </select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+
+                  <FormField
+                    control={form.control}
+                    name="dob"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date of Birth</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="YYYY-MM-DD"
+                            type="date"
+                            {...field}
+                            disabled={isLoading}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="password"

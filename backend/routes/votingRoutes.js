@@ -1,35 +1,39 @@
 // routes/votingRoutes.js
 import express from 'express';
-import multer from 'multer';
 import * as controller from '../controllers/votingController.js';
 import { verifyToken, authorizeRoles } from '../middlewares/auth.js';
 import { upload } from '../middlewares/upload.js';
 const router = express.Router();
+import { updateElectionDetails } from '../controllers/votingController.js';
 
-
+;
 
 // 🔐 User Management
 router.post('/register', upload.single('image'), controller.registerUser); // image as 'image' field
 router.post('/login', controller.login);
 router.put('/profile', verifyToken, upload.single('image'), controller.updateProfile);
 router.get('/profile/:role/:did', verifyToken, controller.getUserProfile);
-router.get('/users/:role', verifyToken, controller.listAllUsersByRole);
+router.get('/users/all', verifyToken, controller.listAllUsers);  // To get all users
 router.put('/change-password', verifyToken, controller.changePassword);
 router.delete('/user/:role/:did', verifyToken, authorizeRoles('admin'), controller.deleteUser);
 router.put('/assign-role', verifyToken, authorizeRoles('admin'), controller.assignRole);
 
 // 🗳️ Election Management
-router.post('/election', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.createElection);
-router.put('/election/stop/:electionId', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.stopElection);
+router.post('/election', verifyToken, authorizeRoles('admin','electioncommunity'), controller.createElection);
+router.post('/election/el', verifyToken, authorizeRoles('electioncommunity'), controller.createElection);
+
 router.get('/elections', controller.getAllElections);
 router.get('/elections/upcoming', controller.filterUpcomingElections);
 router.get('/elections/calendar', controller.getCalendar);
 router.get('/election/:electionId', controller.viewElectionDetails);
-router.put('/election/update', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.updateElectionDetails);
+
+router.put('/api/voting/election/update/:electionId', updateElectionDetails);
+
 router.delete('/election/:electionId', verifyToken, authorizeRoles('admin'), controller.deleteElection);
 router.post('/election/candidate/add', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.addCandidateToElection);
 router.post('/election/candidate/remove', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.removeCandidateFromElection);
 router.post('/election/winner', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.declareWinner);
+
 router.get('/election/:electionId/results', controller.getElectionResults);
 router.get('/election/:electionId/history', verifyToken, controller.getElectionHistory);
 router.get('/election/:electionId/voters', verifyToken, controller.getElectionVoters);
