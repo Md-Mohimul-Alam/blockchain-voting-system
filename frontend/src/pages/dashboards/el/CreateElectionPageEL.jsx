@@ -47,7 +47,7 @@ const CreateElectionEl = () => {
         toast.success("Election created successfully!");
 
         const user = JSON.parse(localStorage.getItem("user"));
-        const role = user?.role?.toLowerCase() || "admin";
+        const role = user?.role?.toLowerCase() || "Electioncommunity";
 
         navigate(`/dashboard/${role}`);
       } else {

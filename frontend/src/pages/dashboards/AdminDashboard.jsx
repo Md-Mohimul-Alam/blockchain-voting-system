@@ -92,11 +92,11 @@ const AdminDashboard = () => {
       path: "/admin/team",
     },
     {
-      title: "Election Wizard",
+      title: "Candidate Requests",
       icon: <Wand2 className="w-4 h-4" />,
       color: "bg-cyan-600 hover:bg-cyan-700",
-      description: "Guide through the election creation process.",
-      path: "/admin/election-wizard",
+      description: "Candidate Requests & Approval for the election  .",
+      path: "/admin/Requests",
     },
     {
       title: "Send Notification",

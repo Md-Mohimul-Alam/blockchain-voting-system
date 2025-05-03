@@ -14,13 +14,24 @@ export const verifyToken = (req, res, next) => {
 };
 
 // ✅ This is what you're missing:
-export const authorizeRoles = (...roles) => {
+export const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
-    console.log("User role:", req.user.role);  // Debugging line to see what role is being passed
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: "You do not have permission to access this resource." });
+    try {
+      if (!req.user || !req.user.role) {
+        return res.status(401).json({ error: "User not authenticated." });
+      }
+
+      console.log("🔒 User Role:", req.user.role); // Optional: Debugging role
+
+      if (!allowedRoles.includes(req.user.role)) {
+        return res.status(403).json({ error: "Access denied. Insufficient permissions." });
+      }
+
+      next(); // ✅ All good, move forward
+    } catch (error) {
+      console.error("Authorization Error:", error);
+      return res.status(500).json({ error: "Internal server error in authorization." });
     }
-    next();
   };
 };
 

@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import API from "@/services/api"; // Ensure you import your API service
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const CreateElection = () => {
   const navigate = useNavigate();
@@ -24,31 +26,37 @@ const CreateElection = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       console.log("Creating Election:", formData);
-
+  
       const token = localStorage.getItem("token");
-
+  
       if (!token) {
         toast.error("Token not found. Please login again.");
         return;
       }
-
-      // Use axios to send a POST request
-      const response = await API.post("/election", formData, {
+  
+      // 🛠️ Format startDate and endDate to ISO format properly
+      const formattedData = {
+        ...formData,
+        startDate: new Date(formData.startDate).toISOString(),
+        endDate: new Date(formData.endDate).toISOString(),
+      };
+  
+      const response = await API.post("/election", formattedData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
       if (response.status === 201) {
         toast.success("Election created successfully!");
-
+  
         const user = JSON.parse(localStorage.getItem("user"));
         const role = user?.role?.toLowerCase() || "admin";
-
+  
         navigate(`/dashboard/${role}`);
       } else {
         throw new Error(`Failed to create election. Status: ${response.status}`);
@@ -58,6 +66,7 @@ const CreateElection = () => {
       console.error("Election creation error:", error);
     }
   };
+  
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -104,22 +113,30 @@ const CreateElection = () => {
               />
 
               {/* Election Start Date Input */}
-              <Input
-                type="datetime-local"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleChange}
-                required
+              {/* Election Start Date */}
+              <label className="block font-semibold">Start Date and Time:</label>
+              <DatePicker
+                selected={formData.startDate ? new Date(formData.startDate) : null}
+                onChange={(date) => setFormData({ ...formData, startDate: date.toISOString() })}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="yyyy-MM-dd HH:mm"
+                className="border px-4 py-2 rounded w-full"
               />
 
-              {/* Election End Date Input */}
-              <Input
-                type="datetime-local"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleChange}
-                required
+              {/* Election End Date */}
+              <label className="block font-semibold mt-4">End Date and Time:</label>
+              <DatePicker
+                selected={formData.endDate ? new Date(formData.endDate) : null}
+                onChange={(date) => setFormData({ ...formData, endDate: date.toISOString() })}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="yyyy-MM-dd HH:mm"
+                className="border px-4 py-2 rounded w-full"
               />
+
 
               {/* Submit Button */}
               <Button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white">

@@ -29,7 +29,7 @@ import AdminAuditLogs from "./pages/dashboards/Admin/AdminAuditLogs";
 import AdminComplaints from "./pages/dashboards/Admin/AdminComplaints";
 import AdminSystemHealth from "./pages/dashboards/Admin/AdminSystemHealth";
 import AdminTeam from "./pages/dashboards/Admin/AdminTeam";
-import AdminElectionWizard from "./pages/dashboards/Admin/AdminElectionWizard";
+import Requests from "./pages/dashboards/Admin/Requests";
 import AdminNotify from "./pages/dashboards/Admin/AdminNotify";
 import ElectionManagement from "./pages/dashboards/Admin/ElectionManagement";
 import AdminNotes from "./pages/dashboards/Admin/AdminNotes";
@@ -73,7 +73,7 @@ const App = () => (
           <Route path="/admin/complaints" element={<AdminComplaints />} />
           <Route path="/admin/system-health" element={<AdminSystemHealth />} />
           <Route path="/admin/team" element={<AdminTeam />} />
-          <Route path="/admin/election-wizard" element={<AdminElectionWizard />} />
+          <Route path="/admin/Requests" element={<Requests />} />
           <Route path="/admin/notify" element={<AdminNotify />} />
           <Route path="/admin/notes" element={<AdminNotes />} />
           <Route path="/admin/manage-users" element={<ManageUsersPage />} />

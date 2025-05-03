@@ -26,44 +26,59 @@ class VotingContract extends Contract {
         const log = { did, action, timestamp, txId: ctx.stub.getTxID() };
         await ctx.stub.putState(`log-${ctx.stub.getTxID()}`, Buffer.from(stringify(sortKeysRecursive(log))));
     }
-// User Management ***********************************************
+
+    // === USER MANAGEMENT ===
     async registerUser(ctx, role, did, fullName, dob, birthplace, username, password, image) {
         const key = `${role.toLowerCase()}-${did}`;
         if (await this._checkIfExists(ctx, key)) throw new Error(`${role} already registered.`);
-        if ((role === "Admin" || role === "ElectionCommunity") && await this._roleExists(ctx, role)) throw new Error(`${role} can only be registered once.`);
-        const txTimestamp = new Date((await ctx.stub.getTxTimestamp()).seconds.low * 1000).toISOString();
-        const user = { did, fullName, dob, birthplace, username, password: this._hashPassword(password), image, role, createdAt: txTimestamp };
+        if ((role === "Admin" || role === "ElectionCommunity") && await this._roleExists(ctx, role)) {
+            throw new Error(`${role} can only be registered once.`);
+        }
+        const createdAt = new Date((await ctx.stub.getTxTimestamp()).seconds.low * 1000).toISOString();
+        const user = { did, fullName, dob, birthplace, username, password: this._hashPassword(password), image, role, createdAt };
         await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(user))));
         await this._logAction(ctx, `REGISTER_${role.toUpperCase()}`, did);
         return JSON.stringify(user);
     }
-    
+
     async login(ctx, role, did, dob, username, password) {
         const key = `${role.toLowerCase()}-${did}`;
         const data = await ctx.stub.getState(key);
-        if (data?.length > 0) {
+        if (!data || data.length === 0) throw new Error("Invalid credentials");
         const user = JSON.parse(data.toString());
-        if (user.dob === dob && user.username === username && user.did === did && user.password === this._hashPassword(password)) {
-            await this._logAction(ctx, `LOGIN_${role.toUpperCase()}`, did);
-            return JSON.stringify(user);
+        if (user.dob !== dob || user.username !== username || user.password !== this._hashPassword(password)) {
+            throw new Error("Invalid credentials");
         }
-        }
-        throw new Error("Invalid credentials");
+        await this._logAction(ctx, `LOGIN_${role.toUpperCase()}`, did);
+        return JSON.stringify(user);
     }
-  
-      
-      
+
     async _roleExists(ctx, role) {
         const iterator = await ctx.stub.getStateByRange("", "~");
-        for await (const res of iterator) {
-            if (res.key.startsWith(role.toLowerCase() + "-")) return true;
+        let exists = false;
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.key.startsWith(role.toLowerCase() + "-")) {
+                exists = true;
+                break;
+            }
+            if (res.done) break;
         }
-        return false;
+        await iterator.close();
+        return exists;
+    }
+    async getUserProfile(ctx, role, did) {
+        const key = `${role.toLowerCase()}-${did}`;
+        const userBytes = await ctx.stub.getState(key);
+        if (!userBytes || userBytes.length === 0) throw new Error("User not found");
+        return userBytes.toString();
     }
 
     async updateProfile(ctx, role, did, fullName, birthplace, image) {
         const key = `${role.toLowerCase()}-${did}`;
-        const user = JSON.parse((await ctx.stub.getState(key)).toString());
+        const data = await ctx.stub.getState(key);
+        if (!data || data.length === 0) throw new Error("User not found");
+        const user = JSON.parse(data.toString());
         user.fullName = fullName;
         user.birthplace = birthplace;
         user.image = image;
@@ -72,55 +87,33 @@ class VotingContract extends Contract {
         return JSON.stringify(user);
     }
 
-    async getUserProfile(ctx, role, did) {
-        const key = `${role.toLowerCase()}-${did}`;
-        const userBytes = await ctx.stub.getState(key);
-        if (!userBytes || userBytes.length === 0) throw new Error("User not found");
-        return userBytes.toString();
+    async listAllUsers(ctx) {
+        const result = [];
+        const iterator = await ctx.stub.getStateByRange("", "~");
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                const record = JSON.parse(res.value.value.toString());
+                if (record.role) result.push(record);
+            }
+            if (res.done) break;
+        }
+        await iterator.close();
+        return JSON.stringify(result);
     }
 
     async listAllUsersByRole(ctx, role) {
         const result = [];
-        const prefix = `${role.toLowerCase()}-`;
-        const iterator = await ctx.stub.getStateByRange(prefix, `${prefix}~`);
-        for await (const res of iterator) result.push(JSON.parse(res.value.toString()));
-        return JSON.stringify(result);
-    }
-    async listAllUsers(ctx) {
-        const result = [];
-        
-        try {
-          // Get an iterator for the entire range of keys
-          const iterator = await ctx.stub.getStateByRange("", "~");
-      
-          let res = await iterator.next();
-          // Iterate through the results
-          while (!res.done) {
-            const user = JSON.parse(res.value.value.toString()); // Parse the JSON value from the buffer
-            if (user.role) { // Ensure it's a valid user (check role or any other properties you need)
-              result.push(user); // Add user to result array
+        const iterator = await ctx.stub.getStateByRange(`${role.toLowerCase()}-`, `${role.toLowerCase()}-~`);
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                result.push(JSON.parse(res.value.value.toString()));
             }
-            res = await iterator.next(); // Move to next item
-          }
-      
-          await iterator.close(); // Ensure to close the iterator after use
-          return JSON.stringify(result); // Return the result as a JSON string
-        } catch (error) {
-          console.error("Error fetching users:", error); // Log the error for debugging
-          throw new Error("Failed to fetch users: " + error.message); // Throw a detailed error
+            if (res.done) break;
         }
-      }
-      
-    
-
-    async changePassword(ctx, role, did, oldPassword, newPassword) {
-        const key = `${role.toLowerCase()}-${did}`;
-        const user = JSON.parse((await ctx.stub.getState(key)).toString());
-        if (user.password !== this._hashPassword(oldPassword)) throw new Error("Old password incorrect");
-        user.password = this._hashPassword(newPassword);
-        await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(user))));
-        await this._logAction(ctx, "CHANGE_PASSWORD", did);
-        return JSON.stringify(user);
+        await iterator.close();
+        return JSON.stringify(result);
     }
 
     async deleteUser(ctx, role, did) {
@@ -130,293 +123,188 @@ class VotingContract extends Contract {
         return `User ${did} deleted`;
     }
 
+    async changePassword(ctx, role, did, oldPassword, newPassword) {
+        const key = `${role.toLowerCase()}-${did}`;
+        const data = await ctx.stub.getState(key);
+        if (!data || data.length === 0) throw new Error("User not found");
+        const user = JSON.parse(data.toString());
+        if (user.password !== this._hashPassword(oldPassword)) throw new Error("Old password incorrect");
+        user.password = this._hashPassword(newPassword);
+        await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(user))));
+        await this._logAction(ctx, "CHANGE_PASSWORD", did);
+        return JSON.stringify(user);
+    }
+
     async assignRole(ctx, did, newRole) {
-        const voterKey = `voter-${did}`;
-        const user = JSON.parse((await ctx.stub.getState(voterKey)).toString());
-        await ctx.stub.deleteState(voterKey);
-        const newKey = `${newRole.toLowerCase()}-${did}`;
+        const oldKey = `voter-${did}`;
+        const data = await ctx.stub.getState(oldKey);
+        if (!data || data.length === 0) throw new Error("User not found");
+        const user = JSON.parse(data.toString());
         user.role = newRole;
+        await ctx.stub.deleteState(oldKey);
+        const newKey = `${newRole.toLowerCase()}-${did}`;
         await ctx.stub.putState(newKey, Buffer.from(stringify(sortKeysRecursive(user))));
         await this._logAction(ctx, "ASSIGN_ROLE", did);
         return JSON.stringify(user);
     }
-    // Election Management ***********************************************
-    // Create Election function
-    async createElection(ctx, electionId, title, description, startDate, endDate) {
-        const key = `election-${electionId}`;
-        const exists = await ctx.stub.getState(key);
-        if (exists && exists.length > 0) throw new Error("Election already exists.");
-    
-        // Get the current date
-        const now = new Date().toISOString();
-    
-        // Determine if the election is active based on the current date and the start/end dates
-        const active = new Date(startDate) <= new Date(now) && new Date(now) <= new Date(endDate);
-    
-        const election = {
-            electionId,
-            title,
-            description,
-            startDate, // Initial start date
-            endDate,   // Initial end date
-            active,    // Automatically set based on the start and end date
-            createdAt: new Date().toISOString(),
-            candidates: [],
-            voters: [],
-            votes: []
-        };
-    
-        console.log("Election created with:", election); // Logging election creation
-        await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(election))));
-        return JSON.stringify(election);
-    }
-    
 
+        // === ELECTION MANAGEMENT ===
 
-    async updateElectionDetails(ctx, electionId, title, description, startDate, endDate) {
-        const key = `election-${electionId}`;
-        const election = JSON.parse((await ctx.stub.getState(key)).toString());
-        if (!election) throw new Error("Election not found");
-        if (title) election.title = title;
-        if (description) election.description = description;
-        if (startDate) election.startDate = startDate;
-        if (endDate) election.endDate = endDate;
-        await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(election))));
-        await this._logAction(ctx, "UPDATE_ELECTION", electionId);
-        return JSON.stringify(election);
-    }
+        async createElection(ctx, electionId, title, description, startDate, endDate) {
+            const key = `election-${electionId}`;
+            if (await this._checkIfExists(ctx, key)) throw new Error("Election already exists.");
+        
+            const now = new Date().toISOString();
+            const election = {
+                electionId,
+                title,
+                description,
+                startDate: new Date(startDate).toISOString(), // 👈 Fix this
+                endDate: new Date(endDate).toISOString(),     // 👈 Fix this
+                createdAt: now,
+                candidates: [],
+                voters: [],
+                votes: [],
+            };
+            await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(election))));
+            await this._logAction(ctx, "CREATE_ELECTION", electionId);
+            return JSON.stringify(election);
+        }
+        
     
-    async deleteElection(ctx, electionId) {
-        const key = `election-${electionId}`;
-        await ctx.stub.deleteState(key);
-        await this._logAction(ctx, "DELETE_ELECTION", electionId);
-        return `Election ${electionId} deleted`;
-    }
-
-
-    async getAllElections(ctx) {
-        const elections = [];
-        const iterator = await ctx.stub.getStateByRange("election-", "election-~");
-      
-        while (true) {
-          const res = await iterator.next();
-          if (res.value && res.value.value.toString()) {
-            elections.push(JSON.parse(res.value.value.toString()));
-          }
-          if (res.done) {
+        async updateElectionDetails(ctx, electionId, title, description, startDate, endDate) {
+            const key = `election-${electionId}`;
+            const data = await ctx.stub.getState(key);
+            if (!data || data.length === 0) throw new Error("Election not found");
+            const election = JSON.parse(data.toString());
+            if (title) election.title = title;
+            if (description) election.description = description;
+            if (startDate) election.startDate = startDate;
+            if (endDate) election.endDate = endDate;
+            await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(election))));
+            await this._logAction(ctx, "UPDATE_ELECTION", electionId);
+            return JSON.stringify(election);
+        }
+    
+        async deleteElection(ctx, electionId) {
+            const key = `election-${electionId}`;
+            await ctx.stub.deleteState(key);
+            await this._logAction(ctx, "DELETE_ELECTION", electionId);
+            return `Election ${electionId} deleted`;
+        }
+    
+        async getAllElections(ctx) {
+            const elections = [];
+            const iterator = await ctx.stub.getStateByRange("election-", "election-~");
+            while (true) {
+                const res = await iterator.next();
+                if (res.value && res.value.value.length > 0) {
+                    elections.push(JSON.parse(res.value.value.toString()));
+                }
+                if (res.done) break;
+            }
             await iterator.close();
-            break;
-          }
+            return JSON.stringify(elections);
         }
-      
-        return JSON.stringify(elections);
-      }
-      
-
-    async filterUpcomingElections(ctx) {
-        const upcoming = [];
-        const now = new Date();
-        const iterator = await ctx.stub.getStateByRange("election-", "election-~");
-        for await (const res of iterator) {
-            const election = JSON.parse(res.value.toString());
-            if (new Date(election.startDate) > now && election.active) upcoming.push(election);
-        }
-        return JSON.stringify(upcoming);
-    }
-
-    async getCalendar(ctx) {
-        const elections = JSON.parse(await this.getAllElections(ctx));
-        return JSON.stringify(elections.map(e => ({ title: e.title, start: e.startDate, end: e.endDate })));
-    }
-
-    async viewElectionDetails(ctx, electionId) {
-        const key = `election-${electionId}`;
-        const election = await ctx.stub.getState(key);
-        if (!election || election.length === 0) throw new Error("Election not found");
-        return election.toString();
-    }
-
- 
-    async addCandidateToElection(ctx, electionId, candidateDid) {
-        const electionKey = `election-${electionId}`;
-        const candidateKey = `candidate-${candidateDid}`;
-        const election = JSON.parse((await ctx.stub.getState(electionKey)).toString());
-        const candidate = JSON.parse((await ctx.stub.getState(candidateKey)).toString());
-        if (!election || !candidate) throw new Error("Election or Candidate not found");
-        if (election.candidates.includes(candidateDid)) throw new Error("Candidate already in election");
-        election.candidates.push(candidateDid);
-        await ctx.stub.putState(electionKey, Buffer.from(stringify(sortKeysRecursive(election))));
-        await this._logAction(ctx, "ADD_CANDIDATE_TO_ELECTION", candidateDid);
-        return JSON.stringify(election);
-    }
-    async removeCandidateFromElection(ctx, electionId, candidateDid) {
-        const electionKey = `election-${electionId}`;
-        const election = JSON.parse((await ctx.stub.getState(electionKey)).toString());
-        if (!election) throw new Error("Election not found");
-        const index = election.candidates.indexOf(candidateDid);
-        if (index === -1) throw new Error("Candidate not in election");
-        election.candidates.splice(index, 1);
-        await ctx.stub.putState(electionKey, Buffer.from(stringify(sortKeysRecursive(election))));
-        await this._logAction(ctx, "REMOVE_CANDIDATE_FROM_ELECTION", candidateDid);
-        return JSON.stringify(election);
-    }
-    async declareWinner(ctx, electionId, winnerDid) {
-        const key = `election-${electionId}`;
-        const election = JSON.parse((await ctx.stub.getState(key)).toString());
-        if (!election) throw new Error("Election not found");
-        if (!election.candidates.includes(winnerDid)) throw new Error("Candidate not in election");
-        election.winner = winnerDid;
-        await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(election))));
-        await this._logAction(ctx, "DECLARE_WINNER", winnerDid);
-        return JSON.stringify(election);
-    }
-    async getElectionResults(ctx, electionId) {
-        const key = `election-${electionId}`;
-        const election = JSON.parse((await ctx.stub.getState(key)).toString());
-        if (!election) throw new Error("Election not found");
-        const candidates = [];
-        for (const candidateDid of election.candidates) {
-            const candidateKey = `candidate-${candidateDid}`;
-            const candidate = JSON.parse((await ctx.stub.getState(candidateKey)).toString());
-            candidates.push(candidate);
-        }
-        return JSON.stringify({ ...election, candidates });
-    }
-    async getElectionHistory(ctx, electionId) {
-        const key = `election-${electionId}`;
-        const history = [];
-        const iterator = await ctx.stub.getHistoryForKey(key);
-        for await (const res of iterator) {
-            const data = JSON.parse(res.value.toString());
-            history.push({ txId: res.txId, timestamp: res.timestamp, data });
-        }
-        return JSON.stringify(history);
-    }   
-    async getElectionVoters(ctx, electionId) {
-        const key = `election-${electionId}`;
-        const election = JSON.parse((await ctx.stub.getState(key)).toString());
-        if (!election) throw new Error("Election not found");
-        const voters = [];
-        for (const voterDid of election.voters) {
-            const voterKey = `voter-${voterDid}`;
-            const voter = JSON.parse((await ctx.stub.getState(voterKey)).toString());
-            voters.push(voter);
-        }
-        return JSON.stringify(voters);
-    }
-    async getElectionVoterCount(ctx, electionId) {
-        const key = `election-${electionId}`;
-        const election = JSON.parse((await ctx.stub.getState(key)).toString());
-        if (!election) throw new Error("Election not found");
-        return JSON.stringify({ voterCount: election.voters.length });
-    }
-    async getElectionVoteCount(ctx, electionId) {
-        const key = `election-${electionId}`;
-        const election = JSON.parse((await ctx.stub.getState(key)).toString());
-        if (!election) throw new Error("Election not found");
-        return JSON.stringify({ voteCount: election.votes.length });
-    }
-    async getElectionVoterHistory(ctx, electionId) {
-        const key = `election-${electionId}`;
-        const history = [];
-        const iterator = await ctx.stub.getHistoryForKey(key);
-        for await (const res of iterator) {
-            const data = JSON.parse(res.value.toString());
-            history.push({ txId: res.txId, timestamp: res.timestamp, data });
-        }
-        return JSON.stringify(history);
-    }
-    async getElectionVoteHistory(ctx, electionId) {
-        const key = `election-${electionId}`;
-        const history = [];
-        const iterator = await ctx.stub.getHistoryForKey(key);
-        for await (const res of iterator) {
-            const data = JSON.parse(res.value.toString());
-            history.push({ txId: res.txId, timestamp: res.timestamp, data });
-        }
-        return JSON.stringify(history);
-    }
-    async getElectionNotifications(ctx, electionId) {
-        const key = `election-${electionId}`;
-        const notifications = [];
-        const iterator = await ctx.stub.getStateByRange(key, `${key}~`);
-        for await (const res of iterator) {
-            const notification = JSON.parse(res.value.toString());
-            notifications.push(notification);
-        }
-        return JSON.stringify(notifications);
-    }
-    //Candidate Management ***********************************************
     
+        
+        
+        async viewElectionDetails(ctx, electionId) {
+            const key = `election-${electionId}`;
+            const data = await ctx.stub.getState(key);
+            if (!data || data.length === 0) throw new Error("Election not found");
+            return data.toString();
+        }
+    // === CANDIDATE MANAGEMENT ===
+
     async applyForCandidacy(ctx, electionId, did) {
-        // Get the election details to ensure the election is active
         const electionKey = `election-${electionId}`;
-        const election = JSON.parse((await ctx.stub.getState(electionKey)).toString());
-        if (!election || !election.active) {
-            throw new Error("Election not found or inactive");
-        }
+        const electionBytes = await ctx.stub.getState(electionKey);
+        if (!electionBytes || electionBytes.length === 0) throw new Error("Election not found");
     
-        // Check if the user has already applied for candidacy in this election
         const applicationKey = `application-${electionId}-${did}`;
-        if (await this._checkIfExists(ctx, applicationKey)) {
-            throw new Error("You have already applied for candidacy in this election.");
-        }
+        if (await this._checkIfExists(ctx, applicationKey)) throw new Error("Already applied for candidacy");
     
-        // Prepare the application details
+        const txTimestamp = new Date((await ctx.stub.getTxTimestamp()).seconds.low * 1000).toISOString();
+    
         const application = {
             did,
-            status: "pending",  // Status set to pending initially
-            appliedAt: new Date().toISOString()
+            electionId,  // 🔥 MUST ADD electionId
+            status: "pending",
+            appliedAt: txTimestamp
         };
     
-        // Store the application in the state
         await ctx.stub.putState(applicationKey, Buffer.from(stringify(sortKeysRecursive(application))));
-    
-        // Log the action of applying for candidacy
         await this._logAction(ctx, "APPLY_CANDIDATE", did);
-    
-        // Ensure the response is valid and correctly formatted
-        return JSON.stringify(application) || '{}'; // Return an empty object if no data
+        return JSON.stringify(application);
     }
-    
-    
     async approveCandidacy(ctx, electionId, did) {
         const applicationKey = `application-${electionId}-${did}`;
-        const application = JSON.parse((await ctx.stub.getState(applicationKey)).toString());
-        if (!application) throw new Error("Application not found");
+        const appBytes = await ctx.stub.getState(applicationKey);
+        if (!appBytes || appBytes.length === 0) throw new Error("Application not found");
     
-        // Check if already approved
-        if (application.status === "approved") {
-            throw new Error("Candidate is already approved.");
-        }
+        const application = JSON.parse(appBytes.toString());
+        if (application.status === "approved") throw new Error("Already approved");
     
-        // Mark the application as approved
         application.status = "approved";
         await ctx.stub.putState(applicationKey, Buffer.from(stringify(sortKeysRecursive(application))));
     
-        // Update the user's role to 'candidate'
-        const userKey = `voter-${did}`;
-        const user = JSON.parse((await ctx.stub.getState(userKey)).toString());
-        user.role = "candidate";  // Change role to candidate
-        await ctx.stub.putState(userKey, Buffer.from(stringify(sortKeysRecursive(user))));
+        const voterKey = `voter-${did}`;
+        let voterBytes = await ctx.stub.getState(voterKey);
     
-        // Add the candidate to the election's candidates list
+        if (!voterBytes || voterBytes.length === 0) {
+            const userKey = `candidate-${did}`;
+            voterBytes = await ctx.stub.getState(userKey);
+            if (!voterBytes || voterBytes.length === 0) throw new Error("Voter record not found");
+        }
+    
+        const voter = JSON.parse(voterBytes.toString());
+        voter.role = "candidate";
+    
+        const candidateKey = `candidate-${did}`;
+        await ctx.stub.putState(candidateKey, Buffer.from(stringify(sortKeysRecursive(voter))));
+    
+        if (await this._checkIfExists(ctx, voterKey)) {
+            await ctx.stub.deleteState(voterKey);
+        }
+    
         const electionKey = `election-${electionId}`;
-        const election = JSON.parse((await ctx.stub.getState(electionKey)).toString());
-        election.candidates.push(did);
-        await ctx.stub.putState(electionKey, Buffer.from(stringify(sortKeysRecursive(election))));
+        const electionBytes = await ctx.stub.getState(electionKey);
+        if (!electionBytes || electionBytes.length === 0) throw new Error("Election not found");
+    
+        const election = JSON.parse(electionBytes.toString());
+    
+        // 🔥 Store full candidate profile inside election (not just DID)
+        const candidateProfile = {
+            did: voter.did,
+            fullName: voter.fullName,
+            username: voter.username,
+            birthplace: voter.birthplace,
+            image: voter.image,
+            dob: voter.dob,
+            role: "candidate",
+        };
+    
+        if (!election.candidates.find(c => c.did === did)) {
+            election.candidates.push(candidateProfile);
+            await ctx.stub.putState(electionKey, Buffer.from(stringify(sortKeysRecursive(election))));
+        }
     
         await this._logAction(ctx, "APPROVE_CANDIDATE", did);
         return JSON.stringify(application);
     }
     
+    
+    
 
     async rejectCandidacy(ctx, electionId, did) {
         const appKey = `application-${electionId}-${did}`;
-        const applicationBytes = await ctx.stub.getState(appKey);
-        if (!applicationBytes || applicationBytes.length === 0) throw new Error("Application not found");
-        const application = JSON.parse(applicationBytes.toString());
-        if (application.status === "approved") throw new Error("Cannot reject an already approved candidate");
+        const appBytes = await ctx.stub.getState(appKey);
+        if (!appBytes || appBytes.length === 0) throw new Error("Application not found");
+        
+        const application = JSON.parse(appBytes.toString());
+        if (application.status === "approved") throw new Error("Cannot reject approved candidate");
+
         application.status = "rejected";
         await ctx.stub.putState(appKey, Buffer.from(stringify(sortKeysRecursive(application))));
         await this._logAction(ctx, "REJECT_CANDIDATE", did);
@@ -425,102 +313,154 @@ class VotingContract extends Contract {
 
     async withdrawCandidacy(ctx, electionId, did) {
         const appKey = `application-${electionId}-${did}`;
-        const application = JSON.parse((await ctx.stub.getState(appKey)).toString());
-        if (!application) throw new Error("Application not found");
+        const appBytes = await ctx.stub.getState(appKey);
+        if (!appBytes || appBytes.length === 0) throw new Error("Application not found");
+
+        const application = JSON.parse(appBytes.toString());
         application.status = "withdrawn";
+
         await ctx.stub.putState(appKey, Buffer.from(stringify(sortKeysRecursive(application))));
         await this._logAction(ctx, "WITHDRAW_CANDIDACY", did);
         return JSON.stringify(application);
     }
 
-    async listCandidateApplications(ctx, electionId) {
-        const applications = [];
-        const iterator = await ctx.stub.getStateByRange(`application-${electionId}-`, `application-${electionId}-~`);
-        for await (const res of iterator) applications.push(JSON.parse(res.value.toString()));
-        return JSON.stringify(applications);
+    async listCandidateApplicationsAll(ctx) {
+        const result = [];
+        const iterator = await ctx.stub.getStateByRange("application-", "application-~");
+
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                result.push(JSON.parse(res.value.value.toString()));
+            }
+            if (res.done) break;
+        }
+        await iterator.close();
+        return JSON.stringify(result);
     }
 
-    async getApprovedCandidates(ctx, electionId) {
-        const key = `election-${electionId}`;
-        const electionBytes = await ctx.stub.getState(key);
-        if (!electionBytes || electionBytes.length === 0) throw new Error("Election not found");
-        const election = JSON.parse(electionBytes.toString());
-        return JSON.stringify(election.candidates);
+    async listAllCandidates(ctx) {
+        const candidates = [];
+        const iterator = await ctx.stub.getStateByRange("candidate-", "candidate-~");
+
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                candidates.push(JSON.parse(res.value.value.toString()));
+            }
+            if (res.done) break;
+        }
+        await iterator.close();
+        return JSON.stringify(candidates);
     }
 
     async getCandidateProfile(ctx, did) {
         const key = `candidate-${did}`;
-        const userBytes = await ctx.stub.getState(key);
-        if (!userBytes || userBytes.length === 0) throw new Error("Candidate not found");
-        return userBytes.toString();
+        const data = await ctx.stub.getState(key);
+        if (!data || data.length === 0) throw new Error("Candidate not found");
+        return data.toString();
     }
-    async updateCandidateProfile(ctx, did, fullName, dob, birthplace, image) {
-        const key = `candidate-${did}`;
-        const candidate = JSON.parse((await ctx.stub.getState(key)).toString());
-        if (!candidate) throw new Error("Candidate not found");
-        candidate.fullName = fullName;
-        candidate.dob = dob;
-        candidate.birthplace = birthplace;
-        candidate.image = image;
-        await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(candidate))));
-        await this._logAction(ctx, "UPDATE_CANDIDATE", did);
-        return JSON.stringify(candidate);
-    }
+
     async deleteCandidate(ctx, did) {
         const key = `candidate-${did}`;
         await ctx.stub.deleteState(key);
         await this._logAction(ctx, "DELETE_CANDIDATE", did);
         return `Candidate ${did} deleted`;
     }
-    async listAllCandidates(ctx) {
-        const candidates = [];
-        const iterator = await ctx.stub.getStateByRange("candidate-", "candidate-~");
-        for await (const res of iterator) candidates.push(JSON.parse(res.value.toString()));
-        return JSON.stringify(candidates);
-    }
-    async getCandidateVoteCount(ctx, did) {
-        const key = `candidate-${did}`;
-        const candidate = JSON.parse((await ctx.stub.getState(key)).toString());
-        if (!candidate) throw new Error("Candidate not found");
-        return JSON.stringify({ voteCount: candidate.votes || 0 });
-    }
-    async getCandidateHistory(ctx, did) {
-        const key = `candidate-${did}`;
-        const history = [];
-        const iterator = await ctx.stub.getHistoryForKey(key);
-        for await (const res of iterator) {
-            const data = JSON.parse(res.value.toString());
-            history.push({ txId: res.txId, timestamp: res.timestamp, data });
+
+    async getApprovedCandidates(ctx, electionId) {
+        const electionKey = `election-${electionId}`;
+        const electionBytes = await ctx.stub.getState(electionKey);
+        if (!electionBytes || electionBytes.length === 0) {
+            throw new Error("Election not found");
         }
-        return JSON.stringify(history);
+    
+        const election = JSON.parse(electionBytes.toString());
+    
+        return JSON.stringify(election.candidates || []);
     }
-    async getCandidateNotifications(ctx, did) {
-        const key = `candidate-${did}`;
-        const notifications = [];
-        const iterator = await ctx.stub.getStateByRange(key, `${key}~`);
-        for await (const res of iterator) {
-            const notification = JSON.parse(res.value.toString());
-            notifications.push(notification);
+
+    async filterRunningElections(ctx) {
+        const now = new Date();
+        const running = [];
+        const iterator = await ctx.stub.getStateByRange("election-", "election-~");
+    
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                const election = JSON.parse(res.value.value.toString());
+                const startDate = new Date(election.startDate);
+                const endDate = new Date(election.endDate);
+    
+                if (startDate <= now && endDate >= now) {
+                    // ✅ Directly push the election (candidates are already full profile)
+                    running.push(election);
+                }
+            }
+            if (res.done) break;
         }
-        return JSON.stringify(notifications);
+    
+        await iterator.close();
+        return JSON.stringify(running);
     }
-    // Voting Management ***********************************************
-    async castVote(ctx, electionId, voterDid, candidateDid) {
-        const voteKey = `vote-${electionId}-${voterDid}`;
-        if (await this._checkIfExists(ctx, voteKey)) throw new Error("Already voted");
-        const vote = { electionId, voterDid, candidateDid, timestamp: new Date().toISOString() };
-        await ctx.stub.putState(voteKey, Buffer.from(stringify(sortKeysRecursive(vote))));
-        await this._logAction(ctx, "CAST_VOTE", voterDid);
-        return JSON.stringify(vote);
-    }
+    
+    
+    
+        // === VOTING MANAGEMENT ===
+        async castVote(ctx, electionId, voterDid, candidateDid) {
+            const voteKey = `vote-${electionId}-${voterDid}`;
+            const electionKey = `election-${electionId}`;
+        
+            if (await this._checkIfExists(ctx, voteKey)) {
+                throw new Error("You have already voted for this election.");
+            }
+        
+            const electionBytes = await ctx.stub.getState(electionKey);
+            if (!electionBytes || electionBytes.length === 0) throw new Error("Election not found");
+        
+            const election = JSON.parse(electionBytes.toString());
+        
+            // Update election first (before any putState)
+            if (!election.voters.includes(voterDid)) {
+                election.voters.push(voterDid);
+            }
+            election.votes.push({
+                voterDid,
+                candidateDid,
+                timestamp: new Date().toISOString(),
+            });
+        
+            // Save election first
+            await ctx.stub.putState(electionKey, Buffer.from(stringify(sortKeysRecursive(election))));
+        
+            // Then create vote record (optional)
+            const vote = {
+                electionId,
+                voterDid,
+                candidateDid,
+                timestamp: new Date().toISOString(),
+            };
+            await ctx.stub.putState(voteKey, Buffer.from(stringify(sortKeysRecursive(vote))));
+        
+            await this._logAction(ctx, "CAST_VOTE", voterDid);
+        
+            return JSON.stringify(vote);
+        }
+        
 
     async countVotes(ctx, electionId) {
         const iterator = await ctx.stub.getStateByRange(`vote-${electionId}-`, `vote-${electionId}-~`);
         const result = {};
-        for await (const res of iterator) {
-            const vote = JSON.parse(res.value.toString());
-            result[vote.candidateDid] = (result[vote.candidateDid] || 0) + 1;
+
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                const vote = JSON.parse(res.value.value.toString());
+                result[vote.candidateDid] = (result[vote.candidateDid] || 0) + 1;
+            }
+            if (res.done) break;
         }
+        await iterator.close();
         return JSON.stringify(result);
     }
 
@@ -538,8 +478,8 @@ class VotingContract extends Contract {
     }
 
     async getVoteReceipt(ctx, electionId, voterDid) {
-        const voteKey = `vote-${electionId}-${voterDid}`;
-        const voteBytes = await ctx.stub.getState(voteKey);
+        const key = `vote-${electionId}-${voterDid}`;
+        const voteBytes = await ctx.stub.getState(key);
         if (!voteBytes || voteBytes.length === 0) throw new Error("Vote not found");
         return voteBytes.toString();
     }
@@ -553,10 +493,18 @@ class VotingContract extends Contract {
     async listVotedElections(ctx, voterDid) {
         const voted = [];
         const iterator = await ctx.stub.getStateByRange("vote-", "vote-~");
-        for await (const res of iterator) {
-            const vote = JSON.parse(res.value.toString());
-            if (vote.voterDid === voterDid) voted.push(vote.electionId);
+
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                const vote = JSON.parse(res.value.value.toString());
+                if (vote.voterDid === voterDid) {
+                    voted.push(vote.electionId);
+                }
+            }
+            if (res.done) break;
         }
+        await iterator.close();
         return JSON.stringify([...new Set(voted)]);
     }
 
@@ -574,50 +522,48 @@ class VotingContract extends Contract {
         const rate = (totalVotes / voters.length) * 100;
         return JSON.stringify({ electionId, turnout: `${rate.toFixed(2)}%` });
     }
+
     async getVotingHistory(ctx, voterDid) {
         const history = [];
         const iterator = await ctx.stub.getStateByRange(`vote-`, `vote-~`);
-        for await (const res of iterator) {
-            const vote = JSON.parse(res.value.toString());
-            if (vote.voterDid === voterDid) history.push(vote);
+
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                const vote = JSON.parse(res.value.value.toString());
+                if (vote.voterDid === voterDid) {
+                    history.push(vote);
+                }
+            }
+            if (res.done) break;
         }
+        await iterator.close();
         return JSON.stringify(history);
     }
+
     async getVoteHistory(ctx, electionId) {
         const history = [];
         const iterator = await ctx.stub.getStateByRange(`vote-${electionId}-`, `vote-${electionId}-~`);
-        for await (const res of iterator) {
-            const vote = JSON.parse(res.value.toString());
-            history.push(vote);
+
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                history.push(JSON.parse(res.value.value.toString()));
+            }
+            if (res.done) break;
         }
+        await iterator.close();
         return JSON.stringify(history);
     }
-    async getVoteNotifications(ctx, voterDid) {
-        const key = `vote-${voterDid}`;
-        const notifications = [];
-        const iterator = await ctx.stub.getStateByRange(key, `${key}~`);
-        for await (const res of iterator) {
-            const notification = JSON.parse(res.value.toString());
-            notifications.push(notification);
-        }
-        return JSON.stringify(notifications);
-    }
-    async getVoteCount(ctx, electionId) {
-        const key = `vote-${electionId}`;
-        const count = await ctx.stub.getState(key);
-        if (!count || count.length === 0) throw new Error("Vote count not found");
-        return count.toString();
-    }
-    async getVoterCount(ctx, electionId) {
-        const key = `voter-${electionId}`;
-        const count = await ctx.stub.getState(key);
-        if (!count || count.length === 0) throw new Error("Voter count not found");
-        return count.toString();
-    }
-    // Complaint management ****************************************
+    // === COMPLAINT MANAGEMENT ===
+
     async submitComplain(ctx, did, content) {
         const key = `complain-${ctx.stub.getTxID()}`;
-        const complaint = { did, content, timestamp: new Date().toISOString() };
+        const complaint = {
+            did,
+            content,
+            timestamp: new Date().toISOString()
+        };
         await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(complaint))));
         await this._logAction(ctx, "SUBMIT_COMPLAIN", did);
         return JSON.stringify(complaint);
@@ -627,10 +573,12 @@ class VotingContract extends Contract {
         const key = `complain-${complaintId}`;
         const complaintBytes = await ctx.stub.getState(key);
         if (!complaintBytes || complaintBytes.length === 0) throw new Error("Complaint not found");
+        
         const complaint = JSON.parse(complaintBytes.toString());
         complaint.response = responseText;
         complaint.respondedBy = responderDid;
         complaint.responseAt = new Date().toISOString();
+
         await ctx.stub.putState(key, Buffer.from(stringify(sortKeysRecursive(complaint))));
         await this._logAction(ctx, "REPLY_COMPLAINT", responderDid);
         return JSON.stringify(complaint);
@@ -639,17 +587,33 @@ class VotingContract extends Contract {
     async viewComplaints(ctx) {
         const complaints = [];
         const iterator = await ctx.stub.getStateByRange("complain-", "complain-~");
-        for await (const res of iterator) complaints.push(JSON.parse(res.value.toString()));
+
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                complaints.push(JSON.parse(res.value.value.toString()));
+            }
+            if (res.done) break;
+        }
+        await iterator.close();
         return JSON.stringify(complaints);
     }
 
     async listComplaintsByUser(ctx, did) {
         const complaints = [];
         const iterator = await ctx.stub.getStateByRange("complain-", "complain-~");
-        for await (const res of iterator) {
-            const complaint = JSON.parse(res.value.toString());
-            if (complaint.did === did) complaints.push(complaint);
+
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                const complaint = JSON.parse(res.value.value.toString());
+                if (complaint.did === did) {
+                    complaints.push(complaint);
+                }
+            }
+            if (res.done) break;
         }
+        await iterator.close();
         return JSON.stringify(complaints);
     }
 
@@ -659,44 +623,76 @@ class VotingContract extends Contract {
         await this._logAction(ctx, "DELETE_COMPLAINT", complaintId);
         return `Complaint ${complaintId} deleted`;
     }
-    // Logs, Reports, and System Reset ****************************************
+    // === AUDIT LOGS & SYSTEM MANAGEMENT ===
+
     async viewAuditLogs(ctx) {
         const logs = [];
         const iterator = await ctx.stub.getStateByRange("log-", "log-~");
-        for await (const res of iterator) logs.push(JSON.parse(res.value.toString()));
+
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                logs.push(JSON.parse(res.value.value.toString()));
+            }
+            if (res.done) break;
+        }
+        await iterator.close();
         return JSON.stringify(logs);
     }
 
     async searchAuditLogsByUser(ctx, did) {
         const logs = [];
         const iterator = await ctx.stub.getStateByRange("log-", "log-~");
-        for await (const res of iterator) {
-            const log = JSON.parse(res.value.toString());
-            if (log.did === did) logs.push(log);
+
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.value.length > 0) {
+                const log = JSON.parse(res.value.value.toString());
+                if (log.did === did) {
+                    logs.push(log);
+                }
+            }
+            if (res.done) break;
         }
+        await iterator.close();
         return JSON.stringify(logs);
     }
 
     async generateElectionReport(ctx, electionId) {
-        const election = JSON.parse(await ctx.stub.getState(`election-${electionId}`));
+        const electionBytes = await ctx.stub.getState(`election-${electionId}`);
+        if (!electionBytes || electionBytes.length === 0) throw new Error("Election not found");
+
+        const election = JSON.parse(electionBytes.toString());
         const votes = JSON.parse(await this.countVotes(ctx, electionId));
         const result = JSON.parse(await this.getVotingResult(ctx, electionId));
-        return JSON.stringify({ electionId, votes, winner: result.winner, maxVotes: result.maxVotes });
+
+        return JSON.stringify({
+            electionId,
+            electionTitle: election.title,
+            totalVotes: Object.values(votes).reduce((a, b) => a + b, 0),
+            winner: result.winner,
+            maxVotes: result.maxVotes,
+            timestamp: new Date().toISOString()
+        });
     }
 
     async downloadAuditReport(ctx) {
-        const logs = await this.viewAuditLogs(ctx);
-        return logs;
+        return await this.viewAuditLogs(ctx);
     }
 
     async resetSystem(ctx) {
         const iterator = await ctx.stub.getStateByRange("", "~");
-        for await (const res of iterator) {
-            await ctx.stub.deleteState(res.key);
+
+        while (true) {
+            const res = await iterator.next();
+            if (res.value && res.value.key !== "") {
+                await ctx.stub.deleteState(res.value.key);
+            }
+            if (res.done) break;
         }
+        await iterator.close();
         await ctx.stub.putState("init", Buffer.from("VotingContract reset"));
         return "System reset complete";
     }
 }
-
 module.exports = VotingContract;

@@ -10,12 +10,31 @@ import jwt from "jsonwebtoken";
 const invoke = async (res, fn, ...args) => {
   try {
     const contract = await getContract();
-    const result = await contract.submitTransaction(fn, ...args);
-    res.json(JSON.parse(result.toString()));
+    
+    console.log(`🛠️ Invoking chaincode function: ${fn} with args:`, args);
+    const txn = contract.createTransaction(fn);
+
+    const resultBuffer = await txn.submit(...args);
+
+    console.log(`✅ Chaincode function ${fn} executed successfully.`);
+
+    const result = resultBuffer.toString();
+    if (result) {
+      try {
+        res.json(JSON.parse(result));
+      } catch (parseErr) {
+        res.json({ message: result });
+      }
+    } else {
+      res.json({ message: "Transaction committed successfully." });
+    }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(`❌ Error invoking chaincode function ${fn}:`, err);
+    res.status(500).json({ error: err.message || "Chaincode invoke failed." });
   }
 };
+
+
 
 // Helper for evaluating chaincode
 const query = async (res, fn, ...args) => {
@@ -106,6 +125,7 @@ export const changePassword = (req, res) => invoke(res, "changePassword", ...Obj
 export const deleteUser = (req, res) => invoke(res, "deleteUser", req.params.role, req.params.did);
 export const assignRole = (req, res) => invoke(res, "assignRole", ...Object.values(req.body));
 
+
 // 🗳️ Election Management
 export const createElection = async (req, res) => {
   console.log("User:", req.user); // This will log the user data from the decoded token
@@ -133,23 +153,43 @@ export const createElection = async (req, res) => {
 };
 // controllers/votingController.js
 
+// votingController.js
+// controllers/votingController.js
+
 export const updateElectionDetails = async (req, res) => {
   const electionId = req.params.electionId;
   const { title, description, startDate, endDate } = req.body;
 
   try {
-    const updatedElection = await invoke('updateElectionDetails', electionId, title, description, startDate, endDate);
-    res.status(200).json(updatedElection);
+    await invoke(res, "updateElectionDetails", electionId, title, description, startDate, endDate);
   } catch (err) {
     console.error("Error updating election:", err);
     res.status(500).json({ error: "Failed to update election", message: err.message });
   }
 };
+export const filterRunningElections = async (_req, res) => {
+  try {
+    const contract = await getContract();
+    const result = await contract.submitTransaction("filterRunningElections");
+
+    const elections = JSON.parse(result.toString());
+    console.log("Running Elections fetched:", elections.length);
+
+    res.json(elections);
+  } catch (error) {
+    console.error("Error fetching running elections:", error);
+    res.status(500).json({ error: "Failed to fetch running elections", message: error.message });
+  }
+};
+
+
+
 
 
 export const deleteElection = (req, res) => invoke(res, "deleteElection", req.params.electionId);
 
 export const getAllElections = (_req, res) => query(res, "getAllElections");
+
 export const filterUpcomingElections = (_req, res) => query(res, "filterUpcomingElections");
 export const getCalendar = (_req, res) => query(res, "getCalendar");
 export const viewElectionDetails = (req, res) => query(res, "viewElectionDetails", req.params.electionId);
@@ -168,51 +208,116 @@ export const getElectionNotifications = (req, res) => query(res, "getElectionNot
 
 // 👤 Candidate Management
 export const applyForCandidacy = async (req, res) => {
-  const { electionId } = req.body;
-  const candidateId = req.user?.did;  // This assumes req.user.did is available after successful authentication
+  const { electionId, did } = req.body;
 
-  if (!candidateId || !electionId) {
-    return res.status(400).json({ error: "Candidate ID and Election ID are required." });
+  if (!electionId || !did) {
+    return res.status(400).json({ error: "Election ID and Candidate DID are required." });
   }
 
   try {
-    console.log(`Candidate ID: ${candidateId}, Election ID: ${electionId}`);
+    console.log(`Applying for Candidacy - Election ID: ${electionId}, Candidate DID: ${did}`);
 
-    // Get contract instance to interact with Hyperledger Fabric
     const contract = await getContract();
 
-    // Call the 'applyForCandidacy' function in the chaincode
-    const response = await contract.submitTransaction('applyForCandidacy', candidateId, electionId);
-    
-    // Check for empty response and handle accordingly
+    // 🛠 Directly submit without checking active (chaincode no longer blocks)
+    const response = await contract.submitTransaction('applyForCandidacy', electionId, did);
+
     if (!response || response.toString().trim() === '') {
       throw new Error("Empty response from chaincode");
     }
 
-    // Parse the response from the chaincode
     const applicationDetails = JSON.parse(response.toString());
 
-    // Log the successful candidacy application
-    console.log(`Successfully applied for candidacy in election ${electionId}`);
+    console.log(`Candidacy Application Successful for Election ${electionId}, DID ${did}`);
 
-    // Respond with the application status
-    res.status(200).json({ message: "Successfully applied for candidacy", applicationDetails });
+    res.status(200).json({
+      message: "Successfully applied for candidacy",
+      applicationDetails,
+    });
   } catch (error) {
-    // Log the error for debugging purposes
     console.error("Error applying for candidacy:", error);
-
-    // Return a more detailed error response
-    res.status(500).json({ error: "Failed to apply for candidacy", message: error.message });
+    res.status(500).json({
+      error: "Failed to apply for candidacy",
+      message: error.message,
+    });
   }
 };
 
 
 
-export const approveCandidacy = (req, res) => invoke(res, "approveCandidacy", ...Object.values(req.body));
+
+export const approveCandidacy = async (req, res) => {
+  const { electionId, did } = req.body;
+
+  if (!did || !electionId) {
+    return res.status(400).json({ error: "Candidate DID and Election ID are required." });
+  }
+
+  try {
+    const contract = await getContract();
+
+    // 🛠 Correctly call approveCandidacy (electionId first, then did)
+    const response = await contract.submitTransaction('approveCandidacy', electionId, did);
+
+    if (!response || response.toString().trim() === '') {
+      throw new Error("Empty response from chaincode");
+    }
+
+    const approvalDetails = JSON.parse(response.toString());
+
+    res.status(200).json({ message: "Candidacy approved successfully", approvalDetails });
+  } catch (error) {
+    console.error("Error approving candidacy:", error);
+    res.status(500).json({ error: "Failed to approve candidacy", message: error.message });
+  }
+};
+
 export const rejectCandidacy = (req, res) => invoke(res, "rejectCandidacy", ...Object.values(req.body));
 export const withdrawCandidacy = (req, res) => invoke(res, "withdrawCandidacy", ...Object.values(req.body));
-export const listCandidateApplications = (req, res) => query(res, "listCandidateApplications", req.params.electionId);
-export const getApprovedCandidates = (req, res) => query(res, "getApprovedCandidates", req.params.electionId);
+
+export const listAllCandidateApplications = async (req, res) => {
+  try {
+    const contract = await getContract();
+    const response = await contract.submitTransaction('listCandidateApplicationsAll'); // 🔥 Use submitTransaction, not evaluateTransaction
+    const applications = JSON.parse(response.toString());
+    res.status(200).json(applications);
+  } catch (error) {
+    console.error("Error listing candidacy applications:", error);
+    res.status(500).json({ error: "Failed to fetch candidacy applications", message: error.message });
+  }
+};
+
+export const getApprovedCandidates = async (req, res) => {
+  const { electionId } = req.params;
+  try {
+    const contract = await getContract();
+    const electionBytes = await contract.evaluateTransaction("viewElectionDetails", electionId);
+    const election = JSON.parse(electionBytes.toString());
+    const candidateDIDs = election.candidates || [];
+
+    // Fetch full profiles for each candidate
+    const candidateProfiles = await Promise.all(
+      candidateDIDs.map(async (did) => {
+        try {
+          const candidateData = await contract.evaluateTransaction("getCandidateProfile", did);
+          return JSON.parse(candidateData.toString());
+        } catch (error) {
+          console.error(`Failed to fetch profile for candidate DID: ${did}`, error);
+          return null; // skip if error
+        }
+      })
+    );
+
+    // Filter out failed fetches
+    const validCandidates = candidateProfiles.filter(profile => profile !== null);
+
+    res.status(200).json(validCandidates);
+  } catch (error) {
+    console.error("Error fetching approved candidates:", error);
+    res.status(500).json({ error: "Failed to fetch approved candidates", message: error.message });
+  }
+};
+
 export const getCandidateProfile = (req, res) => query(res, "getCandidateProfile", req.params.did);
 export const updateCandidateProfile = (req, res) => invoke(res, "updateCandidateProfile", ...Object.values(req.body));
 export const deleteCandidate = (req, res) => invoke(res, "deleteCandidate", req.params.did);
@@ -222,9 +327,83 @@ export const getCandidateHistory = (req, res) => query(res, "getCandidateHistory
 export const getCandidateNotifications = (req, res) => query(res, "getCandidateNotifications", req.params.did);
 
 // 🗳️ Voting
-export const castVote = (req, res) => invoke(res, "castVote", ...Object.values(req.body));
-export const countVotes = (req, res) => query(res, "countVotes", req.params.electionId);
-export const getVotingResult = (req, res) => query(res, "getVotingResult", req.params.electionId);
+export const castVote = async (req, res) => {
+  const { electionId, voterDid, candidateDid } = req.body;
+
+  if (!electionId || !voterDid || !candidateDid) {
+    return res.status(400).json({ error: "Missing electionId, voterDid, or candidateDid" });
+  }
+
+  try {
+    const contract = await getContract(); // ✅ direct access
+    const result = await contract.submitTransaction("castVote", electionId, voterDid, candidateDid);
+
+    const vote = JSON.parse(result.toString()); // ✅ parse result
+
+    console.log("Vote successfully casted:", vote);
+
+    res.status(200).json({ message: "Vote casted successfully", vote }); // ✅ instant replay
+  } catch (error) {
+    console.error("Error casting vote (controller):", error);
+    res.status(500).json({ error: error.message || "Failed to cast vote" });
+  }
+};
+
+export const getTotalVotes = async (_req, res) => {
+  try {
+    const contract = await getContract();
+    const iterator = await contract.evaluateTransaction('viewAuditLogs'); // Use logs or direct votes listing
+
+    const allLogs = JSON.parse(iterator.toString());
+    const totalVotes = allLogs.filter(log => log.action === "CAST_VOTE").length;
+
+    res.json({ totalVotes });
+  } catch (error) {
+    console.error("Error counting votes:", error);
+    res.status(500).json({ error: "Failed to count votes" });
+  }
+};
+// controllers/votingController.js
+
+export const getVotingResult = async (req, res) => {
+  try {
+    const contract = await getContract();
+
+    const resultBytes = await contract.evaluateTransaction("getVotingResult", req.params.electionId);
+    const result = JSON.parse(resultBytes.toString());
+
+    if (!result || !result.winner) {
+      return res.status(404).json({ error: "Winner not found" });
+    }
+    
+    let winnerData = result.winner;
+
+    // 🛠 Only fetch full candidate profile if winner has minimal information
+    if (!winnerData.fullName || winnerData.fullName === "Unknown Candidate") {
+      const winnerProfileBytes = await contract.evaluateTransaction("getCandidateProfile", winnerData.did);
+      const winnerProfile = JSON.parse(winnerProfileBytes.toString());
+
+      winnerData = {
+        did: winnerProfile.did,
+        fullName: winnerProfile.fullName,
+        username: winnerProfile.username,
+        image: winnerProfile.image || "",
+      };
+    }
+
+    res.json({
+      winner: winnerData,
+      maxVotes: result.maxVotes,
+      totalCandidates: result.totalCandidates,
+      totalVotes: result.totalVotes,
+    });
+
+  } catch (error) {
+    console.error("Error fetching voting result:", error);
+    res.status(500).json({ error: error.message || "Failed to fetch voting result" });
+  }
+};
+
 export const getVoteReceipt = (req, res) => query(res, "getVoteReceipt", req.params.electionId, req.params.voterDid);
 export const hasVoted = (req, res) => query(res, "hasVoted", req.params.electionId, req.params.voterDid);
 export const listVotedElections = (req, res) => query(res, "listVotedElections", req.params.voterDid);
