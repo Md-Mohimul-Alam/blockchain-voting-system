@@ -77,40 +77,13 @@ const AdminDashboard = () => {
       description: "Manage and reply to user complaints.",
       path: "/admin/complaints",
     },
-    {
-      title: "System Health",
-      icon: <Activity className="w-4 h-4" />,
-      color: "bg-indigo-600 hover:bg-indigo-700",
-      description: "Check the system's health and status.",
-      path: "/admin/system-health",
-    },
-    {
-      title: "Admin Team",
-      icon: <ShieldCheck className="w-4 h-4" />,
-      color: "bg-pink-600 hover:bg-pink-700",
-      description: "View and manage the admin team.",
-      path: "/admin/team",
-    },
+    
     {
       title: "Candidate Requests",
       icon: <Wand2 className="w-4 h-4" />,
       color: "bg-cyan-600 hover:bg-cyan-700",
       description: "Candidate Requests & Approval for the election  .",
       path: "/admin/Requests",
-    },
-    {
-      title: "Send Notification",
-      icon: <BellRing className="w-4 h-4" />,
-      color: "bg-amber-600 hover:bg-amber-700",
-      description: "Send notifications to users.",
-      path: "/admin/notify",
-    },
-    {
-      title: "Admin Notes",
-      icon: <StickyNote className="w-4 h-4" />,
-      color: "bg-violet-600 hover:bg-violet-700",
-      description: "Create and manage admin notes.",
-      path: "/admin/notes",
     },
   ];
 
