@@ -39,6 +39,8 @@ import ResetSystemPage from "./pages/dashboards/Admin/ResetSystemPage";
 
 import CreateElectionEl from "./pages/dashboards/el/CreateElectionPageEL";
 import ELManageUsersPage from "./pages/dashboards/el/users";
+
+import UserComplaintForm from "./pages/UserComplaintForm";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -84,6 +86,9 @@ const App = () => (
           <Route path="/admin/election-management" element={<ElectionManagement />} />
           <Route path="/el/users" element={<ELManageUsersPage />} />
 
+
+          {/* User Complaint Form */}
+          <Route path="/complaint" element={<UserComplaintForm />} />
           {/* 404 Not Found */}
 
         </Routes>

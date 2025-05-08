@@ -47,18 +47,31 @@ const CandidateDashboard = () => {
   // Apply for Candidacy
   const applyForCandidacy = async (electionId) => {
     try {
-      await API.post('/candidacy/apply', { electionId, did: userData.did });
+      await API.post('/candidacy/apply', {
+        electionId,
+        did: userData.did,
+        role: "candidate", // Force role as candidate
+        fullName: userData.fullName || `AutoRegistered-${userData.did}`,
+        dob: userData.dob || "2000-01-01",
+        birthplace: userData.birthplace || "Unknown",
+        username: userData.username || `user-${userData.did}`,
+        image: userData.image || "", // Optional fallback
+      });
+  
       toast({ title: "Applied for candidacy successfully!", variant: "success" });
+  
+      // Refresh candidate profile
       const updatedProfile = await API.get(`/candidate/${userData.did}`);
       setCandidateProfile(updatedProfile.data);
     } catch (error) {
       toast({
         title: "Failed to apply",
         description: error.response?.data?.message || "Unknown error",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
+  
 
   // Categorize Elections
   const categorizeElections = (elections) => {

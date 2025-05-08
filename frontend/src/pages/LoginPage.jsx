@@ -33,7 +33,7 @@ const loginSchema = z.object({
   did: z.string().min(1, { message: "DID is required" }),
   dob: z.string().min(4, { message: "Date of Birth is required" }),
   username: z.string().min(1, { message: "Username must be at least 1 characters." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  password: z.string().min(4, { message: "Password must be at least 4 characters." }),
 });
 
 

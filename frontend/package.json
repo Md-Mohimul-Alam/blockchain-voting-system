@@ -27,6 +27,7 @@
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
+    "file-saver": "^2.0.5",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.503.0",
     "postcss-preset-env": "^10.1.6",
@@ -41,6 +42,7 @@
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.2.0",
     "uuid": "^11.1.0",
+    "xlsx": "^0.18.5",
     "zod": "^3.24.3"
   },
   "devDependencies": {

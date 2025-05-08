@@ -208,27 +208,43 @@ export const getElectionNotifications = (req, res) => query(res, "getElectionNot
 
 // 👤 Candidate Management
 export const applyForCandidacy = async (req, res) => {
-  const { electionId, did } = req.body;
+  const {
+    electionId,
+    did,
+    fullName = "",
+    dob = "",
+    birthplace = "",
+    username = "",
+    image = "",
+    role = "candidate"
+  } = req.body;
 
   if (!electionId || !did) {
     return res.status(400).json({ error: "Election ID and Candidate DID are required." });
   }
 
   try {
-    console.log(`Applying for Candidacy - Election ID: ${electionId}, Candidate DID: ${did}`);
+    console.log(`Applying for Candidacy - Election ID: ${electionId}, DID: ${did}, Role: ${role}`);
 
     const contract = await getContract();
 
-    // 🛠 Directly submit without checking active (chaincode no longer blocks)
-    const response = await contract.submitTransaction('applyForCandidacy', electionId, did);
+    const response = await contract.submitTransaction(
+      'applyForCandidacy',
+      electionId,
+      did,
+      fullName,
+      dob,
+      birthplace,
+      username,
+      image,
+      role
+    );
 
     if (!response || response.toString().trim() === '') {
       throw new Error("Empty response from chaincode");
     }
 
     const applicationDetails = JSON.parse(response.toString());
-
-    console.log(`Candidacy Application Successful for Election ${electionId}, DID ${did}`);
 
     res.status(200).json({
       message: "Successfully applied for candidacy",
@@ -242,6 +258,7 @@ export const applyForCandidacy = async (req, res) => {
     });
   }
 };
+
 
 
 
@@ -368,41 +385,47 @@ export const getTotalVotes = async (_req, res) => {
 export const getVotingResult = async (req, res) => {
   try {
     const contract = await getContract();
-
     const resultBytes = await contract.evaluateTransaction("getVotingResult", req.params.electionId);
     const result = JSON.parse(resultBytes.toString());
 
-    if (!result || !result.winner) {
+    if (!result || !result.winnerDid) {
       return res.status(404).json({ error: "Winner not found" });
     }
-    
-    let winnerData = result.winner;
 
-    // 🛠 Only fetch full candidate profile if winner has minimal information
-    if (!winnerData.fullName || winnerData.fullName === "Unknown Candidate") {
-      const winnerProfileBytes = await contract.evaluateTransaction("getCandidateProfile", winnerData.did);
+    let winnerData = {
+      did: result.winnerDid,
+      fullName: "Unknown Candidate",
+      username: "unknown",
+      image: ""
+    };
+
+    // Try fetching full candidate profile
+    try {
+      const winnerProfileBytes = await contract.evaluateTransaction("getCandidateProfile", result.winnerDid);
       const winnerProfile = JSON.parse(winnerProfileBytes.toString());
 
       winnerData = {
         did: winnerProfile.did,
         fullName: winnerProfile.fullName,
         username: winnerProfile.username,
-        image: winnerProfile.image || "",
+        image: winnerProfile.image || ""
       };
+    } catch (profileError) {
+      console.warn("Could not fetch winner profile, returning minimal data.");
     }
 
     res.json({
       winner: winnerData,
       maxVotes: result.maxVotes,
       totalCandidates: result.totalCandidates,
-      totalVotes: result.totalVotes,
+      totalVotes: result.totalVotes
     });
-
   } catch (error) {
     console.error("Error fetching voting result:", error);
     res.status(500).json({ error: error.message || "Failed to fetch voting result" });
   }
 };
+
 
 export const getVoteReceipt = (req, res) => query(res, "getVoteReceipt", req.params.electionId, req.params.voterDid);
 export const hasVoted = (req, res) => query(res, "hasVoted", req.params.electionId, req.params.voterDid);
@@ -423,10 +446,50 @@ export const listComplaintsByUser = (req, res) => query(res, "listComplaintsByUs
 export const deleteComplaint = (req, res) => invoke(res, "deleteComplaint", req.params.complaintId);
 
 // 📊 Logs and Reports
-export const viewAuditLogs = (_req, res) => query(res, "viewAuditLogs");
-export const searchAuditLogsByUser = (req, res) => query(res, "searchAuditLogsByUser", req.params.did);
-export const generateElectionReport = (req, res) => query(res, "generateElectionReport", req.params.electionId);
-export const downloadAuditReport = (_req, res) => query(res, "downloadAuditReport");
+export const viewAuditLogs = async (_req, res) => {
+  try {
+    const contract = await getContract();
+    const result = await contract.evaluateTransaction("viewAuditLogs");
+    res.json(JSON.parse(result.toString()));
+  } catch (err) {
+    console.error("❌ viewAuditLogs error:", err);
+    res.status(500).json({ error: err.message || "Failed to fetch audit logs" });
+  }
+};
+
+
+export const searchAuditLogsByUser = async (req, res) => {
+  try {
+    const contract = await getContract();
+    const result = await contract.evaluateTransaction("searchAuditLogsByUser", req.params.did);
+    res.json(JSON.parse(result.toString()));
+  } catch (err) {
+    console.error("❌ searchAuditLogsByUser error:", err);
+    res.status(500).json({ error: err.message || "Failed to search audit logs" });
+  }
+};
+
+export const generateElectionReport = async (req, res) => {
+  try {
+    const contract = await getContract();
+    const result = await contract.evaluateTransaction("generateElectionReport", req.params.electionId);
+    res.json(JSON.parse(result.toString()));
+  } catch (err) {
+    console.error("❌ generateElectionReport error:", err);
+    res.status(500).json({ error: err.message || "Failed to generate election report" });
+  }
+};
+
+export const downloadAuditReport = async (_req, res) => {
+  try {
+    const contract = await getContract();
+    const result = await contract.evaluateTransaction("downloadAuditReport");
+    res.json(JSON.parse(result.toString()));
+  } catch (err) {
+    console.error("❌ downloadAuditReport error:", err);
+    res.status(500).json({ error: err.message || "Failed to download audit report" });
+  }
+};
 
 // ⚠️ System (Protected)
 export const resetSystem = (req, res) => {

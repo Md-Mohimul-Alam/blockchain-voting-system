@@ -18,7 +18,7 @@ router.delete('/user/:role/:did', verifyToken, authorizeRoles('admin'), controll
 router.put('/assign-role', verifyToken, authorizeRoles('admin'), controller.assignRole);
 
 // 🗳️ Election Management
-router.post('/election', verifyToken, authorizeRoles('Admin', 'electioncommunity'), controller.createElection);
+router.post('/election', verifyToken, controller.createElection);
 router.get('/elections', controller.getAllElections);
 router.get('/elections/calendar', controller.getCalendar);
 router.get('/election/:electionId', controller.viewElectionDetails);
@@ -27,7 +27,7 @@ router.delete('/election/:electionId', verifyToken, controller.deleteElection);
 router.post('/election/candidate/add', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.addCandidateToElection);
 router.post('/election/candidate/remove', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.removeCandidateFromElection);
 router.post('/election/winner', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.declareWinner);
-router.get('/election/:electionId/results', controller.getElectionResults);
+router.get('/election/:electionId/results', controller.getVotingResult);
 router.get('/election/:electionId/history', verifyToken, controller.getElectionHistory);
 router.get('/election/:electionId/voters', verifyToken, controller.getElectionVoters);
 router.get('/election/:electionId/voter-count', controller.getElectionVoterCount);
@@ -70,16 +70,16 @@ router.get('/voter-count/:electionId', controller.getVoterCount);
 
 // 📣 Complaints
 router.post('/complaint', verifyToken, controller.submitComplain);
-router.post('/complaint/reply', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.replyToComplaint);
+router.post('/complaint/reply', verifyToken, controller.replyToComplaint);
 router.get('/complaints', controller.viewComplaints);
 router.get('/complaints/user/:did', controller.listComplaintsByUser);
 router.delete('/complaint/:complaintId', verifyToken, authorizeRoles('admin'), controller.deleteComplaint);
 
 // 📊 Logs and Reports
-router.get('/logs', verifyToken, authorizeRoles('admin'), controller.viewAuditLogs);
-router.get('/logs/:did', verifyToken, authorizeRoles('admin'), controller.searchAuditLogsByUser);
+router.get("/logs", verifyToken, controller.viewAuditLogs);
+router.get('/logs/:did', verifyToken,  controller.searchAuditLogsByUser);
 router.get('/report/election/:electionId', controller.generateElectionReport);
-router.get('/report/download', verifyToken, authorizeRoles('admin'), controller.downloadAuditReport);
+router.get('/report/download', verifyToken, controller.downloadAuditReport);
 
 // ⚠️ System Management
 router.post('/system/reset', verifyToken, authorizeRoles('admin'), controller.resetSystem);
