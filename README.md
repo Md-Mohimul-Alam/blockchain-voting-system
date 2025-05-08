@@ -46,26 +46,131 @@ This Blockchain Voting System will:
 
 
 
-📌 Features Implemented
-    Admin Functions
-        RegisterAdmin(did, UserName, DOB, Password) → 
-        Login(did, UserName, DOB, Password) → Admin login
-        UpdateAdmin(UserName, DOB, Password) → Update admin details
-        GetAllVoters() → Retrieve all voters
-        GetAllCandidates() → Retrieve all candidates
-        CreateCandidate(did, Name, DOB, Logo, Birthplace) → Register a new candidate
-        DeleteCandidate(did) → Remove a candidate
-        UpdateCandidate(did, Name, DOB, Logo, Birthplace) → Update candidate details
-        SeeVoteCount() → View votes for each candidate
-        CloseElection() → End election process
-        ResetElection() → Reset election data
-        DeclareWinner() → Announce election winner
-    User Functions
-        RegisterUser(did, Name, DOB, Birthplace, UserName, Password) → Register a voter
-        LoginUser(did, UserName, DOB, Password) → Voter login
-        GetAllCandidates() → Retrieve all candidates
-        CastVote(did, candidateDid) → Vote for a candidate
-        SeeWinner() → View election winner
-        SeeVoteCount() → View votes for each candidate
-        GetPersonalInfo(did) → View personal details
-        UpdatePersonalInfo(did, Name, DOB, Birthplace, UserName, Password) → Update voter details
+# eVoting System using Hyperledger Fabric
+
+A secure, transparent, and decentralized electronic voting platform built with **Hyperledger Fabric**, **React.js**, **Node.js**, and **MongoDB**. The system supports multiple user roles—**Admin**, **Election Commission**, **Voter**, and **Candidate**—with features including vote casting, candidacy application, complaint handling, result declaration, and role-based dashboards.
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Chaincode Functions](#chaincode-functions)
+- [API Routes](#api-routes)
+- [Screenshots](#screenshots)
+- [License](#license)
+
+---
+
+## Features
+
+- Role-based authentication with JWT
+- Election creation and management
+- Secure vote casting (one person, one vote)
+- Auto-declaration of winners
+- Candidacy application and registration
+- Complaint submission and response system
+- Real-time results and audit logging
+- Image upload for profiles and verification
+- Protected admin routes and dashboard access
+
+_____
+
+
+---
+
+## Tech Stack
+
+### Frontend
+- React.js (Vite)
+- Tailwind CSS
+- React Router
+- Lucide Icons
+
+### Backend
+- Node.js
+- Express.js
+- JWT Authentication
+- Multer (Image Upload)
+- MongoDB Atlas
+
+### Blockchain
+- Hyperledger Fabric v2.x
+- Chaincode in JavaScript
+- Fabric CA for identity management
+
+---
+
+## Installation
+
+### Prerequisites
+
+- Node.js >= 16
+- Docker & Docker Compose
+- Hyperledger Fabric binaries & Docker images
+- MongoDB (local or Atlas)
+
+### Setup Instructions
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/evoting-hyperledger.git
+   cd evoting-hyperledger
+
+Set up Hyperledger Fabric network:
+cd fabric-network/test-network
+./network.sh up createChannel -c mychannel -ca -s couchdb 
+
+cahincode installation::
+./network.sh deployCC -ccn voting-contract -ccp ../chaincode2 -ccl javascript
+
+Start Backend Server:
+cd backend
+npm install
+npm run dev
+
+Run Frontend (React):
+cd frontend
+npm install
+npm run dev
+
+
+
+Chaincode Functions (Smart Contract)
+
+    registerUser()
+
+    loginUser()
+
+    createElection()
+
+    applyForCandidacy()
+
+    castVote()
+
+    getAllElections()
+
+    getElectionResult()
+
+    submitComplaint()
+
+    replyToComplaint()
+
+    listComplaintsByUser()
+
+    resetSystem()
+
+REST API Routes
+
+    Base URL: http://localhost:5001/api
+
+Method	Endpoint	Description
+POST	/auth/register	Register a user with image
+POST	/auth/login	Authenticate user and return token
+POST	/elections/create	Create new election (admin only)
+GET	    /elections	Get all elections
+POST	/elections/apply-candidacy	Apply for candidacy
+POST	/elections/cast-vote	Cast a vote
+POST	/complaints/submit	Submit complaint
+POST	/complaints/reply	Admin replies to complaint
