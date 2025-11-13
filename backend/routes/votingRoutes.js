@@ -1,88 +1,142 @@
-// routes/votingRoutes.js
-
 import express from 'express';
 import { verifyToken, authorizeRoles } from '../middlewares/auth.js';
 import { upload } from '../middlewares/upload.js';
-import * as controller from '../controllers/votingController.js'; // ✅ Only one clean import
+import * as controller from '../controllers/votingController.js';
+import { getContractSmart } from '../config/fabricConfig.js'; // ✅ ADDED IMPORT
 
 const router = express.Router();
 
-// 🔐 User Management
+// ==================== HEALTH CHECK & TEST ROUTES ====================
+router.get('/health', controller.healthCheck);
+router.get('/test', controller.testChaincode);
+
+// ==================== USER MANAGEMENT ROUTES ====================
 router.post('/register', upload.single('image'), controller.registerUser);
 router.post('/login', controller.login);
 router.put('/profile', verifyToken, upload.single('image'), controller.updateProfile);
 router.get('/profile/:role/:did', verifyToken, controller.getUserProfile);
 router.get('/users/all', verifyToken, controller.listAllUsers);
+router.get('/users/real', verifyToken, controller.getAllRealUsers);
+router.get('/users/role/:role', verifyToken, controller.listAllUsersByRole);
 router.put('/change-password', verifyToken, controller.changePassword);
-router.delete('/user/:role/:did', verifyToken, authorizeRoles('admin'), controller.deleteUser);
-router.put('/assign-role', verifyToken, authorizeRoles('admin'), controller.assignRole);
+router.delete('/user/:role/:did', verifyToken, authorizeRoles('Admin'), controller.deleteUser);
+router.put('/assign-role', verifyToken, authorizeRoles('Admin'), controller.assignRole);
 
-// 🗳️ Election Management
-router.post('/election', verifyToken, controller.createElection);
+// ==================== ELECTION MANAGEMENT ROUTES ====================
+router.post('/election', verifyToken, authorizeRoles('Admin', 'ElectionCommission'), controller.createElection);
 router.get('/elections', controller.getAllElections);
 router.get('/elections/calendar', controller.getCalendar);
 router.get('/election/:electionId', controller.viewElectionDetails);
-router.put('/election/:electionId', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.updateElectionDetails);
-router.delete('/election/:electionId', verifyToken, controller.deleteElection);
-router.post('/election/candidate/add', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.addCandidateToElection);
-router.post('/election/candidate/remove', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.removeCandidateFromElection);
-router.post('/election/winner', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.declareWinner);
-router.get('/election/:electionId/results', controller.getVotingResult);
-router.get('/election/:electionId/history', verifyToken, controller.getElectionHistory);
-router.get('/election/:electionId/voters', verifyToken, controller.getElectionVoters);
+router.put('/election/:electionId', verifyToken, authorizeRoles('Admin', 'ElectionCommission'), controller.updateElectionDetails);
+router.delete('/election/:electionId', verifyToken, authorizeRoles('Admin', 'ElectionCommission'), controller.deleteElection);
+// Enhanced election routes with auto winner declaration
+router.get('/election/:electionId/results/auto', controller.getElectionResultsWithAutoProcess);
+router.post('/election/:electionId/declare-winner', verifyToken, authorizeRoles('Admin', 'ElectionCommission'), controller.forceDeclareWinner);
+router.get('/election/:electionId/results/enhanced', controller.getElectionResults);
+
 router.get('/election/:electionId/voter-count', controller.getElectionVoterCount);
 router.get('/election/:electionId/vote-count', controller.getElectionVoteCount);
-router.get('/election/:electionId/voter-history', controller.getElectionVoterHistory);
-router.get('/election/:electionId/vote-history', controller.getElectionVoteHistory);
+router.get('/election/:electionId/count-votes', controller.countVotes);
 router.get('/election/:electionId/notifications', controller.getElectionNotifications);
 router.get('/elections/running', controller.filterRunningElections);
+router.get('/elections/upcoming', controller.filterUpcomingElections);
 
-// 👤 Candidate Management
+// ==================== CANDIDATE MANAGEMENT ROUTES ====================
 router.post('/candidacy/apply', verifyToken, controller.applyForCandidacy);
-router.get('/candidacy/list', verifyToken, controller.listAllCandidateApplications);
-router.post('/candidacy/approve', verifyToken, controller.approveCandidacy);
-router.post('/candidacy/reject', verifyToken, authorizeRoles('admin', 'electioncommunity'), controller.rejectCandidacy);
+router.get('/candidacy/applications', verifyToken, controller.listAllCandidateApplications);
+router.get('/candidacy/applications/all', verifyToken, controller.listCandidateApplications);
+router.get('/candidacy/applications/pending', verifyToken, controller.getPendingApplications);
+router.get('/candidacy/applications/status/:status', verifyToken, controller.getCandidateApplicationsByStatus);
+router.get('/candidacy/applications/election/:electionId', verifyToken, controller.getCandidateApplicationsByElection);
+router.get('/candidacy/application/status/:electionId/:did', verifyToken, controller.getCandidateApplicationStatus);
+router.post('/candidacy/approve', verifyToken, authorizeRoles('Admin', 'ElectionCommission'), controller.approveCandidacy);
+router.post('/candidacy/bulk-approve', verifyToken, authorizeRoles('Admin', 'ElectionCommission'), controller.bulkApproveCandidates);
+router.post('/candidacy/reject', verifyToken, authorizeRoles('Admin', 'ElectionCommission'), controller.rejectCandidacy);
 router.post('/candidacy/withdraw', verifyToken, controller.withdrawCandidacy);
-router.get('/candidacy/:electionId', controller.listAllCandidateApplications);
 router.get('/candidates/approved/:electionId', controller.getApprovedCandidates);
 router.get('/candidate/:did', controller.getCandidateProfile);
-router.put('/candidate/update', verifyToken, upload.single('image'), controller.updateCandidateProfile);
-router.delete('/candidate/:did', verifyToken, authorizeRoles('admin'), controller.deleteCandidate);
-router.get('/candidates', controller.listAllCandidates);
-router.get('/candidate/:did/votes', controller.getCandidateVoteCount);
-router.get('/candidate/:did/history', verifyToken, controller.getCandidateHistory);
+router.put('/candidate/profile', verifyToken, upload.single('image'), controller.updateCandidateProfile);
+router.delete('/candidate/:did', verifyToken, authorizeRoles('Admin'), controller.deleteCandidate);
+router.get('/candidates/all', controller.listAllCandidates);
+router.get('/candidate/:did/vote-count', controller.getCandidateVoteCount);
 router.get('/candidate/:did/notifications', controller.getCandidateNotifications);
 
-// 🗳️ Voting
+// ==================== VOTING ROUTES ====================
 router.post('/vote', verifyToken, controller.castVote);
-router.get('/vote/result/:electionId', controller.getVotingResult);
-router.get('/vote/count/all', controller.getTotalVotes);
+router.post('/vote/enhanced', verifyToken, controller.castVoteEnhanced);
+router.get('/vote/total', controller.getTotalVotes);
 router.get('/vote/receipt/:electionId/:voterDid', verifyToken, controller.getVoteReceipt);
-router.get('/vote/has-voted/:electionId/:voterDid', verifyToken, controller.hasVoted);
-router.get('/vote/voted/:voterDid', verifyToken, controller.listVotedElections);
-router.get('/vote/unvoted/:voterDid', verifyToken, controller.listUnvotedElections);
+router.get('/vote/status/:electionId/:voterDid', verifyToken, controller.hasVoted);
+router.get('/vote/voted-elections/:voterDid', verifyToken, controller.listVotedElections);
+router.get('/vote/unvoted-elections/:voterDid', verifyToken, controller.listUnvotedElections);
 router.get('/vote/turnout/:electionId', controller.getTurnoutRate);
 router.get('/vote/history/:voterDid', verifyToken, controller.getVotingHistory);
 router.get('/vote/election-history/:electionId', controller.getVoteHistory);
 router.get('/vote/notifications/:voterDid', verifyToken, controller.getVoteNotifications);
-router.get('/vote-count/:electionId', controller.getVoteCount);
-router.get('/voter-count/:electionId', controller.getVoterCount);
 
-// 📣 Complaints
+// ==================== COMPLAINT ROUTES ====================
 router.post('/complaint', verifyToken, controller.submitComplain);
-router.post('/complaint/reply', verifyToken, controller.replyToComplaint);
-router.get('/complaints', controller.viewComplaints);
-router.get('/complaints/user/:did', controller.listComplaintsByUser);
-router.delete('/complaint/:complaintId', verifyToken, authorizeRoles('admin'), controller.deleteComplaint);
+router.post('/complaint/reply', verifyToken, authorizeRoles('Admin', 'ElectionCommission'), controller.replyToComplaint);
+router.get('/complaints', verifyToken, controller.viewComplaints);
+router.get('/complaints/user/:did', verifyToken, controller.listComplaintsByUser);
+router.delete('/complaint/:complaintId', verifyToken, authorizeRoles('Admin'), controller.deleteComplaint);
 
-// 📊 Logs and Reports
-router.get("/logs", verifyToken, controller.viewAuditLogs);
-router.get('/logs/:did', verifyToken,  controller.searchAuditLogsByUser);
+// ==================== LOGS & REPORTS ROUTES ====================
+router.get('/logs/audit', verifyToken, controller.viewAuditLogs);
+router.get('/logs/user/:did', verifyToken, controller.searchAuditLogsByUser);
 router.get('/report/election/:electionId', controller.generateElectionReport);
-router.get('/report/download', verifyToken, controller.downloadAuditReport);
+router.get('/report/audit', verifyToken, controller.downloadAuditReport);
 
-// ⚠️ System Management
-router.post('/system/reset', verifyToken, authorizeRoles('admin'), controller.resetSystem);
+// ==================== ANALYTICS & PERFORMANCE ROUTES ====================
+router.get('/analytics/performance', controller.getSystemPerformance);
+router.get('/analytics/system', controller.getSystemAnalytics);
+router.get('/analytics/security', verifyToken, controller.getSecurityAuditReport);
 
-// Export router
+// ==================== SYSTEM METRICS ROUTES ====================
+router.get('/metrics/uptime', controller.getSystemUptime);
+router.get('/metrics/performance', controller.getSystemPerformanceMetrics);
+router.get('/metrics/storage', controller.getStorageUsage);
+router.get('/metrics/security', controller.getSecurityMetrics);
+router.get('/metrics/health', controller.getSystemHealth);
+router.get('/metrics/all', controller.getSystemMetrics);
+router.get('/metrics/live', controller.getLiveSystemMetrics);
+router.get('/metrics/history', controller.getSystemMetricsHistory);
+router.get('/metrics/alerts', controller.getSystemAlerts);
+
+// ==================== SYSTEM MANAGEMENT ROUTES ====================
+router.post('/system/reset', verifyToken, authorizeRoles('Admin'), controller.resetSystem);
+router.post('/system/archive-elections', verifyToken, authorizeRoles('Admin'), controller.archiveEndedElections);
+
+// ==================== EMERGENCY PASSWORD RESET ROUTE ====================
+// In your backend controller - FIXED VERSION
+router.post('/candidate/reset-password/:did', verifyToken, authorizeRoles('Admin'), async (req, res) => {
+    try {
+        const { did } = req.params;
+        const { newPassword = "12345678" } = req.body;
+        
+        console.log(`🔐 Resetting password for candidate: ${did}`);
+        
+        const contract = await getContractSmart();
+        
+        // Combine parameters into one string
+        const combinedParam = `${did}:${newPassword}`;
+        
+        const result = await contract.submitTransaction("resetCandidatePassword", combinedParam);
+        const response = JSON.parse(result.toString());
+        
+        res.json({
+            success: true,
+            data: response,
+            message: "Candidate password reset successfully"
+        });
+    } catch (error) {
+        console.error("Error resetting candidate password:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to reset candidate password",
+            message: error.message
+        });
+    }
+});
+
 export default router;

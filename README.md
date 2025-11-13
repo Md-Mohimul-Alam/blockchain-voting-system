@@ -124,6 +124,7 @@ cd fabric-network/test-network
 
 cahincode installation::
 ./network.sh deployCC -ccn voting-contract -ccp ../chaincode2 -ccl javascript
+./network.sh deployCC -ccn voting-contract -ccp ../Chaincode2/javascript/ -ccl javascript -ccv 2.0 -ccs 2
 
 Start Backend Server:
 cd backend

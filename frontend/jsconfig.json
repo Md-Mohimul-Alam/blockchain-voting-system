@@ -9,5 +9,5 @@
     },
     "include": [
       "src"
-    ]
+, "../backend/registerDemoUsers.js"    ]
   }

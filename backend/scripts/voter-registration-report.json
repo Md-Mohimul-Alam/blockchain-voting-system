@@ -1,0 +1,2511 @@
+{
+  "timestamp": "2025-11-12T22:10:51.917Z",
+  "totalAttempted": 500,
+  "newRegistrations": 0,
+  "skippedRegistrations": 0,
+  "failedRegistrations": [
+    {
+      "did": "VOTER001",
+      "fullName": "Sadie Cooper",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER002",
+      "fullName": "Quinn Francis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER003",
+      "fullName": "Nathan Adams",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER004",
+      "fullName": "Jayden Allen",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER005",
+      "fullName": "Daniel Howell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER006",
+      "fullName": "Wyatt Horton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER007",
+      "fullName": "Benjamin Weaver",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER008",
+      "fullName": "Frank Russell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER009",
+      "fullName": "Kimberly Parks",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER010",
+      "fullName": "Harper Cannon",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER011",
+      "fullName": "Catherine George",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER012",
+      "fullName": "Dorothy Gonzalez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER013",
+      "fullName": "Audrey Reyes",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER014",
+      "fullName": "Michelle Barnett",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER015",
+      "fullName": "Quinn Bradley",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER016",
+      "fullName": "Brenda Ball",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER017",
+      "fullName": "Linda Hines",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER018",
+      "fullName": "Hannah Alvarez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER019",
+      "fullName": "Andrew Patel",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER020",
+      "fullName": "Liam Valdez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER021",
+      "fullName": "William Anderson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER022",
+      "fullName": "Ava Stewart",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER023",
+      "fullName": "Eva Joseph",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER024",
+      "fullName": "Betty Bowman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER025",
+      "fullName": "Laura Morgan",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER026",
+      "fullName": "Michael Cross",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER027",
+      "fullName": "Lillian Neal",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER028",
+      "fullName": "Evelyn Lynch",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER029",
+      "fullName": "Dominic Jimenez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER030",
+      "fullName": "Jennifer Barber",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER031",
+      "fullName": "Sharon Fowler",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER032",
+      "fullName": "Matthew Howell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER033",
+      "fullName": "Brayden Jimenez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER034",
+      "fullName": "Benjamin Guzman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER035",
+      "fullName": "Patrick Goodwin",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER036",
+      "fullName": "Aiden Fox",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER037",
+      "fullName": "William Morrison",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER038",
+      "fullName": "Kathleen Chavez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER039",
+      "fullName": "Landon Chavez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER040",
+      "fullName": "Paul Sutton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER041",
+      "fullName": "Victoria Valdez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER042",
+      "fullName": "Jacob Johnson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER043",
+      "fullName": "Nevaeh Harris",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER044",
+      "fullName": "Eli Carpenter",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER045",
+      "fullName": "Alexa Wheeler",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER046",
+      "fullName": "Allison Davis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER047",
+      "fullName": "Hailey Barrett",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER048",
+      "fullName": "John Hopkins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER049",
+      "fullName": "Sadie Caldwell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER050",
+      "fullName": "Julian White",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER051",
+      "fullName": "Brenda Patel",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER052",
+      "fullName": "Andrew Harmon",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER053",
+      "fullName": "Eva Wolfe",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER054",
+      "fullName": "Zoe Kim",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER055",
+      "fullName": "Ashley Bennett",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER056",
+      "fullName": "Lucas Chavez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER057",
+      "fullName": "Scarlett Herrera",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER058",
+      "fullName": "Austin Norris",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER059",
+      "fullName": "Caroline Phillips",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER060",
+      "fullName": "Leah Fleming",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER061",
+      "fullName": "David Wright",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER062",
+      "fullName": "Barbara Gonzales",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER063",
+      "fullName": "Anthony Dawson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER064",
+      "fullName": "Mateo Roberts",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER065",
+      "fullName": "Maria King",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER066",
+      "fullName": "Josiah Phillips",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER067",
+      "fullName": "Ronald Ball",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER068",
+      "fullName": "Paul Pearson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER069",
+      "fullName": "Sebastian Carpenter",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER070",
+      "fullName": "Alexander Barnes",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER071",
+      "fullName": "Kennedy Thompson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER072",
+      "fullName": "Jack Medina",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER073",
+      "fullName": "Andrew Nguyen",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER074",
+      "fullName": "Avery Lopez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER075",
+      "fullName": "Aubree Jimenez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER076",
+      "fullName": "Cynthia Howard",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER077",
+      "fullName": "Anthony Murphy",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER078",
+      "fullName": "Dennis Gutierrez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER079",
+      "fullName": "John Snyder",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER080",
+      "fullName": "Cameron Howell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER081",
+      "fullName": "Cora Munoz",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER082",
+      "fullName": "Victoria Roberts",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER083",
+      "fullName": "Timothy McDaniel",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER084",
+      "fullName": "Elijah Obrien",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER085",
+      "fullName": "Miles Walton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER086",
+      "fullName": "Margaret Richards",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER087",
+      "fullName": "Jennifer Moreno",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER088",
+      "fullName": "Grayson Sims",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER089",
+      "fullName": "Dorothy Howard",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER090",
+      "fullName": "Eva Day",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER091",
+      "fullName": "David Douglas",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER092",
+      "fullName": "Matthew Morgan",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER093",
+      "fullName": "Nolan Day",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER094",
+      "fullName": "Patricia Kelley",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER095",
+      "fullName": "Ryan King",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER096",
+      "fullName": "Adam Hayes",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER097",
+      "fullName": "Eva Steele",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER098",
+      "fullName": "Piper Oliver",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER099",
+      "fullName": "Elizabeth Hill",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER100",
+      "fullName": "Deborah Mendez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER101",
+      "fullName": "Grace Carpenter",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER102",
+      "fullName": "Robert Wright",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER103",
+      "fullName": "Lisa Alvarez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER104",
+      "fullName": "Sadie Holland",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER105",
+      "fullName": "Rebecca Page",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER106",
+      "fullName": "Barbara Andrews",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER107",
+      "fullName": "Jack Scott",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER108",
+      "fullName": "Emily Cook",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER109",
+      "fullName": "Margaret Robbins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER110",
+      "fullName": "Grace James",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER111",
+      "fullName": "Thomas Harvey",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER112",
+      "fullName": "Ian Benson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER113",
+      "fullName": "Jackson Long",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER114",
+      "fullName": "Sharon Robinson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER115",
+      "fullName": "Joseph Sullivan",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER116",
+      "fullName": "Edward Burton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER117",
+      "fullName": "Colton Sutton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER118",
+      "fullName": "Kathleen Curry",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER119",
+      "fullName": "Sarah Goodman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER120",
+      "fullName": "Cameron Medina",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER121",
+      "fullName": "Catherine Baker",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER122",
+      "fullName": "Pamela Hopkins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER123",
+      "fullName": "Alice Walton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER124",
+      "fullName": "Pamela Bradley",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER125",
+      "fullName": "Adrian Ramsey",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER126",
+      "fullName": "Larry Miller",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER127",
+      "fullName": "Amelia Meyer",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER128",
+      "fullName": "Genesis Schultz",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER129",
+      "fullName": "Naomi Barnes",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER130",
+      "fullName": "Santiago Rogers",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER131",
+      "fullName": "Kennedy Wallace",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER132",
+      "fullName": "Barbara Vasquez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER133",
+      "fullName": "Noah Lyons",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER134",
+      "fullName": "Victoria Francis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER135",
+      "fullName": "Evelyn Kim",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER136",
+      "fullName": "Christopher Parker",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER137",
+      "fullName": "Austin Aguilar",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER138",
+      "fullName": "Dorothy Francis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER139",
+      "fullName": "Miles Fletcher",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER140",
+      "fullName": "Evelyn Rogers",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER141",
+      "fullName": "Angela Cross",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER142",
+      "fullName": "Robert Tran",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER143",
+      "fullName": "Lucas Smith",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER144",
+      "fullName": "Debra Sharp",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER145",
+      "fullName": "Rachel Patterson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER146",
+      "fullName": "Jonathan Harper",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER147",
+      "fullName": "David Aguilar",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER148",
+      "fullName": "Aubree Douglas",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER149",
+      "fullName": "Piper Moreno",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER150",
+      "fullName": "Pamela Bowman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER151",
+      "fullName": "Jason Warner",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER152",
+      "fullName": "Piper Chapman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER153",
+      "fullName": "Jason Meyer",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER154",
+      "fullName": "Anthony Sullivan",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER155",
+      "fullName": "Samantha Munoz",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER156",
+      "fullName": "Colton Glover",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER157",
+      "fullName": "Dylan Parks",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER158",
+      "fullName": "Joseph Coleman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER159",
+      "fullName": "Gabriel Curry",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER160",
+      "fullName": "Skylar Guzman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER161",
+      "fullName": "Carolyn Oliver",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER162",
+      "fullName": "Quinn Medina",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER163",
+      "fullName": "Caleb Nguyen",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER164",
+      "fullName": "Thomas Castillo",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER165",
+      "fullName": "Emily Strickland",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER166",
+      "fullName": "Ella Salazar",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER167",
+      "fullName": "Richard Montgomery",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER168",
+      "fullName": "Ian Richards",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER169",
+      "fullName": "Austin Diaz",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER170",
+      "fullName": "Scarlett Burgess",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER171",
+      "fullName": "Eva Delgado",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER172",
+      "fullName": "Avery Hines",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER173",
+      "fullName": "Serenity Gutierrez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER174",
+      "fullName": "Matthew Barrett",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER175",
+      "fullName": "James Romero",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER176",
+      "fullName": "Landon Diaz",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER177",
+      "fullName": "Allison Russell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER178",
+      "fullName": "Joseph Powell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER179",
+      "fullName": "Landon Hayes",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER180",
+      "fullName": "Audrey Edwards",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER181",
+      "fullName": "Emily Carlson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER182",
+      "fullName": "Charlotte Hernandez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER183",
+      "fullName": "Ryan Hoffman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER184",
+      "fullName": "Jacob Welch",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER185",
+      "fullName": "Genesis Hopkins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER186",
+      "fullName": "Sarah Phillips",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER187",
+      "fullName": "Joseph Green",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER188",
+      "fullName": "Nathan Curtis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER189",
+      "fullName": "Ethan Stewart",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER190",
+      "fullName": "Jacob Allen",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER191",
+      "fullName": "Colton Young",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER192",
+      "fullName": "Shirley Fowler",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER193",
+      "fullName": "Mateo Valdez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER194",
+      "fullName": "Willow Mack",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER195",
+      "fullName": "Olivia Walters",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER196",
+      "fullName": "Adeline Perry",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER197",
+      "fullName": "Connor Fernandez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER198",
+      "fullName": "Eric Thornton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER199",
+      "fullName": "Joshua Taylor",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER200",
+      "fullName": "Anthony Alexander",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER201",
+      "fullName": "Dylan Walters",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER202",
+      "fullName": "Sharon Hughes",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER203",
+      "fullName": "James Warner",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER204",
+      "fullName": "Laura Delgado",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER205",
+      "fullName": "Noah Allen",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER206",
+      "fullName": "Bella Thompson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER207",
+      "fullName": "Catherine Butler",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER208",
+      "fullName": "Carter Yates",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER209",
+      "fullName": "Gary George",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER210",
+      "fullName": "Skylar Weber",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER211",
+      "fullName": "Caroline Holt",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER212",
+      "fullName": "Linda Lopez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER213",
+      "fullName": "Jack Howard",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER214",
+      "fullName": "Margaret Larson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER215",
+      "fullName": "Barbara Thompson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER216",
+      "fullName": "Christine Martinez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER217",
+      "fullName": "Kennedy Carr",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER218",
+      "fullName": "Aria Baker",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER219",
+      "fullName": "Sofia Moreno",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER220",
+      "fullName": "Brian Patton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER221",
+      "fullName": "Daniel Kelley",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER222",
+      "fullName": "Edward Dean",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER223",
+      "fullName": "Eli Morgan",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER224",
+      "fullName": "Natalie Harmon",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER225",
+      "fullName": "Anna Barber",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER226",
+      "fullName": "Chase Lowe",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER227",
+      "fullName": "Lisa Soto",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER228",
+      "fullName": "Ryan Hansen",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER229",
+      "fullName": "Elijah Montgomery",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER230",
+      "fullName": "Dennis Bradley",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER231",
+      "fullName": "Patrick Clark",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER232",
+      "fullName": "Timothy Johnson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER233",
+      "fullName": "Stella Garcia",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER234",
+      "fullName": "Amelia Aguilar",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER235",
+      "fullName": "Margaret Sanders",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER236",
+      "fullName": "Sadie Ramos",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER237",
+      "fullName": "Christian Obrien",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER238",
+      "fullName": "Addison Fletcher",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER239",
+      "fullName": "William Dean",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER240",
+      "fullName": "Janet Moss",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER241",
+      "fullName": "Aubree Barnett",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER242",
+      "fullName": "Aubree Gray",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER243",
+      "fullName": "George Parker",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER244",
+      "fullName": "Ava Curtis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER245",
+      "fullName": "Mason Carter",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER246",
+      "fullName": "Willow Rodriguez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER247",
+      "fullName": "Genesis Taylor",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER248",
+      "fullName": "Maria Bowen",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER249",
+      "fullName": "Ethan Holt",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER250",
+      "fullName": "Sebastian Castillo",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER251",
+      "fullName": "Charles Schultz",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER252",
+      "fullName": "Gabriella Hubbard",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER253",
+      "fullName": "Evelyn Gutierrez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER254",
+      "fullName": "Christopher Carpenter",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER255",
+      "fullName": "Patrick Aguilar",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER256",
+      "fullName": "Aaliyah Cannon",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER257",
+      "fullName": "Zachary Andrews",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER258",
+      "fullName": "Lisa Campbell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER259",
+      "fullName": "Isaiah Herrera",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER260",
+      "fullName": "Lucy Fisher",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER261",
+      "fullName": "Dominic Caldwell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER262",
+      "fullName": "Richard Hernandez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER263",
+      "fullName": "Emilia Norris",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER264",
+      "fullName": "Linda Jenkins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER265",
+      "fullName": "Chase Miles",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER266",
+      "fullName": "Caleb Lambert",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER267",
+      "fullName": "Barbara Adams",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER268",
+      "fullName": "Ava Montgomery",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER269",
+      "fullName": "Adeline Riley",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER270",
+      "fullName": "Charlotte Bush",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER271",
+      "fullName": "Benjamin Ryan",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER272",
+      "fullName": "Serenity Ruiz",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER273",
+      "fullName": "Violet Pena",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER274",
+      "fullName": "Quinn Clark",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER275",
+      "fullName": "Maria Walton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER276",
+      "fullName": "Hudson Howard",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER277",
+      "fullName": "Mia Cohen",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER278",
+      "fullName": "Nicole Clark",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER279",
+      "fullName": "Jack Stanley",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER280",
+      "fullName": "Nicholas Henderson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER281",
+      "fullName": "Natalie Alexander",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER282",
+      "fullName": "Alexander Caldwell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER283",
+      "fullName": "Emma Richards",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER284",
+      "fullName": "Mary Howard",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER285",
+      "fullName": "Alexander Curry",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER286",
+      "fullName": "Allison Owens",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER287",
+      "fullName": "Joshua Schmidt",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER288",
+      "fullName": "Deborah Richards",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER289",
+      "fullName": "Brandon Chapman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER290",
+      "fullName": "Dennis Francis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER291",
+      "fullName": "Riley Davis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER292",
+      "fullName": "Sarah Ortiz",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER293",
+      "fullName": "Larry Bryant",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER294",
+      "fullName": "Joseph Henderson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER295",
+      "fullName": "Anna Norris",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER296",
+      "fullName": "Joseph Leonard",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER297",
+      "fullName": "Sharon Kim",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER298",
+      "fullName": "Debra Diaz",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER299",
+      "fullName": "Kenneth Day",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER300",
+      "fullName": "Connor Chapman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER301",
+      "fullName": "Jack Chambers",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER302",
+      "fullName": "Ava Carter",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER303",
+      "fullName": "Genesis Reid",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER304",
+      "fullName": "Eli Chavez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER305",
+      "fullName": "Adeline Sutton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER306",
+      "fullName": "Brian Fuller",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER307",
+      "fullName": "Justin Brooks",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER308",
+      "fullName": "Dorothy Wade",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER309",
+      "fullName": "Serenity Fields",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER310",
+      "fullName": "Ruby Carlson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER311",
+      "fullName": "Sarah Johnson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER312",
+      "fullName": "Cora Howell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER313",
+      "fullName": "Elijah Bowman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER314",
+      "fullName": "Hazel Alexander",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER315",
+      "fullName": "Riley Graves",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER316",
+      "fullName": "Joshua Salazar",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER317",
+      "fullName": "Andrew Salazar",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER318",
+      "fullName": "Nathan King",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER319",
+      "fullName": "Isabella Stewart",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER320",
+      "fullName": "Claire Clark",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER321",
+      "fullName": "Mia Walker",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER322",
+      "fullName": "Lisa Hoffman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER323",
+      "fullName": "Nolan Schmidt",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER324",
+      "fullName": "Leah Romero",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER325",
+      "fullName": "Joshua Brooks",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER326",
+      "fullName": "Eli Mack",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER327",
+      "fullName": "Nicholas Jensen",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER328",
+      "fullName": "Barbara Ryan",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER329",
+      "fullName": "Luke Caldwell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER330",
+      "fullName": "Brandon Hoffman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER331",
+      "fullName": "Luke Warner",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER332",
+      "fullName": "Rebecca Riley",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER333",
+      "fullName": "Zoe Gonzalez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER334",
+      "fullName": "Claire Garner",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER335",
+      "fullName": "Mateo Cannon",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER336",
+      "fullName": "Nathan Terry",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER337",
+      "fullName": "Debra Chapman",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER338",
+      "fullName": "Quinn Murphy",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER339",
+      "fullName": "Wyatt Kelly",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER340",
+      "fullName": "Paisley Barrett",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER341",
+      "fullName": "Amelia Tran",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER342",
+      "fullName": "Angel Romero",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER343",
+      "fullName": "Logan Watson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER344",
+      "fullName": "Aria Shelton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER345",
+      "fullName": "Isabella Davis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER346",
+      "fullName": "Riley James",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER347",
+      "fullName": "Anna Meyer",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER348",
+      "fullName": "Emily Romero",
+      "error": "socket hang up"
+    },
+    {
+      "did": "VOTER349",
+      "fullName": "Anthony Kim",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER350",
+      "fullName": "Chase Rodgers",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER351",
+      "fullName": "Brooklyn Gibson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER352",
+      "fullName": "Catherine Ruiz",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER353",
+      "fullName": "Aaliyah Cox",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER354",
+      "fullName": "Mateo Bell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER355",
+      "fullName": "Emma Jenkins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER356",
+      "fullName": "Nicholas Hopkins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER357",
+      "fullName": "Liam Ball",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER358",
+      "fullName": "Josiah Bailey",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER359",
+      "fullName": "Pamela Gutierrez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER360",
+      "fullName": "Mason Davis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER361",
+      "fullName": "Riley Ruiz",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER362",
+      "fullName": "Eleanor Williamson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER363",
+      "fullName": "Piper Thornton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER364",
+      "fullName": "Emma McKinney",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER365",
+      "fullName": "Laura Obrien",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER366",
+      "fullName": "Allison Keller",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER367",
+      "fullName": "Everly Stevenson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER368",
+      "fullName": "Quinn Clark",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER369",
+      "fullName": "Everly Martin",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER370",
+      "fullName": "Jennifer Moreno",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER371",
+      "fullName": "Joseph Ortega",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER372",
+      "fullName": "Violet Anderson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER373",
+      "fullName": "Nolan Castillo",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER374",
+      "fullName": "Bella Robbins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER375",
+      "fullName": "Addison Patel",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER376",
+      "fullName": "Ethan Lawrence",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER377",
+      "fullName": "William Johnson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER378",
+      "fullName": "Caroline Bennett",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER379",
+      "fullName": "Michael Soto",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER380",
+      "fullName": "Jordan Lowe",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER381",
+      "fullName": "Abigail King",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER382",
+      "fullName": "Susan Price",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER383",
+      "fullName": "Adrian Cooper",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER384",
+      "fullName": "Brenda Rhodes",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER385",
+      "fullName": "Richard Austin",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER386",
+      "fullName": "Owen Walsh",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER387",
+      "fullName": "Lisa Rowe",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER388",
+      "fullName": "Miles Kelly",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER389",
+      "fullName": "Cora Brooks",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER390",
+      "fullName": "Eli Porter",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER391",
+      "fullName": "Dorothy Pearson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER392",
+      "fullName": "Patrick Morales",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER393",
+      "fullName": "Christopher Edwards",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER394",
+      "fullName": "Emily Williams",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER395",
+      "fullName": "Stephen Garcia",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER396",
+      "fullName": "Sebastian Reese",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER397",
+      "fullName": "Zoe Castillo",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER398",
+      "fullName": "Samantha Alvarez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER399",
+      "fullName": "Thomas Walton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER400",
+      "fullName": "Carol Richards",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER401",
+      "fullName": "Katherine Mitchell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER402",
+      "fullName": "Julian Ellis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER403",
+      "fullName": "Maya King",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER404",
+      "fullName": "Evelyn Higgins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER405",
+      "fullName": "Jace Perry",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER406",
+      "fullName": "Brooklyn Bryant",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER407",
+      "fullName": "Aubrey Peters",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER408",
+      "fullName": "Amy Lewis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER409",
+      "fullName": "Genesis Schneider",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER410",
+      "fullName": "Alex Anderson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER411",
+      "fullName": "Sharon Martinez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER412",
+      "fullName": "Genesis Reed",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER413",
+      "fullName": "Landon Porter",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER414",
+      "fullName": "Genesis Rodgers",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER415",
+      "fullName": "Leah Dixon",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER416",
+      "fullName": "Andrew Collins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER417",
+      "fullName": "Katherine Barnes",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER418",
+      "fullName": "Allison Mendoza",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER419",
+      "fullName": "Hunter Fox",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER420",
+      "fullName": "Riley Garner",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER421",
+      "fullName": "Laura Bradley",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER422",
+      "fullName": "Eli Snyder",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER423",
+      "fullName": "Brooklyn Sanders",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER424",
+      "fullName": "Jack Patel",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER425",
+      "fullName": "Lydia Mendoza",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER426",
+      "fullName": "Deborah Pearson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER427",
+      "fullName": "Kaylee Jenkins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER428",
+      "fullName": "Skylar Baldwin",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER429",
+      "fullName": "Stephanie Roberts",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER430",
+      "fullName": "Mark Hill",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER431",
+      "fullName": "Anthony Brewer",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER432",
+      "fullName": "Genesis Miller",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER433",
+      "fullName": "Jeremiah Chavez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER434",
+      "fullName": "Caleb Bradley",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER435",
+      "fullName": "Jonathan Keller",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER436",
+      "fullName": "Quinn Keller",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER437",
+      "fullName": "Avery Walker",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER438",
+      "fullName": "Kennedy Jimenez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER439",
+      "fullName": "Benjamin Ramirez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER440",
+      "fullName": "Emma Terry",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER441",
+      "fullName": "Shirley Hopkins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER442",
+      "fullName": "Josiah Love",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER443",
+      "fullName": "Shirley Myers",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER444",
+      "fullName": "David Morales",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER445",
+      "fullName": "Landon Davis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER446",
+      "fullName": "Wyatt Reese",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER447",
+      "fullName": "Isaiah Cooper",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER448",
+      "fullName": "Savannah Tate",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER449",
+      "fullName": "Eric Mullins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER450",
+      "fullName": "Naomi Baker",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER451",
+      "fullName": "Dennis Little",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER452",
+      "fullName": "William Newton",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER453",
+      "fullName": "Austin Leonard",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER454",
+      "fullName": "Edward Lewis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER455",
+      "fullName": "Rachel Harvey",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER456",
+      "fullName": "Nicole Welch",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER457",
+      "fullName": "Alexa Ellis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER458",
+      "fullName": "Robert Walters",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER459",
+      "fullName": "Daniel Lowe",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER460",
+      "fullName": "Scott Silva",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER461",
+      "fullName": "Richard Oliver",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER462",
+      "fullName": "Oliver Smith",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER463",
+      "fullName": "Thomas Weber",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER464",
+      "fullName": "Betty Dawson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER465",
+      "fullName": "Joshua Robinson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER466",
+      "fullName": "Debra Mullins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER467",
+      "fullName": "Audrey Carr",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER468",
+      "fullName": "Ava Evans",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER469",
+      "fullName": "Jayden Russell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER470",
+      "fullName": "Lucas Perez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER471",
+      "fullName": "Everly Barrett",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER472",
+      "fullName": "Landon Andrews",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER473",
+      "fullName": "Allison Wolfe",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER474",
+      "fullName": "Sharon Graves",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER475",
+      "fullName": "Cameron Francis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER476",
+      "fullName": "Christopher George",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER477",
+      "fullName": "Kimberly Foster",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER478",
+      "fullName": "Ariana Williamson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER479",
+      "fullName": "Zachary Reed",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER480",
+      "fullName": "Charles Patterson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER481",
+      "fullName": "Josiah Gutierrez",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER482",
+      "fullName": "Scott Thompson",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER483",
+      "fullName": "James Rowe",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER484",
+      "fullName": "Amelia Elliott",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER485",
+      "fullName": "Nicole Warner",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER486",
+      "fullName": "Daniel Dennis",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER487",
+      "fullName": "Timothy Lucas",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER488",
+      "fullName": "Maya Adams",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER489",
+      "fullName": "Kevin Chambers",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER490",
+      "fullName": "Ella Nguyen",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER491",
+      "fullName": "Hazel White",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER492",
+      "fullName": "Christine Norris",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER493",
+      "fullName": "Zoey Powell",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER494",
+      "fullName": "Natalie Patel",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER495",
+      "fullName": "Emily Higgins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER496",
+      "fullName": "Stella Sanders",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER497",
+      "fullName": "Samantha Morales",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER498",
+      "fullName": "Kinsley Porter",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER499",
+      "fullName": "Alex Robbins",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    },
+    {
+      "did": "VOTER500",
+      "fullName": "Donald Armstrong",
+      "error": "Blockchain network unavailable - please check if all peers are running"
+    }
+  ],
+  "successRate": "0.0",
+  "newVoters": [],
+  "existingVoters": []
+}

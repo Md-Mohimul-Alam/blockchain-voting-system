@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-11-13T14:29:04.553Z",
+  "totalVoteTasks": 400,
+  "successfulVotes": 20,
+  "failedVotes": 0,
+  "alreadyVoted": 380,
+  "successRate": "5.0",
+  "electionBreakdown": {
+    "Election-2": {
+      "title": "Santaran Art Organization President Election",
+      "successful": 20,
+      "failed": 0,
+      "alreadyVoted": 380
+    }
+  },
+  "candidateResults": {
+    "Election-2": {
+      "C-1": 10,
+      "C-2": 6,
+      "C-3": 4
+    }
+  },
+  "failedVotesDetail": []
+}

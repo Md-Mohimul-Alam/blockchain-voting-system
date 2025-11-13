@@ -1,103 +1,174 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Button } from "@/components/ui/button"; // assuming you are using your UI components
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"; 
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import API from "@/services/api";
-import { useToast } from "@/hooks/use-toast"; // Toast notifications hook
-import { Bar } from "react-chartjs-2"; // Chart.js Bar chart
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import { useToast } from "@/hooks/use-toast";
+import { Bar, Pie } from "react-chartjs-2";
+import { 
+  Chart as ChartJS, 
+  CategoryScale, 
+  LinearScale, 
+  BarElement, 
+  Title, 
+  Tooltip, 
+  Legend,
+  ArcElement
+} from "chart.js";
+import {
+  Calendar,
+  Users,
+  Vote,
+  TrendingUp,
+  AlertCircle,
+  Eye,
+  BarChart3,
+  PieChart,
+  RefreshCw
+} from "lucide-react";
 
 // Register chart components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
-// Election Modal Component
-const ElectionModal = ({ election, isOpen, closeModal }) => {
-  const navigate = useNavigate(); // Use useNavigate to get the navigate function
-
-  return (
-    <div className={`fixed inset-0 z-50 bg-opacity-50 ${isOpen ? "block" : "hidden"} backdrop-blur-sm flex justify-center items-center`}>
-      <div className="bg-white p-8 rounded-lg shadow-lg w-3/4 md:w-1/3">
-        <h3 className="text-2xl font-semibold text-teal-700 mb-4">{election.title}</h3>
-        <p><strong>Description:</strong> {election.description || "No description available."}</p>
-        <div className="mt-4">
-          <p><strong>Start Date:</strong> {new Date(election.startDate).toLocaleString()}</p>
-          <p><strong>End Date:</strong> {new Date(election.endDate).toLocaleString()}</p>
-        </div>
-        <div className="mt-4 flex justify-between">
-          <Button
-            onClick={closeModal}
-            className="bg-red-500 text-white hover:bg-red-600"
-          >
-            Close
-          </Button>
-          <Button 
-            onClick={() => navigate('/admin/election-management')} // Use navigate to go to the election management page
-            className="bg-teal-600 text-white hover:bg-teal-700"
-          >
-            Manage Election
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const AdminAnalytics = () => {
-  const [elections, setElections] = useState([]);
+  const navigate = useNavigate();
   const { toast } = useToast();
+  const [elections, setElections] = useState([]);
   const [userData, setUserData] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state for displaying election details
-  const [selectedElection, setSelectedElection] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeChart, setActiveChart] = useState("bar");
 
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
       setUserData(JSON.parse(user));
     }
+    fetchElections();
   }, []);
 
-  useEffect(() => {
-    API.get("/elections")
-      .then((res) => setElections(res.data))
-      .catch(() =>
-        toast({ title: "Failed to fetch elections", variant: "destructive" })
-      );
-  }, []);
-
-  const categorizeElections = () => {
-    const now = new Date();
-    const upcoming = [], running = [], previous = [];
-
-    elections.forEach((e) => {
-      const start = new Date(e.startDate);
-      const end = new Date(e.endDate);
-
-      if (start > now) {
-        upcoming.push(e);
-      } else if (start <= now && now <= end) {
-        running.push(e);
+  const fetchElections = async () => {
+    try {
+      setLoading(true);
+      console.log("🔄 Fetching elections for analytics...");
+      
+      const response = await API.get("/elections");
+      console.log("📨 Analytics response:", response);
+      
+      // Handle different response structures safely
+      let electionsData = [];
+      
+      if (response.data && Array.isArray(response.data)) {
+        electionsData = response.data;
+      } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+        electionsData = response.data.data;
+      } else if (response.data && typeof response.data === 'object') {
+        electionsData = [response.data];
       } else {
-        previous.push(e);
+        console.warn("⚠️ Unexpected elections structure:", response.data);
+        electionsData = [];
+      }
+      
+      console.log(`✅ Loaded ${electionsData.length} elections for analytics`);
+      setElections(electionsData);
+      
+    } catch (error) {
+      console.error("❌ Error fetching elections for analytics:", error);
+      toast({
+        title: "Failed to load analytics data",
+        description: error.response?.data?.error || "Please try again later",
+        variant: "destructive",
+      });
+      setElections([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Safe categorization function
+  const categorizeElections = () => {
+    if (!elections || !Array.isArray(elections)) {
+      return { upcoming: [], running: [], previous: [], total: 0 };
+    }
+
+    const now = new Date();
+    const upcoming = [];
+    const running = [];
+    const previous = [];
+
+    elections.forEach((election) => {
+      if (!election || !election.startDate || !election.endDate) {
+        console.warn("⚠️ Invalid election data in analytics:", election);
+        return;
+      }
+
+      try {
+        const start = new Date(election.startDate);
+        const end = new Date(election.endDate);
+
+        if (start > now) {
+          upcoming.push(election);
+        } else if (start <= now && now <= end) {
+          running.push(election);
+        } else {
+          previous.push(election);
+        }
+      } catch (dateError) {
+        console.error("❌ Error parsing election dates in analytics:", dateError, election);
       }
     });
 
-    return { upcoming, running, previous };
+    return { 
+      upcoming, 
+      running, 
+      previous, 
+      total: elections.length 
+    };
   };
 
-  const { upcoming, running, previous } = categorizeElections();
+  const { upcoming, running, previous, total } = categorizeElections();
 
-  // Data for the chart
-  const chartData = {
-    labels: ['Upcoming', 'Running', 'Previous'],
+  // Chart data for Bar Chart
+  const barChartData = {
+    labels: ['Upcoming', 'Running', 'Completed'],
     datasets: [
       {
-        label: 'Elections',
-        data: [upcoming.length, running.length, previous.length], // Data for the chart
-        backgroundColor: ['#4CAF50', '#FFEB3B', '#9E9E9E'], // Colors for each bar
-        borderColor: ['#388E3C', '#FBC02D', '#616161'], // Border colors
-        borderWidth: 1,
+        label: 'Number of Elections',
+        data: [upcoming.length, running.length, previous.length],
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.8)',
+          'rgba(75, 192, 192, 0.8)',
+          'rgba(255, 99, 132, 0.8)'
+        ],
+        borderColor: [
+          'rgba(54, 162, 235, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(255, 99, 132, 1)'
+        ],
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  // Chart data for Pie Chart
+  const pieChartData = {
+    labels: ['Upcoming', 'Running', 'Completed'],
+    datasets: [
+      {
+        data: [upcoming.length, running.length, previous.length],
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.8)',
+          'rgba(75, 192, 192, 0.8)',
+          'rgba(255, 99, 132, 0.8)'
+        ],
+        borderColor: [
+          'rgba(54, 162, 235, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(255, 99, 132, 1)'
+        ],
+        borderWidth: 2,
       },
     ],
   };
@@ -105,131 +176,289 @@ const AdminAnalytics = () => {
   const chartOptions = {
     responsive: true,
     plugins: {
+      legend: {
+        position: 'top',
+      },
       title: {
         display: true,
-        text: 'Election Status Overview',
+        text: 'Election Distribution',
+        font: {
+          size: 16
+        }
       },
     },
   };
 
-  // Election click handler for modal display
-  const handleElectionClick = (election) => {
-    setSelectedElection(election);
-    setIsModalOpen(true);
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      upcoming: { variant: "secondary", label: "Upcoming" },
+      running: { variant: "success", label: "Running" },
+      previous: { variant: "destructive", label: "Completed" }
+    };
+    
+    return statusConfig[status] || statusConfig.upcoming;
   };
 
+  const formatDate = (dateString) => {
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return "Invalid Date";
+    }
+  };
+
+  const ElectionCard = ({ election, status }) => {
+    const config = getStatusBadge(status);
+    
+    return (
+      <Card className="bg-white shadow-md hover:shadow-lg transition-shadow border-l-4 border-l-teal-500">
+        <CardContent className="p-4">
+          <div className="flex justify-between items-start mb-3">
+            <h3 className="font-semibold text-gray-800 text-lg line-clamp-2">
+              {election.title}
+            </h3>
+            <Badge variant={config.variant}>
+              {config.label}
+            </Badge>
+          </div>
+          
+          {election.description && (
+            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+              {election.description}
+            </p>
+          )}
+          
+          <div className="space-y-2 text-xs text-gray-500">
+            <div className="flex justify-between">
+              <span>Start:</span>
+              <span className="font-medium">{formatDate(election.startDate)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>End:</span>
+              <span className="font-medium">{formatDate(election.endDate)}</span>
+            </div>
+          </div>
+          
+          <Button 
+            onClick={() => navigate('/admin/election-management')}
+            className="w-full mt-4 bg-teal-600 hover:bg-teal-700 text-white"
+            size="sm"
+          >
+            <Eye className="w-4 h-4 mr-2" />
+            Manage
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Header />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <RefreshCw className="w-8 h-8 animate-spin text-teal-600 mx-auto mb-4" />
+            <p className="text-gray-600">Loading analytics data...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      <div className="p-8 text-3xl font-bold text-center text-white bg-teal-800 shadow-xl mb-8">
-        <CardHeader>
-          <CardTitle className="pl-23">Election Status Overview</CardTitle>
-        </CardHeader>
-      </div>
-      
-      {/* Election Analytics Bar Chart */}
-      <div className="max-w-5xl mx-auto w-full mb-12">
-        <Card>
-          <CardContent className="space-y-4">
-            <Bar data={chartData} options={chartOptions} />
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Card Section for each type of election */}
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-        {/* Running Elections */}
-        <Card className="mt-8 border-t-4 border-yellow-500">
-          <CardHeader>
-            <CardTitle>Running Elections</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {running.length === 0 ? (
-              <p className="text-gray-500 italic">No running elections available.</p>
-            ) : (
-              running.map((election, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 border rounded-lg bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out cursor-pointer"
-                  onClick={() => handleElectionClick(election)} // Trigger the action passed as prop
-                >
-                  <div className="block items-center">
-                    <h3 className="font-semibold text-2xl text-teal-600 mb-2">{election.title}</h3>
-                    <Button className="w-full text-white bg-teal-600 hover:bg-teal-700">
-                      <p className="text-white">View Details</p>
-                    </Button>
-                  </div>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Upcoming Elections */}
-        <Card className="mt-8 border-t-4 border-purple-500">
-          <CardHeader>
-            <CardTitle>Upcoming Elections</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {upcoming.length === 0 ? (
-              <p className="text-gray-500 italic">No upcoming elections available.</p>
-            ) : (
-              upcoming.map((election, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 border rounded-lg bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out cursor-pointer"
-                  onClick={() => handleElectionClick(election)} // Trigger the action passed as prop
-                >
-                  <div className="block items-center">
-                    <h3 className="font-semibold text-2xl text-teal-600 mb-2">{election.title}</h3>
-                    <Button className="w-full text-white bg-teal-600 hover:bg-teal-700">
-                      <p className="text-white">View Details</p>
-                    </Button>
-                  </div>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Previous Elections */}
-        <Card className="mt-8 border-t-4 border-gray-500">
-          <CardHeader>
-            <CardTitle>Previous Elections</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {previous.length === 0 ? (
-              <p className="text-gray-500 italic">No previous elections available.</p>
-            ) : (
-              previous.map((election, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 border rounded-lg bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out cursor-pointer"
-                  onClick={() => handleElectionClick(election)} // Trigger the action passed as prop
-                >
-                  <div className="block items-center">
-                    <h3 className="font-semibold text-2xl text-teal-600 mb-2">{election.title}</h3>
-                    <Button className="w-full text-white bg-teal-600 hover:bg-teal-700">
-                      <p className="text-white">View Details</p>
-                    </Button>
-                  </div>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-12 shadow-xl">
+        <div className="container mx-auto px-6 text-center">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <BarChart3 className="w-8 h-8" />
+            <h1 className="text-4xl font-bold">Election Analytics</h1>
+          </div>
+          <p className="text-xl opacity-90">
+            Comprehensive insights and statistics for all elections
+          </p>
+        </div>
       </div>
 
-      {/* Election Modal */}
-      {selectedElection && (
-        <ElectionModal
-          election={selectedElection}
-          isOpen={isModalOpen}
-          closeModal={() => setIsModalOpen(false)}
-        />
-      )}
+      <main className="flex-grow container mx-auto px-6 py-8">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white shadow-lg border-0">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-blue-100 rounded-lg">
+                  <Calendar className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Elections</p>
+                  <p className="text-2xl font-bold text-gray-900">{total}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Footer */}
+          <Card className="bg-white shadow-lg border-0">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-green-100 rounded-lg">
+                  <TrendingUp className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Running</p>
+                  <p className="text-2xl font-bold text-gray-900">{running.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-lg border-0">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-purple-100 rounded-lg">
+                  <Calendar className="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Upcoming</p>
+                  <p className="text-2xl font-bold text-gray-900">{upcoming.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-lg border-0">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-red-100 rounded-lg">
+                  <Vote className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Completed</p>
+                  <p className="text-2xl font-bold text-gray-900">{previous.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Charts Section */}
+        <Card className="bg-white shadow-lg border-0 mb-8">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Election Distribution</CardTitle>
+              <CardDescription>
+                Visual representation of election status across the system
+              </CardDescription>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant={activeChart === "bar" ? "default" : "outline"}
+                onClick={() => setActiveChart("bar")}
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <BarChart3 className="w-4 h-4" />
+                Bar Chart
+              </Button>
+              <Button
+                variant={activeChart === "pie" ? "default" : "outline"}
+                onClick={() => setActiveChart("pie")}
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <PieChart className="w-4 h-4" />
+                Pie Chart
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              {activeChart === "bar" ? (
+                <Bar data={barChartData} options={chartOptions} />
+              ) : (
+                <Pie data={pieChartData} options={chartOptions} />
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Election Lists */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Running Elections */}
+          <div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-green-600" />
+              Running Elections ({running.length})
+            </h3>
+            <div className="space-y-4">
+              {running.length > 0 ? (
+                running.map((election, idx) => (
+                  <ElectionCard key={idx} election={election} status="running" />
+                ))
+              ) : (
+                <Card className="bg-gray-50 border-dashed">
+                  <CardContent className="p-6 text-center">
+                    <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500">No running elections</p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </div>
+
+          {/* Upcoming Elections */}
+          <div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-blue-600" />
+              Upcoming Elections ({upcoming.length})
+            </h3>
+            <div className="space-y-4">
+              {upcoming.length > 0 ? (
+                upcoming.map((election, idx) => (
+                  <ElectionCard key={idx} election={election} status="upcoming" />
+                ))
+              ) : (
+                <Card className="bg-gray-50 border-dashed">
+                  <CardContent className="p-6 text-center">
+                    <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500">No upcoming elections</p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </div>
+
+          {/* Completed Elections */}
+          <div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <Vote className="w-5 h-5 text-red-600" />
+              Completed Elections ({previous.length})
+            </h3>
+            <div className="space-y-4">
+              {previous.length > 0 ? (
+                previous.map((election, idx) => (
+                  <ElectionCard key={idx} election={election} status="previous" />
+                ))
+              ) : (
+                <Card className="bg-gray-50 border-dashed">
+                  <CardContent className="p-6 text-center">
+                    <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500">No completed elections</p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+
       <Footer />
     </div>
   );

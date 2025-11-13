@@ -4,8 +4,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
+import { useToast } from "../hooks/use-toast";
+import { useAuth } from "../context/AuthContext"; // ✅ Import useAuth
+import { Button } from "../components/ui/button";
 import {
   Form,
   FormControl,
@@ -26,21 +27,20 @@ import {
 import { Vote, Eye, EyeOff } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import API from "@/services/api"; // 🔗 Import the API service
+import API from "@/services/api";
 
 const loginSchema = z.object({
-  role: z.string().min(3, { message: "Role is required" }),
+  role: z.string().min(1, { message: "Role is required" }),
   did: z.string().min(1, { message: "DID is required" }),
-  dob: z.string().min(4, { message: "Date of Birth is required" }),
-  username: z.string().min(1, { message: "Username must be at least 1 characters." }),
+  dob: z.string().min(1, { message: "Date of Birth is required" }),
+  username: z.string().min(1, { message: "Username is required" }),
   password: z.string().min(4, { message: "Password must be at least 4 characters." }),
 });
-
-
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth(); // ✅ Use AuthContext
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -55,34 +55,58 @@ const Login = () => {
     }    
   });
 
-
-  const onSubmit = async (data) => {
-    setIsLoading(true);
-    try {
-      const response = await API.post("/login", data);
-      const { token, user } = response.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      
-  
-      toast({
-        title: "Login successful!",
-        description: `Welcome ${user.fullName || user.username}!`,
-      });
-  
-      // ✅ Redirect to role-based dashboard
-      navigate(`/dashboard/${user.role.toLowerCase()}`);
-    } catch (error) {
-      toast({
-        title: "Login failed",
-        description: error.response?.data?.error || "Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };  
+// In your LoginPage.jsx onSubmit function
+const onSubmit = async (data) => {
+  setIsLoading(true);
+  try {
+    console.log("🔐 Login attempt with data:", data);
     
+    const response = await API.post("/login", data);
+    console.log("📨 Full login response:", response.data);
+
+    let token, userData;
+
+    // Handle different response structures
+    if (response.data.data) {
+      // Structure: { success: true, data: { token, user } }
+      token = response.data.data.token;
+      userData = response.data.data.user;
+    } else {
+      // Structure: { success: true, token, user }
+      token = response.data.token;
+      userData = response.data.user;
+    }
+
+    console.log("✅ Extracted token:", token);
+    console.log("✅ Extracted user:", userData);
+
+    if (!token || !userData) {
+      throw new Error("Missing token or user data in response");
+    }
+
+    // Use AuthContext login function
+    login(userData, token);
+
+    toast({
+      title: "Login successful! 🎉",
+      description: `Welcome ${userData.fullName || userData.username || userData.did}!`,
+    });
+
+    // Use the redirect route instead of direct navigation
+    navigate("/dashboard/redirect");
+    
+  } catch (error) {
+    console.error("❌ Login error:", error);
+    toast({
+      title: "Login failed",
+      description: error.response?.data?.error || "Please try again.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   return (
@@ -112,7 +136,11 @@ const Login = () => {
                       <FormItem>
                         <FormLabel>Username</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter your username" {...field} disabled={isLoading} />
+                          <Input 
+                            placeholder="Enter your username" 
+                            {...field} 
+                            disabled={isLoading} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -125,7 +153,11 @@ const Login = () => {
                       <FormItem>
                         <FormLabel>DID</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter your DID" {...field} disabled={isLoading} />
+                          <Input 
+                            placeholder="Enter your DID" 
+                            {...field} 
+                            disabled={isLoading} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -140,22 +172,20 @@ const Login = () => {
                         <FormControl>
                           <select
                             {...field}
-                            className="w-full p-2 border border-gray-300 rounded"
+                            className="w-full p-2 border border-gray-300 rounded-md bg-white"
                             disabled={isLoading}
                           >
                             <option value="">Select role</option>
                             <option value="Voter">Voter</option>
                             <option value="Candidate">Candidate</option>
                             <option value="Admin">Admin</option>
-                            <option value="Electioncommunity">Election Community</option>
+                            <option value="ElectionCommission">Election Commission</option>
                           </select>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
-
                   <FormField
                     control={form.control}
                     name="dob"
@@ -164,7 +194,6 @@ const Login = () => {
                         <FormLabel>Date of Birth</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="YYYY-MM-DD"
                             type="date"
                             {...field}
                             disabled={isLoading}
@@ -174,7 +203,6 @@ const Login = () => {
                       </FormItem>
                     )}
                   />
-
                   <FormField
                     control={form.control}
                     name="password"
@@ -191,8 +219,9 @@ const Login = () => {
                             />
                             <button
                               type="button"
-                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                               onClick={togglePasswordVisibility}
+                              disabled={isLoading}
                             >
                               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>
@@ -207,20 +236,29 @@ const Login = () => {
                       Forgot password?
                     </Link>
                   </div>
-                  <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700" disabled={isLoading}>
-                    {isLoading ? "Signing in..." : "Sign in"}
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-teal-600 hover:bg-teal-700" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Signing in...
+                      </div>
+                    ) : (
+                      "Sign in"
+                    )}
                   </Button>
                 </form>
               </Form>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <div className="text-center text-sm">
-                Don&apos;t have an account? <Link to="/register" className="text-teal-600 hover:text-teal-800 font-medium">Register</Link>
-              </div>
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-300" />
-                </div>
+                Don&apos;t have an account?{" "}
+                <Link to="/register" className="text-teal-600 hover:text-teal-800 font-medium">
+                  Register
+                </Link>
               </div>
             </CardFooter>
           </Card>

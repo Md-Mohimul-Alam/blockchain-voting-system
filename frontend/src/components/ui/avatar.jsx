@@ -1,8 +1,7 @@
 // src/components/ui/avatar.jsx
 import React, { forwardRef } from "react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
-import { cn } from "@/lib/utils";
-
+import { cn } from "../../lib/utils";
 const Avatar = forwardRef((props, ref) => {
   const { className, ...rest } = props;
   return (
